@@ -2,8 +2,10 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from course_api.data_managers.course_pull import UCMercedClassParser
 from course_api.models import Course
 import os
+import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "course_planner.settings")
+django.setup()
 sched = BlockingScheduler()
 
 
