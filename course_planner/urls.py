@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from course_api.views import course_view
 
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
+    path('course_pull/', course_view),
 ]

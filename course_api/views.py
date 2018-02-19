@@ -13,5 +13,12 @@ def course_view(request):
             # TODO weird thing with python and not references
             crn = course.get('crn')
             course.pop('crn')
+            course['units'] = int(course['units'])
+            course['capacity'] = int(course['capacity'])
+            course['enrolled'] = int(course['enrolled'])
+            if course['available'] == 'Closed':
+                course['available'] = 0
+            else:
+                course['available'] = int(course['available'])
             Course.objects.update_or_create(crn=crn, defaults=course)
     return JsonResponse({'success': True})
