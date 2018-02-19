@@ -1,3 +1,4 @@
+APScheduler==3.5.1
 dj-database-url==0.4.2
 Django==2.0.2
 django-heroku==0.2.0
@@ -5,4 +6,6 @@ django-jet==1.0.7
 djangorestframework==3.7.7
 psycopg2==2.7.4
 pytz==2018.3
+six==1.11.0
+tzlocal==1.5.1
 whitenoise==3.3.1
