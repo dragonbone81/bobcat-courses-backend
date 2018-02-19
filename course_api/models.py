@@ -1,72 +1,73 @@
 from django.db import models
 
+
 # Create your models here.
-Course = models.Model(
-    crn=models.CharField(
+class Course(models.Model):
+    crn = models.CharField(
         primary_key=True,
         max_length=32,
         db_index=True,
         verbose_name="CRN",
     ),
-    subject=models.CharField(
+    subject = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Subject",
     ),
-    course_id=models.CharField(
+    course_id = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Course ID",
     ),
-    course_name=models.CharField(
+    course_name = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Course Name",
     ),
-    units=models.IntegerField(
+    units = models.IntegerField(
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Units",
     ),
-    type=models.CharField(
+    type = models.CharField(
         max_length=32,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Type",
     ),
-    days=models.CharField(
+    days = models.CharField(
         max_length=32,
         null=True,
         blank=True,
         db_index=True,
     ),
-    hours=models.CharField(
+    hours = models.CharField(
         max_length=32,
         null=True,
         blank=True,
         db_index=True,
     ),
-    room=models.CharField(
+    room = models.CharField(
         max_length=32,
         null=True,
         blank=True,
         db_index=True,
     ),
-    dates=models.CharField(
+    dates = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    instructor=models.CharField(
+    instructor = models.CharField(
         max_length=256,
         null=True,
         blank=True,
@@ -74,96 +75,95 @@ Course = models.Model(
         verbose_name="Instructor",
     ),
     # TODO needs work
-    lecture_crn=models.CharField(
+    lecture_crn = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Lecture CRN",
     ),
-    term=models.CharField(
+    term = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Term",
     ),
-    capacity=models.IntegerField(
+    capacity = models.IntegerField(
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Capacity",
     ),
-    enrolled=models.IntegerField(
+    enrolled = models.IntegerField(
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Enrolled",
     ),
-    available=models.IntegerField(
+    available = models.IntegerField(
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Available",
     ),
-    final_type=models.CharField(
+    final_type = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_days=models.CharField(
+    final_days = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_hours=models.CharField(
+    final_hours = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_room=models.CharField(
+    final_room = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_dates=models.CharField(
+    final_dates = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_type_2=models.CharField(
+    final_type_2 = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_days_2=models.CharField(
+    final_days_2 = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_hours_2=models.CharField(
+    final_hours_2 = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_room_2=models.CharField(
+    final_room_2 = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-    final_dates_2=models.CharField(
+    final_dates_2 = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
     ),
-)
