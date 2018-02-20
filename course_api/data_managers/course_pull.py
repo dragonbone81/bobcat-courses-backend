@@ -2,6 +2,7 @@ from html.parser import HTMLParser
 from urllib.request import urlopen
 
 
+# TODO take a look at ANTH-003-01 and crn ""
 # moisonmaxime
 class UCMercedParser(HTMLParser):
     starts = []

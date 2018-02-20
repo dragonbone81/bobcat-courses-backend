@@ -14,7 +14,7 @@ def course_view(request):
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().order_by('crn')
     serializer_class = CourseSerializer
     filter_fields = '__all__'
     search_fields = '__all__'
