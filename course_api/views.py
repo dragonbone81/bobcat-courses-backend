@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
