@@ -23,6 +23,7 @@ router.register(r'courses', CourseViewSet)
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
+    path('/', admin.site.urls),
     path('course_pull/', course_view),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
