@@ -3,29 +3,29 @@ from django.http import JsonResponse
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
 
-from course_api.data_managers.course_pull import UCMercedClassParser
+from course_api.data_managers.course_push import UCMercedCoursePush
 from course_api.models import Course
 
 
 # Create your views here.
 def course_view(request):
     if request.GET and request.GET.get('pull'):
-        data = UCMercedClassParser('201810').parse()
-        for course in data:
-            # TODO weird thing with python and not references
-            crn = course.get('crn')
-            course.pop('crn')
-            course['units'] = int(course['units'])
-            course['capacity'] = int(course['capacity'])
-            course['enrolled'] = int(course['enrolled'])
-            if course['available'] == 'Closed':
-                course['available'] = 0
-            else:
-                course['available'] = int(course['available'])
-            Course.objects.update_or_create(crn=crn, defaults=course)
+        UCMercedCoursePush().push_courses()
     return JsonResponse({'success': True})
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+
+
+class Scheduler(object):
+    from apscheduler.schedulers.background import BackgroundScheduler
+    sched = BackgroundScheduler()
+
+    @sched.scheduled_job('interval', hours=6)  # to not annoy or whatever
+    def timed_job():
+        UCMercedCoursePush().push_courses()
+        print('Course Pull Failed')
+
+    sched.start()

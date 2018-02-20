@@ -63,6 +63,7 @@ class UCMercedClassParser(object):
         column = 0
         data = []
         subject = None
+        previous_discussion = None  # for lab discussion correlation
         header = ["subject", "crn", "course_id", "course_name", "units", "type", "days", "hours", "room", "dates",
                   "instructor", "capacity", "enrolled", "available", "final_type", "final_days", "final_hours",
                   "final_room",
@@ -91,12 +92,20 @@ class UCMercedClassParser(object):
         current_lect = None
         # account for BIO-002 - probobly hard
         # account for discusions/labs - probobly easy
+        # TODO make work for non coresponding labs BIO-001-20
         for line in data:
+            if line['type'] != 'LAB':
+                previous_discussion = None
             line['term'] = self.term
+            if line['type'] == 'DISC':
+                previous_discussion = line['crn']
             if line.get('type') == 'LECT':
                 current_lect = line.get('crn')
             elif line.get('type') == 'INI' or line.get('type') == 'SEM' or line.get('type') == 'FLDW':
                 pass
             else:
                 line['lecture_crn'] = current_lect
+                # this is for lab discussion linking idk if this works
+                if line['type'] == 'LAB' and previous_discussion:
+                    line['discussion_crn'] = previous_discussion
         return data

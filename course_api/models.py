@@ -78,12 +78,37 @@ class Course(models.Model):
         verbose_name="Instructor",
     )
     # TODO needs work
+    lecture = models.ForeignKey(
+        'Course',
+        related_name='course_lecture',
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name="Associated Lecture",
+        on_delete=models.CASCADE
+    )
     lecture_crn = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
         verbose_name="Lecture CRN",
+    )
+    discussion = models.ForeignKey(
+        'Course',
+        related_name='course_discussion',
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name="Associated Discussion",  # Used for linked labs
+        on_delete=models.CASCADE
+    )
+    discussion_crn = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name="Discussion CRN",
     )
     term = models.CharField(
         max_length=256,
@@ -110,6 +135,7 @@ class Course(models.Model):
         db_index=True,
         verbose_name="Available",
     )
+    # TODO needs be reworked for labs
     final_type = models.CharField(
         max_length=256,
         null=True,
