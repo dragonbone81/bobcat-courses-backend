@@ -19,19 +19,19 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
 
 
-class Scheduler(object):
-    import os
-
-    from django.core.wsgi import get_wsgi_application
-
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'course_planner.settings'
-    application = get_wsgi_application()
-    from apscheduler.schedulers.background import BackgroundScheduler
-    sched = BackgroundScheduler()
-
-    @sched.scheduled_job('interval', hours=6)  # to not annoy or whatever
-    def timed_job():
-        UCMercedCoursePush().push_courses()
-        print('Course Pull Failed')
-
-    sched.start()
+# class Scheduler(object):
+#     import os
+#
+#     from django.core.wsgi import get_wsgi_application
+#
+#     os.environ['DJANGO_SETTINGS_MODULE'] = 'course_planner.settings'
+#     application = get_wsgi_application()
+#     from apscheduler.schedulers.background import BackgroundScheduler
+#     sched = BackgroundScheduler()
+#
+#     @sched.scheduled_job('interval', hours=6)  # to not annoy or whatever
+#     def timed_job():
+#         UCMercedCoursePush().push_courses()
+#         print('Course Pull Failed')
+#
+#     sched.start()
