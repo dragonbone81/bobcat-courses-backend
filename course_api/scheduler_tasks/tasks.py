@@ -1,3 +1,7 @@
+import os
+
+# set the default Django settings module for the 'celery' program.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'course_planner.settings')
 from apscheduler.schedulers.background import BackgroundScheduler
 from course_api.data_managers.course_push import UCMercedCoursePush
 
