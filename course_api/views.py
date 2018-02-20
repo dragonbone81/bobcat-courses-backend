@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework import viewsets
+from course_api.serializers import CourseSerializer
 
 from course_api.data_managers.course_pull import UCMercedClassParser
 from course_api.models import Course
@@ -22,3 +24,8 @@ def course_view(request):
                 course['available'] = int(course['available'])
             Course.objects.update_or_create(crn=crn, defaults=course)
     return JsonResponse({'success': True})
+
+
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
