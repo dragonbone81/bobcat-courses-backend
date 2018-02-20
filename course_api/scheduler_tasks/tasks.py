@@ -1,7 +1,7 @@
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 
-scheduler = BackgroundScheduler()
+scheduler = BlockingScheduler()
 
 
 @scheduler.scheduled_job('interval', hours=6, id="course_update")  # to not annoy or whatever
