@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet
 from rest_framework import routers
+from django.views.generic import RedirectView
 
 router = routers.DefaultRouter()
 router.register(r'courses', CourseViewSet)
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
-    path('/', admin.site.urls),
+    path('', RedirectView.as_view(url='admin/')),
     path('course_pull/', course_view),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
