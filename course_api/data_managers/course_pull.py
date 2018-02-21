@@ -105,8 +105,10 @@ class UCMercedClassParser(object):
             elif line.get('type') == 'INI' or line.get('type') == 'SEM' or line.get('type') == 'FLDW':
                 pass
             else:
-                line['lecture_crn'] = current_lect
-                # this is for lab discussion linking idk if this works
-                if line['type'] == 'LAB' and previous_discussion:
-                    line['discussion_crn'] = previous_discussion
+                idParts = line['course_id'].split('-')
+                if ('L' not in idParts[1]):
+                    line['lecture_crn'] = current_lect
+                    # this is for lab discussion linking idk if this works
+                    if line['type'] == 'LAB' and previous_discussion:
+                        line['discussion_crn'] = previous_discussion
         return data
