@@ -4,8 +4,7 @@ from course_api.serializers import CourseSerializer
 
 from course_api.data_managers.course_push import UCMercedCoursePush
 from course_api.models import Course
-from django.contrib.auth.models import User
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -14,7 +13,7 @@ class CourseListView(APIView):
     # TODO figure out authentication and permission
     """
     View to receive a class (GLOBAL) and return all associated possibilities.
-
+    * Sample python request -- requests.post(url="http://127.0.0.1:8000/api/courses/course-match", json={"course_list": ["CSE-120", "CSE-150"]}, params={'format': 'json'}).json()
     * Requires token authentication.
     """
 
@@ -22,9 +21,10 @@ class CourseListView(APIView):
     permission_classes = ()
 
     # serializer_class = CourseSerializer
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     # Rather than return everything return valid course schedules
-    def post(self, request, format=None):
+    def post(self, request):
         """
         Return a list of all users.
         """
