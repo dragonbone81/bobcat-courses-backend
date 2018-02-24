@@ -1,6 +1,9 @@
 from django.db import models
 
 
+# TODO - suggest name model or field idk
+
+# TODO field to model course name (CSE-120)
 class Course(models.Model):
     class Meta:
         verbose_name = "Course"
