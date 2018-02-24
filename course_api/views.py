@@ -7,6 +7,28 @@ from course_api.models import Course
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
+# TODO schedule view
+
+class ExampleJWT(APIView):
+    """
+    * Requires JWT authentication.
+    Example token authentication
+    Get token from (username/password): api/auth/token/obtain
+    Pass here or any view as Authentication: Bearer <token>
+    Enjoy :)
+    """
+
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def get(self, request):
+        user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name()}
+        return Response(user)
 
 
 class CourseListView(APIView):
@@ -17,7 +39,7 @@ class CourseListView(APIView):
     * Requires token authentication.
     """
 
-    # authentication_classes = (authentication.TokenAuthentication,)
+    # authentication_classes = (JWTAuthentication,)
     permission_classes = ()
 
     # serializer_class = CourseSerializer
