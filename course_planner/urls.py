@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT
+from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration
 from rest_framework import routers
 from django.views.generic import RedirectView
 
@@ -33,5 +33,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
+    path('login', UserInfo.as_view()),
+    path('register', UserRegistration.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
 ]

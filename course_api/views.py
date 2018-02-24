@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
 
@@ -29,6 +30,37 @@ class ExampleJWT(APIView):
     def get(self, request):
         user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name()}
         return Response(user)
+
+
+class UserInfo(APIView):
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def get(self, request):
+        user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name(),
+                'first_name': request.user.first_name, 'last_name': request.user.last_name}
+        return Response(user)
+
+
+class UserRegistration(APIView):
+    permission_classes = ()
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def post(self, request):
+        name = request.data.get('full_name', "").split()
+        first_name = name[0]
+        if len(name) > 1:
+            last_name = name[1]
+        else:
+            last_name = None
+        user = {'username': request.data.get('username'), 'password': request.data.get('password'),
+                'first_name': first_name, 'last_name': last_name, 'email': request.data.get('email')}
+        if not User.objects.filter(username=request.data.get('username')):
+            User.objects.create_user(**user)
+            return Response(user)
+        else:
+            return Response({'error': 'User Already Exists'})
 
 
 class CourseListView(APIView):
