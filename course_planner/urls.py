@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration
+from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
+    CoursesSearch
 from rest_framework import routers
 from django.views.generic import RedirectView
 
@@ -28,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='admin/')),
     path('api/courses/course-match', CourseListView.as_view()),
+    path('api/courses/course-search', CoursesSearch.as_view()),
     path('api/courses/jwt-example', ExampleJWT.as_view()),
     path('course_pull/', course_view),
     path('api/', include(router.urls)),

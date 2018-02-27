@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
@@ -7,9 +8,11 @@ from course_api.data_managers.course_push import UCMercedCoursePush
 from course_api.models import Course
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # TODO schedule view
@@ -48,19 +51,27 @@ class UserRegistration(APIView):
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def post(self, request):
-        name = request.data.get('full_name', "").split()
-        first_name = name[0]
-        if len(name) > 1:
-            last_name = name[1]
-        else:
-            last_name = None
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
         user = {'username': request.data.get('username'), 'password': request.data.get('password'),
                 'first_name': first_name, 'last_name': last_name, 'email': request.data.get('email')}
         if not User.objects.filter(username=request.data.get('username')):
-            User.objects.create_user(**user)
-            return Response(user)
+            user = User.objects.create_user(**user)
+            token_jwt = RefreshToken.for_user(user)
+            response = {
+                'user': {
+                    'username': request.data.get('username'),
+                    'name': user.get_full_name(), 'first_name': user.first_name, 'last_name': user.last_name,
+                    'email': request.data.get('email')
+                },
+                'api_keys': {
+                    'access': str(token_jwt.access_token),
+                    'refresh': str(token_jwt)
+                },
+            }
+            return Response(response)
         else:
-            return Response({'error': 'User Already Exists'})
+            return Response({'error': 'User Already Exists'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class CourseListView(APIView):
@@ -87,6 +98,26 @@ class CourseListView(APIView):
         for course in courses_to_search:
             courses[course] = [CourseSerializer(course).data for course in
                                Course.objects.filter(course_id__istartswith=course)]
+        return Response(courses)
+
+
+class CoursesSearch(APIView):
+    # TODO figure out authentication and permission
+    """
+    """
+
+    # authentication_classes = (JWTAuthentication,)
+    permission_classes = ()
+
+    # serializer_class = CourseSerializer
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    # Rather than return everything return valid course schedules
+    def get(self, request):
+        print(request.GET)
+        course = request.GET.get('course', None)
+        courses = Course.objects.filter(Q(course_id__istartswith=course) & Q(course_id__iregex=r"[^A-Za-zs.]$"))
+        courses = [CourseSerializer(course).data for course in courses]
         return Response(courses)
 
 
