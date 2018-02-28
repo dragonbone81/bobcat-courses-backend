@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
+import re
 
 from course_api.data_managers.course_push import UCMercedCoursePush
 from course_api.models import Course
@@ -115,12 +116,12 @@ class CoursesSearch(APIView):
     # Rather than return everything return valid course schedules
     def get(self, request):
         course = request.GET.get('course', None)
-        course_subj = course[0:3]
-        course_number = course[3:6]
-        courses = Course.objects.filter(
-            Q(course_id__istartswith=course_subj) & Q(course_id__iregex=r"[^A-Za-zs.]$") & Q(
-                course_id__icontains=course_number))
-
+        course_subj = "".join(re.findall("[a-zA-Z]+", course))
+        course_number = "".join(re.findall("[0-9]+", course))
+        courses = Course.objects.filter(Q(course_id__iregex=r"[^A-Za-zs.]$") & (
+                    Q(subject__icontains=course_subj) | Q(course_id__icontains=course_subj)))
+        if course_number:
+            courses = courses.filter(course_id__icontains=course_number)
         courses = [CourseSerializer(course).data for course in courses]
         return Response(courses)
 
