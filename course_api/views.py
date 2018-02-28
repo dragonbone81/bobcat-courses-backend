@@ -114,9 +114,13 @@ class CoursesSearch(APIView):
 
     # Rather than return everything return valid course schedules
     def get(self, request):
-        print(request.GET)
         course = request.GET.get('course', None)
-        courses = Course.objects.filter(Q(course_id__istartswith=course) & Q(course_id__iregex=r"[^A-Za-zs.]$"))
+        course_subj = course[0:3]
+        course_number = course[3:6]
+        courses = Course.objects.filter(
+            Q(course_id__istartswith=course_subj) & Q(course_id__iregex=r"[^A-Za-zs.]$") & Q(
+                course_id__icontains=course_number))
+
         courses = [CourseSerializer(course).data for course in courses]
         return Response(courses)
 
