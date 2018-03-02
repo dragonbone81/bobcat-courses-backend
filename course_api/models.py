@@ -3,6 +3,19 @@ from django.contrib.auth.models import User
 
 
 # TODO Schedule model
+class SubjectClass(models.Model):
+    class Meta:
+        verbose_name = "Subject Class"
+        verbose_name_plural = "Subject Classes"
+
+    course_name = models.CharField(
+        verbose_name="Course Name",
+        max_length=256,
+        primary_key=True,
+        db_index=True,
+    )
+
+
 class Schedule(models.Model):
     class Meta:
         verbose_name = "Schedule"
@@ -216,6 +229,13 @@ class Course(models.Model):
         db_index=True,
     )
     final_dates_2 = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    simple_name = models.CharField(
+        verbose_name="Simple Name",
         max_length=256,
         null=True,
         blank=True,

@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
 import re
+from course_api.utils.simplified_course_name import get_simple
 
-from course_api.data_managers.course_push import UCMercedCoursePush
-from course_api.models import Course
+from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
+from course_api.models import Course, SubjectClass
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework import status
@@ -92,13 +93,18 @@ class CourseListView(APIView):
     # Rather than return everything return valid course schedules
     def post(self, request):
         """
-        Return a list of all users.
+        Return a list of all courses.
         """
         courses_to_search = request.data.get('course_list', [])
         courses = dict()
         for course in courses_to_search:
-            courses[course] = [CourseSerializer(course).data for course in
-                               Course.objects.filter(course_id__istartswith=course)]
+            if isinstance(course, str):
+                courses[course] = [CourseSerializer(course).data for course in
+                                   Course.objects.filter(
+                                       Q(course_id__istartswith=course) | Q(simple_name__icontains=course))]
+            if isinstance(course, dict):
+                courses[course.get('id')] = [CourseSerializer(course).data for course in
+                                             Course.objects.filter(simple_name__icontains=course.get('id'))]
         return Response(courses)
 
 
@@ -115,21 +121,29 @@ class CoursesSearch(APIView):
 
     # Rather than return everything return valid course schedules
     def get(self, request):
+        # TODO if someone searches computer science it does not return...
         course = request.GET.get('course', None)
         course_subj = "".join(re.findall("[a-zA-Z]+", course))
         course_number = "".join(re.findall("[0-9]+", course))
         courses = Course.objects.filter(Q(course_id__iregex=r"[^A-Za-zs.]$") & (
-                    Q(subject__icontains=course_subj) | Q(course_id__icontains=course_subj)))
-        if course_number:
-            courses = courses.filter(course_id__icontains=course_number)
-        courses = [CourseSerializer(course).data for course in courses]
-        return Response(courses)
+                Q(subject__icontains=course_subj) | Q(course_id__icontains=course_subj)) & Q(
+            course_id__icontains=course_number))
+        courses_data = {}
+        for course in courses:
+            try:
+                subject = SubjectClass.objects.get(course_name=get_simple(course.course_id))
+            except SubjectClass.DoesNotExist:
+                continue
+            courses_data[subject.course_name] = subject.course_name
+        return Response([course for key, course in courses_data.items()] or [])
 
 
 # Create your views here.
 def course_view(request):
     if request.GET and request.GET.get('pull'):
         UCMercedCoursePush().push_courses()
+    if request.GET and request.GET.get('simple'):
+        SubjectClassUpdate().update_lectures()
     return JsonResponse({'success': True})
 
 
