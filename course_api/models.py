@@ -1,9 +1,44 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
-# TODO - suggest name model or field idk
+# TODO Schedule model
+class SubjectClass(models.Model):
+    class Meta:
+        verbose_name = "Subject Class"
+        verbose_name_plural = "Subject Classes"
 
-# TODO field to model course name (CSE-120)
+    course_name = models.CharField(
+        verbose_name="Course Name",
+        max_length=256,
+        primary_key=True,
+        db_index=True,
+    )
+
+
+class Schedule(models.Model):
+    class Meta:
+        verbose_name = "Schedule"
+        verbose_name_plural = "Schedules"
+
+    classes = models.ManyToManyField(
+        'Course',
+        verbose_name="Classes",
+        db_index=True,
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name="Schedule User",
+        null=False,
+        blank=False,
+        db_index=True,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return "Schedule: {} - {}".format(self.user, self.pk)
+
+
 class Course(models.Model):
     class Meta:
         verbose_name = "Course"
@@ -199,6 +234,13 @@ class Course(models.Model):
         blank=True,
         db_index=True,
     )
+    simple_name = models.CharField(
+        verbose_name="Simple Name",
+        max_length=256,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
 
     def __str__(self):
-        return self.crn
+        return self.course_id or self.crn
