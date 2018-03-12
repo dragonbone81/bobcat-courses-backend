@@ -103,7 +103,7 @@ def hasConflict(schedule):
                 times[day].append(time)
             else:
                 return True
-        if c.hasKey("final_days"):
+        if "final_days" in c:
             for day in c["final_days"]:
                 time = convertTime(c["final_hours"])
                 if not dayConflicts(time, finals[day]):
@@ -124,5 +124,5 @@ perms = generateSchedules(["cse120", "cse150"])
 for p in perms:
     if not hasConflict(p):
         for c in p:
-            print p[c]
+            print (c + ": " + str(p[c]))
         print ("###########################")
