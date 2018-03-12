@@ -1,127 +1,67 @@
-def convert2400(s):
-    time = s.split(":")
-    hour = time[0]
-    minute = time[1]
-    if "pm" in minute and hour != "12":
-        hour = str(int(hour) + 12)
-    elif "am" in minute and hour == "12":
-        hour = str(int(hour) - 12)
-    minute = minute[0:2]
-    return int(hour + minute)
+def convertTime(s):
+    t = s.split("-")
+    startTime = t[0].split(":")
+    endTime = t[1].split(":")
+    if "pm" in endTime[1]:
+        if endTime[0] != "12":
+            endTime[0] = str(int(endTime[0]) + 12)
+        if int(startTime[0]) < 10 and startTime[0] != "12":
+            startTime[0] = str(int(startTime[0]) + 12)
+    endTime[1] = endTime[1][0:2]
+    if int(startTime[0]) > int(endTime[0]):
+        startTime[0] = str(int(startTime[0]) - 12)
+    return { "start": int(startTime[0] + startTime[1]), "end": int(endTime[0] + endTime[1]) }
 
-def generateSections(courses):
-    sections = {} # { math-022: {02: {}, 03: {}, 21: {}, 22: {}}, phys-008: {02: {}, 03: {}, 21: {}, 22: {}} }
-    for courseID in courses:
-        dict = {}
-        types = []
-        for c in courses[courseID]:
-            if c['type'] not in types:
-                types.append(c['type'])
-        print(types)
+def getAllCoursesForCourseID(id):
+    courses = { "cse120":[{"course_id": "cse-120-01", "type": "LECT", "crn": 1}, {"course_id": "cse-120-02L", "type": "LAB", "crn": 2, "lecture_crn":1}, {"course_id": "cse-120-03L", "type": "LAB", "crn": 3, "lecture_crn":1}], "cse150":[{"course_id": "cse-150-01", "type": "LECT", "crn": 4}, {"course_id": "cse-150-02L", "type": "LAB", "crn": 5, "lecture_crn":4}, {"course_id": "cse-150-03L", "type": "LAB", "crn": 6, "lecture_crn":4}]}
+    return courses[id]
 
+def getCourse(crn, courses):
+    for c in courses:
+        if crn == c["crn"]:
+            return c
 
+def getSections(courses):
+    sections = {}
+    for c in courses:
+        if c["type"] != "LECT":
+            classid = c["course_id"].split("-")[2][0:2]
+            if  classid not in sections:
+                sections[classid] = {"LECT": None, "DISC": None, "LAB": None}
+            if c["type"] == "DISC":
+                sections[classid]["DISC"] = c
+            elif c["type"] == "LAB":
+                sections[classid]["LAB"] = c
+    for sKey in sections:
+        section = sections[sKey]
+        if section["DISC"] != None:
+            section["LECT"] = getCourse(section["DISC"]["lecture_crn"], courses)
+        elif section["LAB"] != None:
+            section["LECT"] = getCourse(section["LAB"]["lecture_crn"], courses)
+    return sections
 
+def generateSchedules(courseIDs):
+    classes = {}
+    
+    for id in courseIDs:
+        subCourses = getAllCoursesForCourseID(id)
+        classes[id] = getSections(subCourses)
+    # classes = ["id1":{02:{Lect, Lab, Disc}, 03:{Lect, Lab, Disc}}, "id2":{02:{Lect, Lab, Disc}, 03:{Lect, Lab, Disc}}]
 
+    n=1
+    for c in classes:    # calculate number of permutations
+        n *= len(classes[c])
 
+    permutations = [{} for i in range(n)]
 
+    for i in range(len(permutations)):        # this is what makes all possible combinations
+        n=1
+        for c in classes:
+            sectionKey = classes[c].keys()[i/n % len(classes[c])]
+            permutations[i][c] = classes[c][sectionKey]
+            n *= len(c)
+    return permutations
 
-
-
-courses = {
-    "CSE-120": [
-                {
-                "crn": "15911",
-                "subject": "Computer Science & Engineering",
-                "course_id": "CSE-120-02L",
-                "course_name": "Software Engineering",
-                "units": 0,
-                "type": "LAB",
-                "days": "M",
-                "hours": "7:30-10:20am",
-                "room": "CLSSRM 281",
-                "dates": "16-JAN 04-MAY",
-                "instructor": "Lee",
-                "lecture_crn": "15910",
-                "discussion_crn": None,
-                "term": "201810",
-                "capacity": 20,
-                "enrolled": 16,
-                "available": 4,
-                "final_type": None,
-                "final_days": None,
-                "final_hours": None,
-                "final_room": None,
-                "final_dates": None,
-                "final_type_2": None,
-                "final_days_2": None,
-                "final_hours_2": None,
-                "final_room_2": None,
-                "final_dates_2": None,
-                "lecture": None,
-                "discussion": None
-                },
-                {
-                "crn": "15910",
-                "subject": "Computer Science & Engineering",
-                "course_id": "CSE-120-01",
-                "course_name": "Software Engineering",
-                "units": 4,
-                "type": "LECT",
-                "days": "WF",
-                "hours": "12:00-1:15pm",
-                "room": "COB2 140",
-                "dates": "16-JAN 04-MAY",
-                "instructor": "Leung",
-                "lecture_crn": None,
-                "discussion_crn": None,
-                "term": "201810",
-                "capacity": 40,
-                "enrolled": 22,
-                "available": 18,
-                "final_type": "EXAM",
-                "final_days": "M",
-                "final_hours": "3:00-6:00pm",
-                "final_room": "COB2 140",
-                "final_dates": "07-MAY 07-MAY",
-                "final_type_2": None,
-                "final_days_2": None,
-                "final_hours_2": None,
-                "final_room_2": None,
-                "final_dates_2": None,
-                "lecture": None,
-                "discussion": None
-                },
-                {
-                "crn": "15912",
-                "subject": "Computer Science & Engineering",
-                "course_id": "CSE-120-03L",
-                "course_name": "Software Engineering",
-                "units": 0,
-                "type": "LAB",
-                "days": "M",
-                "hours": "10:30-1:20pm",
-                "room": "CLSSRM 281",
-                "dates": "16-JAN 04-MAY",
-                "instructor": "Rakhmetulla",
-                "lecture_crn": "15910",
-                "discussion_crn": None,
-                "term": "201810",
-                "capacity": 20,
-                "enrolled": 6,
-                "available": 14,
-                "final_type": None,
-                "final_days": None,
-                "final_hours": None,
-                "final_room": None,
-                "final_dates": None,
-                "final_type_2": None,
-                "final_days_2": None,
-                "final_hours_2": None,
-                "final_room_2": None,
-                "final_dates_2": None,
-                "lecture": None,
-                "discussion": None
-                }
-                ]
-}
-generateSections(courses)
+perms = generateSchedules(["cse120", "cse150"])
+for p in perms:
+    print p
