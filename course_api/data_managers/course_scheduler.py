@@ -22,6 +22,7 @@ def getAllCoursesForCourseID(id):
           {"course_id": "cse-150-01", "days": "T", "hours": "11:30-12:20pm", "type": "LECT", "crn": 4},
           {"course_id": "cse-150-02L", "days": "W", "hours": "11:30-12:20pm", "type": "LAB", "crn": 5, "lecture_crn":4},
           {"course_id": "cse-150-03L", "days": "W", "hours": "11:30-12:20pm", "type": "LAB", "crn": 6, "lecture_crn":4}]}
+    # courses needs to be replaced by actual DB
     return courses[id]
 
 def getCourse(crn, courses):
