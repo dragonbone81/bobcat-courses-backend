@@ -103,6 +103,13 @@ def hasConflict(schedule):
                 times[day].append(time)
             else:
                 return True
+        if c.hasKey("final_days"):
+            for day in c["final_days"]:
+                time = convertTime(c["final_hours"])
+                if not dayConflicts(time, finals[day]):
+                    finals[day].append(time)
+                else:
+                    return True
 
     return False
 
