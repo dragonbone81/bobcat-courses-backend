@@ -13,8 +13,11 @@ from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ViewSet
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -38,24 +41,41 @@ class ExampleJWT(APIView):
         return Response(user)
 
 
-class UserInfo(APIView):
-    authentication_classes = (JWTAuthentication,)
+class UserInfo(ViewSet):
+    """
+    Requires Authentication - {Authorization: "Bearer " + access_token}
+
+    get: Return user info of Auth/JWT holder : {username, email, name, firstname, lastname}
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    def get(self, request):
+    def list(self, request, format=None):
         user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name(),
                 'first_name': request.user.first_name, 'last_name': request.user.last_name}
         return Response(user)
 
 
-class UserRegistration(APIView):
-    permission_classes = ()
+class UserRegistration(ViewSet):
+    """
+    Requires Authentication and Staff Status - {Authorization: "Bearer " + access_token}
+
+    post: Return user info and access_tokens when post : {username, email, name, firstname, lastname, password}
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAdminUser,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
     def post(self, request):
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
+        first_name = request.data.get('first_name', "Anonymous")
+        last_name = request.data.get('last_name', "Panda")
         user = {'username': request.data.get('username'), 'password': request.data.get('password'),
                 'first_name': first_name, 'last_name': last_name, 'email': request.data.get('email')}
         if not User.objects.filter(username=request.data.get('username')):
@@ -77,21 +97,23 @@ class UserRegistration(APIView):
             return Response({'error': 'User Already Exists'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
-class CourseListView(APIView):
-    # TODO figure out authentication and permission
+class CourseListView(ViewSet):
     """
     View to receive a class (GLOBAL) and return all associated possibilities.
-    * Sample python request -- requests.post(url="http://127.0.0.1:8000/api/courses/course-match", json={"course_list": ["CSE-120", "CSE-150"]}, params={'format': 'json'}).json()
+    * Sample python request -- {"course_list": ["CSE-120", "CSE-150"]}
     * Requires token authentication.
     """
 
-    # authentication_classes = (JWTAuthentication,)
-    permission_classes = ()
-
-    # serializer_class = CourseSerializer
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    # Rather than return everything return valid course schedules
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
     def post(self, request):
         """
         Return a list of all courses.
@@ -109,21 +131,24 @@ class CourseListView(APIView):
         return Response(courses)
 
 
-class CoursesSearch(APIView):
-    # TODO figure out authentication and permission
+class CoursesSearch(ViewSet):
     """
+    Requires Authentication - {Authorization: "Bearer " + access_token}
+
+    get: course=CSE-120 or course=CSE  -   filtering by course_id, subject or simple name returns list of matching simple_names
     """
-
-    # authentication_classes = (JWTAuthentication,)
-    permission_classes = ()
-
-    # serializer_class = CourseSerializer
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    # Rather than return everything return valid course schedules
-    def get(self, request):
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
         # TODO if someone searches computer science it does not return...
         course = request.GET.get('course', None)
+        if not course:
+            return Response(None)
         course_subj = "".join(re.findall("[a-zA-Z]+", course))
         course_number = "".join(re.findall("[0-9]+", course))
         courses = Course.objects.filter(Q(course_id__iregex=r"[^A-Za-zs.]$") & (
@@ -155,21 +180,22 @@ class CourseViewSet(viewsets.ModelViewSet):
     search_fields = '__all__'
 
 
-class SchedulesListView(APIView):
-    # TODO figure out authentication and permission
+class SchedulesListView(ViewSet):
     """
-    View to receive a class (GLOBAL) and return all associated possibilities.
-    * Sample python request -- requests.post(url="http://127.0.0.1:8000/api/courses/schedule-search", json={"course_list": ["CSE-120", "CSE-150", "CSE-170"]}, params={'format': 'json'}).json()
-    * Requires token authentication.
+    Requires Authentication - {Authorization: "Bearer " + access_token}
+
+    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"]}
     """
-
-    # authentication_classes = (JWTAuthentication,)
-    permission_classes = ()
-
-    # serializer_class = CourseSerializer
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    # Rather than return everything return valid course schedules
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
     def post(self, request):
         """
         Return a list of all courses.
