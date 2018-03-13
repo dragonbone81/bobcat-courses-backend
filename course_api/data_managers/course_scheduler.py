@@ -1,8 +1,7 @@
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 
-
 class CourseScheduler(object):
-    def convertTime(self, s):
+    def convertTime(self, s):       # Good to go
         t = s.split("-")
         startTime = t[0].split(":")
         endTime = t[1].split(":")
@@ -16,7 +15,7 @@ class CourseScheduler(object):
             startTime[0] = str(int(startTime[0]) - 12)
         return {"start": int(startTime[0] + startTime[1]), "end": int(endTime[0] + endTime[1])}
 
-    def getCourse(self, crn, courses):
+    def getCourse(self, crn, courses):  # Is there a better way?
         for c in courses:
             if crn == c["crn"]:
                 return c
@@ -36,9 +35,9 @@ class CourseScheduler(object):
                     sections[classid][c["type"]] = c
             for sKey in sections:
                 section = sections[sKey]
-                if section["DISC"] != None:
+                if "DISC" in section:
                     section["LECT"] = self.getCourse(section["DISC"]["lecture_crn"], courses)
-                elif section["LAB"] != None:
+                elif "LAB" in section:
                     section["LECT"] = self.getCourse(section["LAB"]["lecture_crn"], courses)
         return sections
 
@@ -62,7 +61,7 @@ class CourseScheduler(object):
                 n *= len(classes[class_id])
         return permutations
 
-    def dayConflicts(self, time, day):
+    def dayConflicts(self, time, day):      # Good to go
         for t in day:
             if time["start"] >= t["start"] and time["start"] <= t["end"]:
                 return True
