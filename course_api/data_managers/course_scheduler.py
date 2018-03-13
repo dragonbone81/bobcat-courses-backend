@@ -45,19 +45,19 @@ class CourseScheduler(object):
 
     def generateSchedules(self, courseIDs):
         classes = {}
-        course_data = get_courses(courseIDs)
-        for id in courseIDs:
-            subCourses = course_data[id]
-            classes[id] = self.getSections(subCourses)
+        course_data = get_courses(courseIDs)            #
+        for id in courseIDs:                            # Create a dictionary that contains all classes (each contains all their sections)
+            subCourses = course_data[id]                #
+            classes[id] = self.getSections(subCourses)  #
         n = 1
-        for class_id, data in classes.items():  # calculate number of permutations
+        for class_id, data in classes.items():  # Calculate number of possible permutations
             n *= len(data)
 
-        permutations = [{} for i in range(n)]
+        permutations = [{} for i in range(n)]   # Create an array to contain all possible schedules
 
-        for i in range(len(permutations)):  # this is what makes all possible combinations
+        for i in range(len(permutations)):  # This is what makes all possible combinations
             n = 1
-            for class_id, data in classes.items():
+            for class_id, data in classes.items():  # Go through all classes and add the relevant section
                 section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
                 permutations[i][class_id] = classes[class_id][section[0]]
                 n *= len(classes[class_id])
