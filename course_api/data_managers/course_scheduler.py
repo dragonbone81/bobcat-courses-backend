@@ -3,18 +3,18 @@ from course_api.utils.get_courses_base_on_simple_name import get_courses
 class CourseScheduler(object):
     
     def convertTime(self, s):
-        t = s.split("-")
+        t = s.split("-")            # separate start and end times
         startTime = t[0].split(":")
         endTime = t[1].split(":")
-        if "pm" in endTime[1]:
-            if endTime[0] != "12":
-                endTime[0] = str(int(endTime[0]) + 12)
-            if int(startTime[0]) < 10 and startTime[0] != "12":
-                startTime[0] = str(int(startTime[0]) + 12)
-        endTime[1] = endTime[1][0:2]
-        if int(startTime[0]) > int(endTime[0]):
-            startTime[0] = str(int(startTime[0]) - 12)
-        return {"start": int(startTime[0] + startTime[1]), "end": int(endTime[0] + endTime[1])}
+        if "pm" in endTime[1]:      # if pm appears in the end time
+            if endTime[0] != "12":      # if the end time is not 12:xx
+                endTime[0] = str(int(endTime[0]) + 12)      # add 12 hours
+            if startTime[0] != "12":                    # if the start time is not 12
+                startTime[0] = str(int(startTime[0]) + 12)  # add 12 hours
+        endTime[1] = endTime[1][0:2]         # cut out the am or pm
+        if int(startTime[0]) > int(endTime[0]):  # if for some reason it starts (it means it started in the morning
+            startTime[0] = str(int(startTime[0]) - 12)  # remove 12 hours
+        return {"start": int(startTime[0] + startTime[1]), "end": int(endTime[0] + endTime[1])} # return {start, end}
 
 
 
@@ -26,25 +26,20 @@ class CourseScheduler(object):
 
 
     def getSections(self, courses):
-        sections = {}
-        for c in courses:
-            if c["type"] != "LECT":
-                classid = c["course_id"].split("-")[2][0:2]
-                if classid not in sections:
-                    sections[classid] = {}
-                if c["type"] == "DISC":
-                    sections[classid]["DISC"] = c
-                elif c["type"] == "LAB":
-                    sections[classid]["LAB"] = c
-                else:
-                    sections[classid][c["type"]] = c
-            for sKey in sections:
-                section = sections[sKey]
-                if "DISC" in section:
-                    section["LECT"] = self.getCourse(section["DISC"]["lecture_crn"], courses)
-                elif "LAB" in section:
-                    section["LECT"] = self.getCourse(section["LAB"]["lecture_crn"], courses)
-        return sections
+        sections = {}           # Create a dictionary of sections
+        for c in courses:       # Go through all the courses of one class
+            if c["type"] != "LECT":     # If it is not a lecture
+                classid = c["course_id"].split("-")[2][0:2]     # Calculate the section ID
+                if classid not in sections:                     # If no section exists for this ID,
+                    sections[classid] = {}                          # Create it
+                sections[classid][c["type"]] = c                # Add this course to the section
+        for sKey in sections:           # Go through all sections
+            section = sections[sKey]
+            if "DISC" in section:       # if there is a disc or lab in the section link its lecture
+                section["LECT"] = self.getCourse(section["DISC"]["lecture_crn"], courses)
+            elif "LAB" in section:
+                section["LECT"] = self.getCourse(section["LAB"]["lecture_crn"], courses)
+        return sections         # return the sections
 
 
 
