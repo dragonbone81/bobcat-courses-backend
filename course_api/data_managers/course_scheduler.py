@@ -27,13 +27,13 @@ class CourseScheduler(object):
             if c["type"] != "LECT":
                 classid = c["course_id"].split("-")[2][0:2]
                 if classid not in sections:
-                    sections[classid] = {"LECT": None, "DISC": None, "LAB": None, "SEM": None}
+                    sections[classid] = {}
                 if c["type"] == "DISC":
                     sections[classid]["DISC"] = c
                 elif c["type"] == "LAB":
                     sections[classid]["LAB"] = c
-                elif c["type"] == "SEM":
-                    sections[classid]["SEM"] = c
+                else:
+                    sections[classid][c["type"]] = c
             for sKey in sections:
                 section = sections[sKey]
                 if section["DISC"] != None:
