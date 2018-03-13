@@ -15,10 +15,14 @@ class CourseScheduler(object):
             startTime[0] = str(int(startTime[0]) - 12)
         return {"start": int(startTime[0] + startTime[1]), "end": int(endTime[0] + endTime[1])}
 
+
+
     def getCourse(self, crn, courses):  # Is there a better way?
         for c in courses:
             if crn == c["crn"]:
                 return c
+
+
 
     def getSections(self, courses):
         sections = {}
@@ -41,6 +45,8 @@ class CourseScheduler(object):
                     section["LECT"] = self.getCourse(section["LAB"]["lecture_crn"], courses)
         return sections
 
+
+
     def generateSchedules(self, courseIDs):
         classes = {}
         course_data = get_courses(courseIDs)
@@ -61,6 +67,8 @@ class CourseScheduler(object):
                 n *= len(classes[class_id])
         return permutations
 
+
+
     def dayConflicts(self, time, day):      # Good to go
         for t in day:
             if time["start"] >= t["start"] and time["start"] <= t["end"]:
@@ -69,19 +77,15 @@ class CourseScheduler(object):
                 return True
         return False
 
+
+
     def hasConflict(self, schedule):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         finals = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         allCourses = []
         for c in schedule:
-            if schedule[c]["LECT"]:
-                allCourses.append(schedule[c]["LECT"])
-
-            if schedule[c]["LAB"]:
-                allCourses.append(schedule[c]["LAB"])
-
-            if schedule[c]["DISC"]:
-                allCourses.append(schedule[c]["DISC"])
+            for type in schedule[c]:
+                allCourses.append(schedule[c][type])
 
         for c in allCourses:
             for day in c["days"]:
@@ -99,6 +103,8 @@ class CourseScheduler(object):
                 else:
                     return True
         return False
+
+
 
     def get_valid_schedules(self, courses):
         schedules = list()
