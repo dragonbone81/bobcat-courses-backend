@@ -66,12 +66,12 @@ class CourseScheduler(object):
 
 
     def dayConflicts(self, time, day):
-        for t in day:
+        for t in day:   # Go though all the times that are already in the day
             if time["start"] >= t["start"] and time["start"] <= t["end"]:
-                return True
+                return True         # if the course we want to add starts during a registered course -> Conflict
             if time["end"] >= t["start"] and time["end"] <= t["end"]:
-                return True
-        return False
+                return True         # if the course we want to add ends during a registered course -> Conflict
+        return False        # No conflict
 
 
 
