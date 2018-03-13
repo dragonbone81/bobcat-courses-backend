@@ -23,20 +23,20 @@ from django.views.generic import RedirectView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
-router.register(r'courses', CourseViewSet, base_name='courses')
+# router.register(r'courses', CourseViewSet, base_name='courses')
+router.register(r'login', UserInfo, base_name='login')
+router.register(r'register', UserRegistration, base_name='register')
+router.register(r'courses/course-match', CourseListView, base_name='CourseListView')
+router.register(r'courses/schedule-search', SchedulesListView, base_name='SchedulesListView')
+router.register(r'courses/course-search', CoursesSearch, base_name='CoursesSearch')
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='admin/')),
-    path('api/courses/course-match', CourseListView.as_view()),
-    path('api/courses/schedule-search', SchedulesListView.as_view()),
-    path('api/courses/course-search', CoursesSearch.as_view()),
     path('api/courses/jwt-example', ExampleJWT.as_view()),
     path('course_pull/', course_view),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
-    path('login', UserInfo.as_view()),
-    path('register', UserRegistration.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
 ]
