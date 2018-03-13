@@ -27,7 +27,7 @@ class CourseScheduler(object):
             if c["type"] != "LECT":
                 classid = c["course_id"].split("-")[2][0:2]
                 if classid not in sections:
-                    sections[classid] = {"LECT": None, "DISC": None, "LAB": None}
+                    sections[classid] = {"LECT": None, "DISC": None, "LAB": None, "SEM": None}
                 if c["type"] == "DISC":
                     sections[classid]["DISC"] = c
                 elif c["type"] == "LAB":
