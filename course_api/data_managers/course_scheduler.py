@@ -34,7 +34,6 @@ class CourseScheduler(object):
                     sections[classid]["LAB"] = c
                 elif c["type"] == "SEM":
                     sections[classid]["SEM"] = c
-        if (courses[0]["type"] != "SEM"):
             for sKey in sections:
                 section = sections[sKey]
                 if section["DISC"] != None:
