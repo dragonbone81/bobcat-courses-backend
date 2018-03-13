@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
+from course_api.data_managers.course_scheduler import CourseScheduler
 
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectClass
@@ -152,3 +153,29 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     filter_fields = '__all__'
     search_fields = '__all__'
+
+
+class SchedulesListView(APIView):
+    # TODO figure out authentication and permission
+    """
+    View to receive a class (GLOBAL) and return all associated possibilities.
+    * Sample python request -- requests.post(url="http://127.0.0.1:8000/api/courses/schedule-search", json={"course_list": ["CSE-120", "CSE-150", "CSE-170"]}, params={'format': 'json'}).json()
+    * Requires token authentication.
+    """
+
+    # authentication_classes = (JWTAuthentication,)
+    permission_classes = ()
+
+    # serializer_class = CourseSerializer
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    # Rather than return everything return valid course schedules
+    def post(self, request):
+        """
+        Return a list of all courses.
+        """
+        courses_to_search = request.data.get('course_list', [])
+        generator = CourseScheduler()
+        courses = generator.get_valid_schedules(courses_to_search)
+
+        return Response(courses[:65])
