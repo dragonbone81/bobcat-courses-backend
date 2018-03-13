@@ -1,7 +1,8 @@
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 
 class CourseScheduler(object):
-    def convertTime(self, s):       # Good to go
+    
+    def convertTime(self, s):
         t = s.split("-")
         startTime = t[0].split(":")
         endTime = t[1].split(":")
@@ -69,7 +70,7 @@ class CourseScheduler(object):
 
 
 
-    def dayConflicts(self, time, day):      # Good to go
+    def dayConflicts(self, time, day):
         for t in day:
             if time["start"] >= t["start"] and time["start"] <= t["end"]:
                 return True
