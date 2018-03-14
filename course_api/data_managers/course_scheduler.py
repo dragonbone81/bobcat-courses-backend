@@ -2,6 +2,8 @@ from course_api.utils.get_courses_base_on_simple_name import get_courses
 
 
 class CourseScheduler(object):
+    def __init__(self, term):
+        self.term = term
 
     def convertTime(self, s):
         t = s.split("-")  # separate start and end times
@@ -40,7 +42,7 @@ class CourseScheduler(object):
 
     def generateSchedules(self, courseIDs):
         classes = {}
-        course_data = get_courses(courseIDs)  #
+        course_data = get_courses(courseIDs, self.term)  #
         for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #

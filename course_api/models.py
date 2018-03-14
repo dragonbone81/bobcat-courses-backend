@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# TODO Schedule model
 class SubjectClass(models.Model):
     class Meta:
         verbose_name = "Subject Class"
@@ -13,6 +12,35 @@ class SubjectClass(models.Model):
         max_length=256,
         primary_key=True,
         db_index=True,
+    )
+    term = models.CharField(
+        null=False,
+        blank=False,
+        db_index=True,
+        max_length=32,
+        verbose_name="Term",
+        default="201810",
+    )
+
+
+class SubjectCourse(models.Model):
+    class Meta:
+        verbose_name = "Subject Class"
+        verbose_name_plural = "Subject Classes"
+        unique_together = ("course_name", "term")
+
+    course_name = models.CharField(
+        verbose_name="Course Name",
+        max_length=256,
+        db_index=True,
+    )
+    term = models.CharField(
+        null=False,
+        blank=False,
+        db_index=True,
+        max_length=32,
+        verbose_name="Term",
+        default="201810",
     )
 
 
@@ -33,6 +61,14 @@ class Schedule(models.Model):
         blank=False,
         db_index=True,
         on_delete=models.CASCADE,
+    )
+    term = models.CharField(
+        null=False,
+        blank=False,
+        db_index=True,
+        max_length=32,
+        verbose_name="Term",
+        default="201810",
     )
 
     def __str__(self):

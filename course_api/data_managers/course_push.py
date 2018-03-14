@@ -1,6 +1,6 @@
 from course_api.data_managers.course_pull import UCMercedClassParser
 from django_bulk_update.helper import bulk_update
-from course_api.models import Course, SubjectClass
+from course_api.models import Course, SubjectCourse
 from course_planner.settings import DEBUG
 from course_api.utils.simplified_course_name import get_simple
 from django.db.models import Q
@@ -62,17 +62,18 @@ class SubjectClassUpdate(object):
             if not courses.get(simplified_name):
                 course_obj = {
                     'course_name': simplified_name,
+                    'term': course.term,
                 }
-                course_obj = SubjectClass(**course_obj)
+                course_obj = SubjectCourse(**course_obj)
                 courses[simplified_name] = course_obj
         return courses
 
     def update_lectures(self):
         # screw it for this one we actually don't need to update anything so lets just get all delete and the place all
-        SubjectClass.objects.all().delete()
+        SubjectCourse.objects.all().delete()
         courses = self.get_courses_lectures()
         courses = [course for key, course in courses.items()]
-        SubjectClass.objects.bulk_create(courses)
+        SubjectCourse.objects.bulk_create(courses)
 
 # SubjectClassUpdate().update_lectures()
 # UCMercedCoursePush().push_courses()
