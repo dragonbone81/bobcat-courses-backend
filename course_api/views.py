@@ -6,6 +6,7 @@ from course_api.serializers import CourseSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
 from course_api.data_managers.course_scheduler import CourseScheduler
+from course_api.data_managers.my_registration import CourseRegistration
 
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectCourse
@@ -215,3 +216,29 @@ class SchedulesListView(ViewSet):
 
         return Response(courses[:65])
 
+
+class CasRegistration(ViewSet):
+    """
+    Requires Authentication - {Authorization: "Bearer " + access_token}
+
+    post: Registers you for classes
+    example: {"crns":[123, 1234, 123], "username":"***", "password":"***", "term":201820} for summer term
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        crns = request.data.get('crns')
+        username = request.data.get('username')
+        password = request.data.get('password')
+        term = request.data.get('term')
+        response = CourseRegistration(course_crns=crns, term=term,
+                                      auth={'username': username, 'password': password}).register()
+        return Response(response)
