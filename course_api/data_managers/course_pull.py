@@ -2,14 +2,15 @@ from html.parser import HTMLParser
 from urllib.request import urlopen
 
 
-# TODO take a look at ANTH-003-01 and crn ""
 # moisonmaxime
 class UCMercedParser(HTMLParser):
-    starts = []
-    data = []
-    toIgnore = ['CRN', 'Course #', 'Course Title', 'Units', 'Actv', 'Days', 'Time', 'Bldg/Rm', 'Start - End',
-                'Instructor', 'Max Enrl', 'Act Enrl', 'Seats Avail', 'Skip to top of page', 'Search Courses']
-    passes = 0
+    def __init__(self):
+        super().__init__()
+        self.starts = []
+        self.data = []
+        self.toIgnore = ['CRN', 'Course #', 'Course Title', 'Units', 'Actv', 'Days', 'Time', 'Bldg/Rm', 'Start - End',
+                         'Instructor', 'Max Enrl', 'Act Enrl', 'Seats Avail', 'Skip to top of page', 'Search Courses']
+        self.passes = 0
 
     def handle_starttag(self, tag, attrs):
         self.starts.append(tag)
@@ -52,14 +53,25 @@ class UCMercedParser(HTMLParser):
 
 
 class UCMercedClassParser(object):
-    def __init__(self, term):
+    def __init__(self, terms):
         self.parser = UCMercedParser()
-        self.term = term  # I guess its year|semester (201810, 201730)
+        self.terms = terms  # I guess its year|semester (201810, 201730)
 
-    def parse(self):
+    def parse_terms(self):
+        data = list()
+        for term in self.terms:
+            data += self.parse(term)
+        return data
+
+    def parse(self, term):
+        self.parser.data = []
+        """
+        OK this is FUCKING CRAZY the data from the parser stays even if we make a new instance 
+        even if we make a new instance of ClassParser...the most bizarre thing ever
+        """
         s = urlopen(
             "https://mystudentrecord.ucmerced.edu/pls/PROD/xhwschedule.P_ViewSchedule?validterm={}&openclasses=N".format(
-                self.term)).read()  # Extract from html file
+                term)).read()  # Extract from html file
         self.parser.feed(str(s))  # Parse it into data elements (subject, crn, or info)
         column = 0
         data = []
@@ -91,13 +103,10 @@ class UCMercedClassParser(object):
                     column += 1
         data = [dict(zip(header, line)) for line in data]
         current_lect = None
-        # account for BIO-002 - probobly hard
-        # account for discusions/labs - probobly easy
-        # TODO make work for non coresponding labs BIO-001-20
         for line in data:
             if line['type'] != 'LAB':
                 previous_discussion = None
-            line['term'] = self.term
+            line['term'] = term
             if line['type'] == 'DISC':
                 previous_discussion = line['crn']
             if line.get('type') == 'LECT':
@@ -112,3 +121,5 @@ class UCMercedClassParser(object):
                     if line['type'] == 'LAB' and previous_discussion:
                         line['discussion_crn'] = previous_discussion
         return data
+
+# print(len(UCMercedClassParser(terms=["201830", "201810", "201830", "201830"]).parse_terms()))

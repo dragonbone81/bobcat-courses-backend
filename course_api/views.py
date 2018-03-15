@@ -8,7 +8,7 @@ from course_api.utils.simplified_course_name import get_simple
 from course_api.data_managers.course_scheduler import CourseScheduler
 
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
-from course_api.models import Course, SubjectClass
+from course_api.models import Course, SubjectCourse
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework import status
@@ -100,7 +100,7 @@ class UserRegistration(ViewSet):
 class CourseListView(ViewSet):
     """
     View to receive a class (GLOBAL) and return all associated possibilities.
-    * Sample python request -- {"course_list": ["CSE-120", "CSE-150"]}
+    * Sample python request -- {"course_list": ["CSE-120", "CSE-150"], "term":"201810"}
     * Requires token authentication.
     """
 
@@ -119,15 +119,19 @@ class CourseListView(ViewSet):
         Return a list of all courses.
         """
         courses_to_search = request.data.get('course_list', [])
+        term = request.data.get('term')
+        if not term:
+            return Response({"Error": "No Term"})
         courses = dict()
         for course in courses_to_search:
             if isinstance(course, str):
                 courses[course] = [CourseSerializer(course).data for course in
                                    Course.objects.filter(
-                                       Q(course_id__istartswith=course) | Q(simple_name__icontains=course))]
+                                       (Q(course_id__istartswith=course) | Q(simple_name__icontains=course)) & Q(
+                                           term=term))]
             if isinstance(course, dict):
                 courses[course.get('id')] = [CourseSerializer(course).data for course in
-                                             Course.objects.filter(simple_name__icontains=course.get('id'))]
+                                             Course.objects.filter(simple_name__icontains=course.get('id'), term=term)]
         return Response(courses)
 
 
@@ -135,7 +139,8 @@ class CoursesSearch(ViewSet):
     """
     Requires Authentication - {Authorization: "Bearer " + access_token}
 
-    get: course=CSE-120 or course=CSE  -   filtering by course_id, subject or simple name returns list of matching simple_names
+    get: ?course=CSE-120&term=201810 or course=CSE&term=201810  -   filtering by course_id, subject or simple name returns list of matching simple_names
+    TERM but be there
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -147,18 +152,19 @@ class CoursesSearch(ViewSet):
     def list(self, request, format=None):
         # TODO if someone searches computer science it does not return...
         course = request.GET.get('course', None)
-        if not course:
+        term = request.GET.get('term', None)
+        if not course or not term:
             return Response(None)
         course_subj = "".join(re.findall("[a-zA-Z]+", course))
         course_number = "".join(re.findall("[0-9]+", course))
-        courses = Course.objects.filter(Q(course_id__iregex=r"[^A-Za-zs.]$") & (
+        courses = Course.objects.filter((Q(course_id__iregex=r"[^A-Za-zs.]$") & (
                 Q(subject__icontains=course_subj) | Q(course_id__icontains=course_subj)) & Q(
-            course_id__icontains=course_number))
+            course_id__icontains=course_number)) & Q(term=term))
         courses_data = {}
         for course in courses:
             try:
-                subject = SubjectClass.objects.get(course_name=get_simple(course.course_id))
-            except SubjectClass.DoesNotExist:
+                subject = SubjectCourse.objects.get(course_name=get_simple(course.course_id), term=term)
+            except SubjectCourse.DoesNotExist:
                 continue
             courses_data[subject.course_name] = subject.course_name
         return Response([course for key, course in courses_data.items()] or [])
@@ -184,7 +190,7 @@ class SchedulesListView(ViewSet):
     """
     Requires Authentication - {Authorization: "Bearer " + access_token}
 
-    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"]}
+    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201810"}
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -201,7 +207,11 @@ class SchedulesListView(ViewSet):
         Return a list of all courses.
         """
         courses_to_search = request.data.get('course_list', [])
-        generator = CourseScheduler()
+        term = request.data.get('term', None)
+        if not term:
+            return Response({"Error": "No Term"})
+        generator = CourseScheduler(term)
         courses = generator.get_valid_schedules(courses_to_search)
 
         return Response(courses[:65])
+
