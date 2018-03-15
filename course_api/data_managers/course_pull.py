@@ -69,7 +69,7 @@ class UCMercedClassParser(object):
                   "instructor", "capacity", "enrolled", "available", "final_type", "final_days", "final_hours",
                   "final_room",
                   "final_dates", "final_type_2", "final_days_2", "final_hours_2", "final_room_2", "final_dates_2"]
-        for info in data:
+        for info in self.parser.data:
 
             if info[1] == 'subject':
                 subject = info[0]
