@@ -8,7 +8,7 @@ from django.db.models import Q
 
 class UCMercedCoursePush(object):
     def __init__(self):
-        self.data = UCMercedClassParser(term="201810").parse()
+        self.data = UCMercedClassParser(terms=["201830", "201810"]).parse_terms()
 
     def push_courses(self):
         current_courses = Course.objects.all()
