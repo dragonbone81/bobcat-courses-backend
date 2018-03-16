@@ -101,14 +101,15 @@ class CourseScheduler(object):
         times = {}
         earliest = 2400
         latest = 0000
-        for c in allCourses:
-            for day in c["days"]:
-                time = self.convertTime(c["hours"])
-                times[day].append(time)
-                if time["start"] < earliest:
-                    earliest = time["start"]
-                if time["end"] > latest:
-                    latest = time["end"]
+        for key, section in schedule.items():
+            for key, course in section:
+                for day in course["days"]:
+                    time = self.convertTime(c["hours"])
+                    times[day].append(time)
+                    if time["start"] < earliest:
+                        earliest = time["start"]
+                    if time["end"] > latest:
+                        latest = time["end"]
         gapSize = 0
         for day in times:
             list = sorted(times[day], key=lambda x: x["start"], reverse=False)
