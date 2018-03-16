@@ -98,9 +98,10 @@ class CourseScheduler(object):
         return False
 
     def getInfoForSchedule(self, schedule):
-        times = {}
+        times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         earliest = 2400
         latest = 0000
+        
         for key, section in schedule.items():
             for key, course in section.items():
                 for day in course["days"]:
@@ -110,13 +111,18 @@ class CourseScheduler(object):
                         earliest = time["start"]
                     if time["end"] > latest:
                         latest = time["end"]
+    
         gapSize = 0
+        numOfDays = 0
+        
         for day in times:
             list = sorted(times[day], key=lambda x: x["start"], reverse=False)
+            if len(list) > 0:
+                numOfDays = numOfDays + 1
             for i in range(1, len(list)):
-                gapSize = gapSize + list[i]["start"] - list[i-1]["end"] 
-                
-        info = {"number_of_days": len(times), "earliest": earliest, "latest": latest, "gaps": gapSize}
+                gapSize = gapSize + list[i]["start"] - list[i-1]["end"]
+
+        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize}
         return info
 
     def get_valid_schedules(self, courses):
