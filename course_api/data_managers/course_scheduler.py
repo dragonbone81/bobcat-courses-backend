@@ -2,8 +2,12 @@ from course_api.utils.get_courses_base_on_simple_name import get_courses
 
 
 class CourseScheduler(object):
-    def __init__(self, term):
+    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc'):
         self.term = term
+        self.earliest_time = earliest_time
+        self.latest_time = latest_time
+        self.gaps = gaps
+        self.days = days
 
     def convertTime(self, s):
         t = s.split("-")  # separate start and end times
@@ -101,7 +105,7 @@ class CourseScheduler(object):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         earliest = 2400
         latest = 0000
-        
+
         for key, section in schedule.items():
             for key, course in section.items():
                 for day in course["days"]:
@@ -111,16 +115,16 @@ class CourseScheduler(object):
                         earliest = time["start"]
                     if time["end"] > latest:
                         latest = time["end"]
-    
+
         gapSize = 0
         numOfDays = 0
-        
+
         for day in times:
             list = sorted(times[day], key=lambda x: x["start"], reverse=False)
             if len(list) > 0:
                 numOfDays = numOfDays + 1
             for i in range(1, len(list)):
-                gapSize = gapSize + list[i]["start"] - list[i-1]["end"]
+                gapSize = gapSize + list[i]["start"] - list[i - 1]["end"]
 
         info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize}
         return info
@@ -130,6 +134,26 @@ class CourseScheduler(object):
         permutations = self.generateSchedules(courses)
         for permutation in permutations:
             if not self.hasConflict(permutation):
-                schedule = {"schedule": permutation, "info": self.getInfoForSchedule(permutation)}
+                info = self.getInfoForSchedule(permutation)
+                if self.earliest_time and info.get('earliest') < self.earliest_time:
+                    continue
+                if self.latest_time and info.get('latest') > self.latest_time:
+                    continue
+                schedule = {"schedule": permutation, "info": info}
                 schedules.append(schedule)
+        if self.days == 'desc' and self.gaps == 'desc':
+            schedules = sorted(schedules,
+                               key=lambda info_dict: (info_dict['info']['gaps'], info_dict['info']['number_of_days']),
+                               reverse=False)
+        elif self.days == 'asc' and self.gaps == 'desc':
+            schedules = sorted(schedules,
+                               key=lambda info_dict: (info_dict['info']['gaps'], -info_dict['info']['number_of_days']))
+        elif self.days == 'desc' and self.gaps == 'asc':
+            schedules = sorted(schedules,
+                               key=lambda info_dict: (-info_dict['info']['gaps'], info_dict['info']['number_of_days']))
+        elif self.days == 'asc' and self.gaps == 'asc':
+            schedules = sorted(schedules,
+                               key=lambda info_dict: (info_dict['info']['gaps'], info_dict['info']['number_of_days']),
+                               reverse=False)
+
         return schedules
