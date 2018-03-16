@@ -102,7 +102,7 @@ class CourseScheduler(object):
         earliest = 2400
         latest = 0000
         for key, section in schedule.items():
-            for key, course in section:
+            for key, course in section.items():
                 for day in course["days"]:
                     time = self.convertTime(c["hours"])
                     times[day].append(time)
