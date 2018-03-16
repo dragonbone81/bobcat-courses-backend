@@ -97,29 +97,29 @@ class CourseScheduler(object):
                     return True
         return False
 
-def getEarliestTime(permutation):
-    start = 2400
-    for course in permutation:
-        for c in permutation[course]:
-            time = convertTime(permutation[course][c]["hours"])["start"]
-            if time < start:
-                start = time
-    return start
+    def getEarliestTime(self, permutation):
+        start = 2400
+        for course in permutation:
+            for c in permutation[course]:
+                time = convertTime(permutation[course][c]["hours"])["start"]
+                if time < start:
+                    start = time
+        return start
 
-def getLatestTime(permutation):
-    end = 0000
-    for course in permutation:
-        for c in permutation[course]:
-            time = convertTime(permutation[course][c]["hours"])["end"]
-            if time > end:
-                end = time
-    return end
+    def getLatestTime(self, permutation):
+        end = 0000
+        for course in permutation:
+            for c in permutation[course]:
+                time = convertTime(permutation[course][c]["hours"])["end"]
+                if time > end:
+                    end = time
+        return end
 
     def get_valid_schedules(self, courses):
         schedules = list()
         permutations = self.generateSchedules(courses)
         for permutation in permutations:
             if not self.hasConflict(permutation):
-                schedule = {"schedule": permutation, "earliest": getEarliestTime(permutation), "latest": getLatestTime(permutation)}
+                schedule = {"schedule": permutation, "earliest": self.getEarliestTime(permutation), "latest": self.getLatestTime(permutation)}
                 schedules.append(schedule)
         return schedules
