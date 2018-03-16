@@ -97,29 +97,32 @@ class CourseScheduler(object):
                     return True
         return False
 
-    def getEarliestTime(self, permutation):
-        start = 2400
-        for course in permutation:
-            for c in permutation[course]:
-                time = self.convertTime(permutation[course][c]["hours"])["start"]
-                if time < start:
-                    start = time
-        return start
-
-    def getLatestTime(self, permutation):
-        end = 0000
-        for course in permutation:
-            for c in permutation[course]:
-                time = self.convertTime(permutation[course][c]["hours"])["end"]
-                if time > end:
-                    end = time
-        return end
+    def getInfoForSchedule(self, schedule):
+        times = {}
+        earliest = 2400
+        latest = 0000
+        for c in allCourses:
+            for day in c["days"]:
+                time = self.convertTime(c["hours"])
+                times[day].append(time)
+                if time["start"] < earliest:
+                    earliest = time["start"]
+                if time["end"] > latest:
+                    latest = time["end"]
+        gapSize = 0
+        for day in times:
+            list = sorted(times[day], key=lambda x: x["start"], reverse=False)
+            for i in range(1, len(list)):
+                gapSize = gapSize + list[i]["start"] - list[i-1]["end"] 
+                
+        info = {"number_of_days": len(times), "earliest": earliest, "latest": latest, "gaps": gapSize}
+        return info
 
     def get_valid_schedules(self, courses):
         schedules = list()
         permutations = self.generateSchedules(courses)
         for permutation in permutations:
             if not self.hasConflict(permutation):
-                schedule = {"schedule": permutation, "earliest": self.getEarliestTime(permutation), "latest": self.getLatestTime(permutation)}
+                schedule = {"schedule": permutation, "info": self.getInfoForSchedule(permutation)}
                 schedules.append(schedule)
         return schedules
