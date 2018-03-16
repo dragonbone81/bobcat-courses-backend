@@ -14,6 +14,7 @@ djangorestframework-filters==0.10.2
 djangorestframework-simplejwt==3.2.1
 enum-compat==0.0.2
 idna==2.6
+lxml==4.2.0
 psycopg2==2.7.4
 PyJWT==1.5.3
 pytz==2018.3
