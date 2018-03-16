@@ -101,7 +101,7 @@ class CourseScheduler(object):
         start = 2400
         for course in permutation:
             for c in permutation[course]:
-                time = convertTime(permutation[course][c]["hours"])["start"]
+                time = self.convertTime(permutation[course][c]["hours"])["start"]
                 if time < start:
                     start = time
         return start
@@ -110,7 +110,7 @@ class CourseScheduler(object):
         end = 0000
         for course in permutation:
             for c in permutation[course]:
-                time = convertTime(permutation[course][c]["hours"])["end"]
+                time = self.convertTime(permutation[course][c]["hours"])["end"]
                 if time > end:
                     end = time
         return end
