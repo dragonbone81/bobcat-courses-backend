@@ -39,7 +39,8 @@ class CourseScheduler(object):
             elif "LAB" in section:
                 section["LECT"] = self.getCourse(section["LAB"]["lecture_crn"], courses)
         if sections == []:
-            sections = courses
+            for c in courses:
+                sections.append{"LECT": c}
         return sections  # return the sections
 
     def generateSchedules(self, courseIDs):
