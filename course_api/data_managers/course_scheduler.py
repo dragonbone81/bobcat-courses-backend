@@ -104,7 +104,7 @@ class CourseScheduler(object):
         for key, section in schedule.items():
             for key, course in section.items():
                 for day in course["days"]:
-                    time = self.convertTime(c["hours"])
+                    time = self.convertTime(course["hours"])
                     times[day].append(time)
                     if time["start"] < earliest:
                         earliest = time["start"]
