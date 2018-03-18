@@ -82,10 +82,11 @@ class CourseScheduler(object):
         allCourses = []
         for c in schedule:
             for type in schedule[c]:
-                allCourses.append(schedule[c][type])
-
+                return_val = schedule[c][type]
+                if return_val:
+                    allCourses.append(return_val)
         for c in allCourses:
-            for day in c["days"]:
+            for day in c.get("days"):
                 time = self.convertTime(c["hours"])
                 if not self.dayConflicts(time, times[day]):
                     times[day].append(time)
@@ -108,13 +109,14 @@ class CourseScheduler(object):
 
         for key, section in schedule.items():
             for key, course in section.items():
-                for day in course["days"]:
-                    time = self.convertTime(course["hours"])
-                    times[day].append(time)
-                    if time["start"] < earliest:
-                        earliest = time["start"]
-                    if time["end"] > latest:
-                        latest = time["end"]
+                if course:
+                    for day in course["days"]:
+                        time = self.convertTime(course["hours"])
+                        times[day].append(time)
+                        if time["start"] < earliest:
+                            earliest = time["start"]
+                        if time["end"] > latest:
+                            latest = time["end"]
 
         gapSize = 0
         numOfDays = 0

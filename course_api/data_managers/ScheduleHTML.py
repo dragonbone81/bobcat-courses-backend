@@ -48,16 +48,17 @@ def create_schedules(request):
         courses = []
         for course, data in classes.items():
             for section, section_data in data.items():
-                if section_data.get('lecture_crn'):
-                    section_data['color'] = colorscale(
-                        ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
-                            'subject')).hex, 1.5)
+                if section_data:
+                    if section_data.get('lecture_crn'):
+                        section_data['color'] = colorscale(
+                            ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
+                                'subject')).hex, 1.5)
 
-                else:
-                    section_data['color'] = colorscale(
-                        ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
-                            'subject')).hex, 1.5)
-                courses.append(section_data)
+                    else:
+                        section_data['color'] = colorscale(
+                            ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
+                                'subject')).hex, 1.5)
+                    courses.append(section_data)
 
         for course in courses:
             course_days = list(course.get('days'))
@@ -86,4 +87,6 @@ def create_schedules(request):
             [random.choice(string.ascii_letters + string.digits) for n in range(16)])
         schedules.append(course_by_times)
         all_schedule_ids.append(course_by_times['unique_name'])
+        schedules = schedules[:65]
+        all_schedule_ids = all_schedule_ids[:65]
     return schedules, all_schedule_ids, selected_classes
