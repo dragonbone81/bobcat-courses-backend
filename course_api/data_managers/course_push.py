@@ -65,7 +65,7 @@ class SubjectClassUpdate(object):
                     'term': course.term,
                 }
                 course_obj = SubjectCourse(**course_obj)
-                courses[simplified_name] = course_obj
+                courses["{}:{}".format(simplified_name, course.term)] = course_obj
         return courses
 
     def update_lectures(self):
