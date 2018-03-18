@@ -39,18 +39,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-auto form-inline" style="padding: 5px;">
-                    <div class="input-group">
-                        <div class="input-group-prepend col-lg-4">
-                            <span class="input-group-text"><label for="courses">Course Search</label></span>
-                        </div>
-                        <div class="col-lg-8">
-                            <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
-                                    style="width: 100%" required>
-                                <option>CSE-100</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="col-lg-3 col-md-3 col-sm">
+                    <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
+                            style="width: 100%" required>
+                    </select>
                 </div>
             </div>
             <div class="form-row align-items-center">
@@ -170,7 +162,7 @@
         <div class="col-lg-1"></div>
         {% for calendar in schedules %}
             <div class="table-responsive col-lg-8" id="{{ calendar.unique_name }}" hidden>
-                <table class="table table-bordered">
+                <table class="table table-bordered table-responsive">
                     <thead>
                     <tr>
                         <th>Schedule</th>
@@ -197,6 +189,7 @@
                                         <h3>{{ data.course_id }}</h3>
                                         <h4>{{ data.type }}</h4>
                                         <h6>{{ data.hours }}</h6>
+                                        <h6>{{ data.crn }}</h6>
                                     {% endif %}
 
                                 </td>
@@ -210,6 +203,7 @@
                                         <h3>{{ data.course_id }}</h3>
                                         <h4>{{ data.type }}</h4>
                                         <h6>{{ data.hours }}</h6>
+                                        <h6>{{ data.crn }}</h6>
                                     {% endif %}
 
                                 </td>
@@ -223,6 +217,7 @@
                                         <h3>{{ data.course_id }}</h3>
                                         <h4>{{ data.type }}</h4>
                                         <h6>{{ data.hours }}</h6>
+                                        <h6>{{ data.crn }}</h6>
                                     {% endif %}
 
                                 </td>
@@ -236,6 +231,7 @@
                                         <h3>{{ data.course_id }}</h3>
                                         <h4>{{ data.type }}</h4>
                                         <h6>{{ data.hours }}</h6>
+                                        <h6>{{ data.crn }}</h6>
                                     {% endif %}
 
                                 </td>
@@ -249,6 +245,7 @@
                                         <h3>{{ data.course_id }}</h3>
                                         <h4>{{ data.type }}</h4>
                                         <h6>{{ data.hours }}</h6>
+                                        <h6>{{ data.crn }}</h6>
                                     {% endif %}
 
                                 </td>
@@ -358,6 +355,20 @@
         {% if schedules %}
             var table_id = '#' + current_id;
             $(table_id).removeAttr('hidden');
+        {% endif %}
+        {% if selected_classes %}
+            {% for course in selected_classes %}
+                $('#courses').append($('<option>', {
+                    value: "{{ course }}",
+                    text: "{{ course }}"
+                }));
+                var option = new Option("{{ course }}", "{{ course }}");
+                option.selected = true;
+
+                $("#courses").append(option);
+
+            {% endfor %}
+            $("#courses").trigger("change");
         {% endif %}
 
     });
