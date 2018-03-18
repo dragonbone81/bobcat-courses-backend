@@ -184,12 +184,15 @@
                             {% with calendar.M|get_item:display.m as data %}
                                 <td {% if data.exists %} bgcolor="{{ data.color }}"
                                                          style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
+                                                         rowspan="1">
                                     {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
+                                        <h4>{{ data.course_id }}</h4>
+                                        <h5>{{ data.type }}</h5>
                                         <h6>{{ data.hours }}</h6>
                                         <h6>{{ data.crn }}</h6>
+                                    {% endif %}
+                                    {% if data.length > 1 %}
+                                        <i class="fa fa-arrow-down"></i>
                                     {% endif %}
 
                                 </td>
@@ -198,12 +201,15 @@
                             {% with calendar.T|get_item:display.m as data %}
                                 <td {% if data.exists %} bgcolor="{{ data.color }}"
                                                          style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
+                                                         rowspan="1">
                                     {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
+                                        <h4>{{ data.course_id }}</h4>
+                                        <h5>{{ data.type }}</h5>
                                         <h6>{{ data.hours }}</h6>
                                         <h6>{{ data.crn }}</h6>
+                                    {% endif %}
+                                    {% if data.length > 1 %}
+                                        <i class="fa fa-arrow-down"></i>
                                     {% endif %}
 
                                 </td>
@@ -212,12 +218,15 @@
                             {% with calendar.W|get_item:display.m as data %}
                                 <td {% if data.exists %} bgcolor="{{ data.color }}"
                                                          style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
+                                                         rowspan="1">
                                     {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
+                                        <h4>{{ data.course_id }}</h4>
+                                        <h5>{{ data.type }}</h5>
                                         <h6>{{ data.hours }}</h6>
                                         <h6>{{ data.crn }}</h6>
+                                    {% endif %}
+                                    {% if data.length > 1 %}
+                                        <i class="fa fa-arrow-down"></i>
                                     {% endif %}
 
                                 </td>
@@ -226,12 +235,15 @@
                             {% with calendar.R|get_item:display.m as data %}
                                 <td {% if data.exists %} bgcolor="{{ data.color }}"
                                                          style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
+                                                         rowspan="1">
                                     {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
+                                        <h4>{{ data.course_id }}</h4>
+                                        <h5>{{ data.type }}</h5>
                                         <h6>{{ data.hours }}</h6>
                                         <h6>{{ data.crn }}</h6>
+                                    {% endif %}
+                                    {% if data.length > 1 %}
+                                        <i class="fa fa-arrow-down"></i>
                                     {% endif %}
 
                                 </td>
@@ -240,12 +252,16 @@
                             {% with calendar.F|get_item:display.m as data %}
                                 <td {% if data.exists %} bgcolor="{{ data.color }}"
                                                          style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
+                                                         rowspan="1">
                                     {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
+                                        <h4>{{ data.course_id }}</h4>
+                                        <h5>{{ data.type }}</h5>
                                         <h6>{{ data.hours }}</h6>
                                         <h6>{{ data.crn }}</h6>
+                                        {% if data.length > 1 %}
+                                            <i class="fa fa-arrow-down"></i>
+                                        {% endif %}
+
                                     {% endif %}
 
                                 </td>
@@ -370,6 +386,7 @@
             {% endfor %}
             $("#courses").trigger("change");
         {% endif %}
+
 
     });
 </script>
