@@ -1,0 +1,367 @@
+{% load time_converter %}
+<!doctype html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css"
+          rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+
+
+    <title>Schedule Search</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div>
+        <h2>Search for Classes</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-row align-items-center">
+                <div class="col-auto form-inline" style="padding: 5px;">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><label for="term">Term</label></span>
+                        </div>
+                        <select class="form-control" id="term" name="term" required>
+                            <option value="201810">Spring 2018</option>
+                            <option selected value="201830">Fall 2018</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-auto form-inline" style="padding: 5px;">
+                    <div class="input-group">
+                        <div class="input-group-prepend col-lg-4">
+                            <span class="input-group-text"><label for="courses">Course Search</label></span>
+                        </div>
+                        <div class="col-lg-8">
+                            <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
+                                    style="width: 100%" required>
+                                <option>CSE-100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row align-items-center">
+                <div class="col-auto form-inline" style="padding: 5px;">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><label for="earliest">Earliest Time</label></span>
+                        </div>
+                        <select class="form-control" id="earliest" name="earliest" required>
+                            <option selected value="any">Any</option>
+                            <option value="800">8:00am</option>
+                            <option value="830">8:30am</option>
+                            <option value="900">9:00am</option>
+                            <option value="930">9:30am</option>
+                            <option value="1000">10:00am</option>
+                            <option value="1030">10:30am</option>
+                            <option value="1100">11:00am</option>
+                            <option value="1130">11:30am</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-auto form-inline" style="padding: 5px;">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><label for="latest">Latest Time</label></span>
+                        </div>
+                        <select class="form-control" id="latest" name="latest" required>
+                            <option selected value="any">Any</option>
+                            <option value="1700">5:00pm</option>
+                            <option value="1730">5:30pm</option>
+                            <option value="1800">6:00pm</option>
+                            <option value="1830">6:30pm</option>
+                            <option value="1900">7:00pm</option>
+                            <option value="1930">7:30pm</option>
+                            <option value="2000">8:00pm</option>
+                            <option value="2030">8:30pm</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-auto form-inline" style="padding: 5px;">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><label for="filters">Filters</label></span>
+                        </div>
+                        <select class="form-control" name="filters" id="filters" multiple>
+                            <optgroup class="gaps" label="Class Gaps">
+                                <option value="gaps_min">Minimize Gaps</option>
+                                <option value="gaps_max">Maximize Gaps</option>
+                            </optgroup>
+                            <optgroup class="days" label="Days">
+                                <option value="min_days">Minimize Days</option>
+                                <option value="max_days">Maximize Days</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-auto" style="padding: 5px;">
+                    <button class="btn btn-outline-success" type="submit" id="submit_b">Get Schedules</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    {% if schedules %}
+        <div class="input-group  input-group-lg mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="schedule_span">Schedule </span>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                        onclick="toggle_tables('back', 5)"><i
+                        class="fa fa-angle-double-left"></i> Back 5
+                </button>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                        onclick="toggle_tables('back', 1)"><i
+                        class="fa fa-arrow-left"></i> Previous
+                </button>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                        onclick="toggle_tables('forward', 1)">Next
+                    <i
+                            class="fa fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                        onclick="toggle_tables('forward', 5)"><i
+                        class="fa fa-angle-double-right"></i> Skip 5
+                </button>
+            </div>
+            <div class="input-group-append">
+                <span class="input-group-text">Total Schedules : {{ total_schedules }} </span>
+            </div>
+
+
+        </div>
+
+    {% endif %}
+    <div class="row">
+        {% if schedules %}
+            <div class="col-lg-3">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        My Classes:
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for course in selected_classes %}
+                            <li class="list-group-item">{{ course }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-lg-1"></div>
+        {% for calendar in schedules %}
+            <div class="table-responsive col-lg-8" id="{{ calendar.unique_name }}" hidden>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Schedule</th>
+                        <th width="20%">Monday</th>
+                        <th width="20%">Tuesday</th>
+                        <th width="20%">Wednesday</th>
+                        <th width="20%">Thursday</th>
+                        <th width="20%">Friday</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <script>
+
+                    </script>
+                    {% for display in times %}
+
+                        <tr>
+                            <td>{{ display.c }}</td>
+                            {% with calendar.M|get_item:display.m as data %}
+                                <td {% if data.exists %} bgcolor="{{ data.color }}"
+                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
+                                                         rowspan="{{ data.length }}">
+                                    {% if data.exists %}
+                                        <h3>{{ data.course_id }}</h3>
+                                        <h4>{{ data.type }}</h4>
+                                        <h6>{{ data.hours }}</h6>
+                                    {% endif %}
+
+                                </td>
+                            {% endwith %}
+
+                            {% with calendar.T|get_item:display.m as data %}
+                                <td {% if data.exists %} bgcolor="{{ data.color }}"
+                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
+                                                         rowspan="{{ data.length }}">
+                                    {% if data.exists %}
+                                        <h3>{{ data.course_id }}</h3>
+                                        <h4>{{ data.type }}</h4>
+                                        <h6>{{ data.hours }}</h6>
+                                    {% endif %}
+
+                                </td>
+                            {% endwith %}
+
+                            {% with calendar.W|get_item:display.m as data %}
+                                <td {% if data.exists %} bgcolor="{{ data.color }}"
+                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
+                                                         rowspan="{{ data.length }}">
+                                    {% if data.exists %}
+                                        <h3>{{ data.course_id }}</h3>
+                                        <h4>{{ data.type }}</h4>
+                                        <h6>{{ data.hours }}</h6>
+                                    {% endif %}
+
+                                </td>
+                            {% endwith %}
+
+                            {% with calendar.R|get_item:display.m as data %}
+                                <td {% if data.exists %} bgcolor="{{ data.color }}"
+                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
+                                                         rowspan="{{ data.length }}">
+                                    {% if data.exists %}
+                                        <h3>{{ data.course_id }}</h3>
+                                        <h4>{{ data.type }}</h4>
+                                        <h6>{{ data.hours }}</h6>
+                                    {% endif %}
+
+                                </td>
+                            {% endwith %}
+
+                            {% with calendar.F|get_item:display.m as data %}
+                                <td {% if data.exists %} bgcolor="{{ data.color }}"
+                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
+                                                         rowspan="{{ data.length }}">
+                                    {% if data.exists %}
+                                        <h3>{{ data.course_id }}</h3>
+                                        <h4>{{ data.type }}</h4>
+                                        <h6>{{ data.hours }}</h6>
+                                    {% endif %}
+
+                                </td>
+                            {% endwith %}
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script>
+    {#console.log("{{ total_schedules }}");#}
+    var current_id = "{{ all_schedule_ids.0 }}";
+    var current_schedule = 0;
+    var all_ids = [];
+    {%  for course_id in all_schedule_ids  %}
+        all_ids.push("{{course_id}}");
+    {% endfor %}
+    {#console.log(current_id);#}
+    $('#schedule_span').text("Schedule " + (current_schedule + 1));
+
+
+    // In your Javascript (external .js resource or <script> tag)
+    function toggle_tables(way, num) {
+
+        var table_id = '#' + current_id;
+        $(table_id).attr('hidden', true);
+        if (way === 'forward') {
+            if (current_schedule + num > ({{ total_schedules }}-1)) {
+                current_schedule = 0;
+            }
+            else {
+                current_schedule += num;
+            }
+        }
+        if (way === 'back') {
+            if (current_schedule - num < 0) {
+                current_schedule = {{ total_schedules }}-1;
+            }
+            else {
+                current_schedule -= num;
+            }
+        }
+        current_id = all_ids[current_schedule];
+        {#console.log(current_id);#}
+        table_id = '#' + current_id;
+        $(table_id).removeAttr('hidden');
+        $('#schedule_span').text("Schedule " + (current_schedule + 1));
+
+    }
+
+    $('.js-example-basic-single').select2({
+        placeholder: "Search for Classes",
+        width: 'resolve',
+        ajax: {
+            url: '/api/courses/course-search/',
+            data: function (params) {
+                return {
+                    course: params.term,
+                    term: $('#term').val()
+                };
+            },
+            processResults: function (data) {
+                var results = [];
+                data.forEach(function (course) {
+                    results.push({
+                        id: course,
+                        text: course
+                    })
+                });
+                return {
+                    results: results
+                };
+            }
+        }
+    });
+    $('#filters').multiselect({
+        onChange: function (options, checked) {
+            var $option = $(options);
+            if ($option.length === 1) {
+
+                var $group = $option.parent('optgroup');
+                var $options = $('option', $group);
+                $options = $options.filter(':selected');
+
+                if (checked && $options.length > 1) {
+                    $("#filters").multiselect('deselect', $option.val());
+                }
+            }
+        }
+
+    });
+    $(document).ready(function () {
+        {% if schedules %}
+            var table_id = '#' + current_id;
+            $(table_id).removeAttr('hidden');
+        {% endif %}
+
+    });
+</script>
+</body>
+
+</html>

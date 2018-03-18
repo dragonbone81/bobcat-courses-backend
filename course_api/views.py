@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
+from course_api.data_managers.ScheduleHTML import create_schedules
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
 
@@ -20,6 +21,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from django.shortcuts import render
 
 
 # TODO schedule view
@@ -143,8 +146,8 @@ class CoursesSearch(ViewSet):
     get: ?course=CSE-120&term=201810 or course=CSE&term=201810  -   filtering by course_id, subject or simple name returns list of matching simple_names
     TERM but be there
     """
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def retrieve(self, request, pk=None):
@@ -246,3 +249,39 @@ class CasRegistration(ViewSet):
         response = CourseRegistration(course_crns=crns, term=term,
                                       auth={'username': username, 'password': password}).register()
         return Response(response)
+
+
+def calendar(request):
+    if request.POST:
+        schedules, all_schedule_ids, selected_classes = create_schedules(request)
+        return render(request, 'calendar.html',
+                      {'schedules': schedules,
+                       'times': [{'m': '7:00', 'c': '7:00am'}, {'m': '7:30', 'c': '7:30am'},
+                                 {'m': '8:00', 'c': '8:00am'},
+                                 {'m': '8:30', 'c': '8:30am'}, {'m': '9:00', 'c': '9:00am'},
+                                 {'m': '9:30', 'c': '9:30am'},
+                                 {'m': '10:00', 'c': '10:00am'}, {'m': '10:30', 'c': '10:30am'},
+                                 {'m': '11:00', 'c': '11:00am'}, {'m': '11:30', 'c': '11:30am'},
+                                 {'m': '12:00', 'c': '12:00pm'}, {'m': '12:30', 'c': '12:30pm'},
+                                 {'m': '13:00', 'c': '1:00pm'}, {'m': '13:30', 'c': '1:30pm'},
+                                 {'m': '14:00', 'c': '2:00pm'},
+                                 {'m': '14:30', 'c': '2:30pm'},
+                                 {'m': '15:00', 'c': '3:00pm'}, {'m': '15:30', 'c': '3:30pm'},
+                                 {'m': '16:00', 'c': '4:00pm'}, {'m': '16:30', 'c': '4:30pm'},
+                                 {'m': '17:00', 'c': '5:00pm'}, {'m': '17:30', 'c': '5:30pm'},
+                                 {'m': '18:00', 'c': '6:00pm'}, {'m': '18:30', 'c': '6:30pm'},
+                                 {'m': '19:00', 'c': '7:00pm'},
+                                 {'m': '19:30', 'c': '7:30pm'},
+                                 {'m': '20:00', 'c': '8:00pm'}, {'m': '20:30', 'c': '8:30pm'},
+                                 {'m': '21:00', 'c': '9:00pm'}, {'m': '21:30', 'c': '9:30pm'},
+                                 {'m': '22:00', 'c': '10:00pm'}, {'m': '22:30', 'c': '10:30pm'}],
+                       'total_schedules': len(schedules), 'all_schedule_ids': all_schedule_ids,
+                       'selected_classes': selected_classes})
+    course_by_times = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
+    return render(request, 'calendar.html',
+                  {'calendar': course_by_times,
+                   'times': ['7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30', '11:00', '11:30',
+                             '12:00', '12:30', '13:00', '13:30', '14:00',
+                             '14:30',
+                             '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
+                             '20:00', '20:30', '21:00']})
