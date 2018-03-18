@@ -70,6 +70,10 @@ class CourseScheduler(object):
                 return True  # if the course we want to add starts during a registered course -> Conflict
             if time["end"] >= t["start"] and time["end"] <= t["end"]:
                 return True  # if the course we want to add ends during a registered course -> Conflict
+            if t["start"] >= time["start"] and t["start"] <= time["end"]:
+                return True  # if a registered course starts during the course we want to add -> Conflict
+            if t["end"] >= time["start"] and t["end"] <= time["end"]:
+                return True  # if a registered course ends during the course we want to add -> Conflict
         return False  # No conflict
 
     def hasConflict(self, schedule):
