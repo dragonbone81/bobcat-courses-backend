@@ -171,6 +171,27 @@ class CoursesSearch(ViewSet):
         return Response(simple_courses)
 
 
+class GetTerms(ViewSet):
+    """
+    returns total available terms
+    """
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        # this just matches simple name
+        simple_courses = SubjectCourse.objects.all()
+        terms = list()
+        for course in simple_courses:
+            if course.term not in terms:
+                terms.append(course.term)
+        return Response(terms)
+
+
 # Create your views here.
 def course_view(request):
     if request.GET and request.GET.get('pull'):

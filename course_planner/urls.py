@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
-    CoursesSearch, SchedulesListView, CasRegistration, calendar
+    CoursesSearch, SchedulesListView, CasRegistration, calendar, GetTerms
 from rest_framework import routers
 from django.views.generic import RedirectView
 
@@ -30,6 +30,7 @@ router.register(r'courses/course-match', CourseListView, base_name='CourseListVi
 router.register(r'courses/schedule-search', SchedulesListView, base_name='SchedulesListView')
 router.register(r'courses/course-search', CoursesSearch, base_name='CoursesSearch')
 router.register(r'courses/course-register', CasRegistration, base_name='CasRegistration')
+router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
