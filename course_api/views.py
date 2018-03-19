@@ -160,7 +160,8 @@ class CoursesSearch(ViewSet):
         if not course or not term:
             return Response(None)
         simple_courses = [course.course_name for course in
-                          SubjectCourse.objects.filter(course_name__istartswith=course, term=term)]
+                          SubjectCourse.objects.filter(course_name__istartswith=course, term=term).order_by(
+                              'course_name')]
         return Response(simple_courses)
 
 
