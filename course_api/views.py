@@ -154,24 +154,14 @@ class CoursesSearch(ViewSet):
         return Response(None)
 
     def list(self, request, format=None):
-        # TODO if someone searches computer science it does not return...
+        # this just matches simple name
         course = request.GET.get('course', None)
         term = request.GET.get('term', None)
         if not course or not term:
             return Response(None)
-        course_subj = "".join(re.findall("[a-zA-Z]+", course))
-        course_number = "".join(re.findall("[0-9]+", course))
-        courses = Course.objects.filter((Q(course_id__iregex=r"[^A-Za-zs.]$") & (
-                Q(subject__icontains=course_subj) | Q(course_id__icontains=course_subj)) & Q(
-            course_id__icontains=course_number)) & Q(term=term))
-        courses_data = {}
-        for course in courses:
-            try:
-                subject = SubjectCourse.objects.get(course_name=get_simple(course.course_id), term=term)
-            except SubjectCourse.DoesNotExist:
-                continue
-            courses_data[subject.course_name] = subject.course_name
-        return Response([course for key, course in courses_data.items()] or [])
+        simple_courses = [course.course_name for course in
+                          SubjectCourse.objects.filter(course_name__istartswith=course, term=term)]
+        return Response(simple_courses)
 
 
 # Create your views here.
