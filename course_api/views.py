@@ -159,8 +159,14 @@ class CoursesSearch(ViewSet):
         term = request.GET.get('term', None)
         if not course or not term:
             return Response(None)
+        course_with_dash = course
+        if '-' not in course_with_dash:
+            for i, char in enumerate(course_with_dash):
+                if char.isdigit():
+                    course_with_dash = "{}-{}".format(course_with_dash[0:i], course_with_dash[i:])
+                    break
         simple_courses = [course.course_name for course in
-                          SubjectCourse.objects.filter(course_name__istartswith=course, term=term).order_by(
+                          SubjectCourse.objects.filter(course_name__istartswith=course_with_dash, term=term).order_by(
                               'course_name')]
         return Response(simple_courses)
 
