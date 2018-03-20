@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from course_api.serializers import CourseSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
+from django.contrib.auth import authenticate, login
 from course_api.data_managers.ScheduleHTML import create_schedules
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
@@ -22,7 +23,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 # TODO schedule view
@@ -302,4 +303,16 @@ def calendar(request):
                              '12:00', '12:30', '13:00', '13:30', '14:00',
                              '14:30',
                              '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-                             '20:00', '20:30', '21:00']})
+                             '20:00', '20:30', '21:00'], 'error': {'message': request.GET.get('error')}})
+
+
+def django_login(request):
+    if request.POST and request.POST.get('username') and request.POST.get('password'):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect(request.GET.get('next'), )
+        else:
+            return redirect(request.GET.get('next') + '?error=Credential%20were%20invalid')

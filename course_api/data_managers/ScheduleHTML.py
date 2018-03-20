@@ -23,13 +23,19 @@ def create_schedules(request):
         latest = int(latest)
     filters = request.POST.getlist('filters')
     try:
-        gaps = filters[0]
+        filter_1 = filters[0]
     except IndexError:
-        gaps = None
+        filter_1 = None
     try:
-        days = filters[1]
+        filter_2 = filters[1]
     except IndexError:
-        days = None
+        filter_2 = None
+    if filter_1 and 'gap' in filter_1:
+        gaps = filter_1
+        days = filter_2
+    else:
+        days = filter_1
+        gaps = filter_2
     if days == 'min_days':
         days = 'asc'
     else:
@@ -38,8 +44,8 @@ def create_schedules(request):
         gaps = 'asc'
     else:
         gaps = 'desc'
-    generator = CourseScheduler(term, earliest_time=earliest, latest_time=latest, days=days, gaps=gaps)
-    courses = generator.get_valid_schedules(courses)
+    generator = CourseScheduler(term, latest_time=latest, earliest_time=earliest, days=days, gaps=gaps)
+    courses = generator.get_valid_schedules(courses)[:65]
     schedules = list()
     all_schedule_ids = []
     for schedule in courses:
@@ -87,6 +93,6 @@ def create_schedules(request):
             [random.choice(string.ascii_letters + string.digits) for n in range(16)])
         schedules.append(course_by_times)
         all_schedule_ids.append(course_by_times['unique_name'])
-        schedules = schedules[:65]
-        all_schedule_ids = all_schedule_ids[:65]
+        schedules = schedules
+        all_schedule_ids = all_schedule_ids
     return schedules, all_schedule_ids, selected_classes

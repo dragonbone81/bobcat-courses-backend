@@ -1,4 +1,5 @@
 from course_api.utils.get_courses_base_on_simple_name import get_courses
+from operator import itemgetter
 
 
 class CourseScheduler(object):
@@ -145,21 +146,23 @@ class CourseScheduler(object):
                     continue
                 if self.latest_time and info.get('latest') > self.latest_time:
                     continue
-                schedule = {"schedule": permutation, "info": info}
+                schedule = dict()
+                schedule["schedule"] = permutation
+                schedule["info"] = info
+                # sorry max I need this for sorting :*(
+                schedule['number_of_days'] = info['number_of_days']
+                schedule['earliest'] = info['earliest']
+                schedule['latest'] = info['latest']
+                schedule['gaps'] = info['gaps']
                 schedules.append(schedule)
         if self.days == 'desc' and self.gaps == 'desc':
-            schedules = sorted(schedules,
-                               key=lambda info_dict: (info_dict['info']['gaps'], info_dict['info']['number_of_days']),
-                               reverse=False)
+            schedules = sorted(schedules, key=itemgetter('number_of_days', 'gaps'), reverse=True)
         elif self.days == 'asc' and self.gaps == 'desc':
-            schedules = sorted(schedules,
-                               key=lambda info_dict: (info_dict['info']['gaps'], -info_dict['info']['number_of_days']))
+            schedules = sorted(schedules, key=itemgetter('gaps'), reverse=True)
+            schedules = sorted(schedules, key=itemgetter('number_of_days'), reverse=False)
         elif self.days == 'desc' and self.gaps == 'asc':
-            schedules = sorted(schedules,
-                               key=lambda info_dict: (-info_dict['info']['gaps'], info_dict['info']['number_of_days']))
+            schedules = sorted(schedules, key=itemgetter('gaps'), reverse=False)
+            schedules = sorted(schedules, key=itemgetter('number_of_days'), reverse=True)
         elif self.days == 'asc' and self.gaps == 'asc':
-            schedules = sorted(schedules,
-                               key=lambda info_dict: (info_dict['info']['gaps'], info_dict['info']['number_of_days']),
-                               reverse=False)
-
+            schedules = sorted(schedules, key=itemgetter('number_of_days', 'gaps'), reverse=False)
         return schedules

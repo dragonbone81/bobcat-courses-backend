@@ -16,10 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
-    CoursesSearch, SchedulesListView, CasRegistration, calendar, GetTerms
+    CoursesSearch, SchedulesListView, CasRegistration, calendar, GetTerms, django_login
 from rest_framework import routers
 from django.views.generic import RedirectView
-
+from django.contrib.auth.views import logout
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
@@ -41,5 +41,13 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
-    path('api/calendar', calendar),
+    path('api/django/logout', logout, {'next_page': '/api/calendar'}),
+    path('api/django/login', django_login),
+
+    # local schedule urls
+    path('api/calendar', RedirectView.as_view(url='/app/bobcat-courses')),
+    path('app/bobcat-courses', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
+    path('app/bobcat-courses/schedules', calendar),
+    path('app/bobcat-courses/profile', calendar),
+    path('app/bobcat-courses/saved-schedules', calendar)
 ]

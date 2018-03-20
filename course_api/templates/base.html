@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    {% block imports %}
+    {% endblock %}
+    <title>Schedule Search</title>
+    <title>{% block title %}Home{% endblock %}</title>
+</head>
+<body>
+{% if error.message %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>{{ error.message }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
+{% block header %}
+    <nav class="navbar navbar-expand-lg navbar-expand-sm navbar-expand-xs navbar-dark bg-dark">
+        <a class="navbar-brand" href="/app/bobcat-courses/schedules">Bobcat Courses</a>
+
+        <div class="navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Save Schedules</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                {% if request.user.is_authenticated %}
+                    <span class="navbar-text">
+                Welcome {{ request.user.username }}&nbsp;</span>
+                    <form action="/api/django/logout">
+                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
+                    </form>
+                {% else %}
+                    <div class="dropdown">
+                        <button type="button" id="dropdownMenu1" data-toggle="dropdown"
+                                class="btn btn-outline-success my-2 my-sm-0 dropdown-toggle">Login <span
+                                class="caret"></span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <form method="post" class="px-4 py-3" action="/api/django/login?next={{ request.path }}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" id="username"
+                                           placeholder="Username" name="username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password"
+                                           placeholder="Password" name="password">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Sign in</button>
+                            </form>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/api/django/register">New around here? Sign up</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+{% block content %}
+{% endblock %}
+</body>
+</html>
