@@ -162,14 +162,14 @@ def new_courses(request):
             course['end_str'] = hours.get('end')
             course['start'] = "{}{}".format(ceil_dt(start_date, timedelta(minutes=30)).hour,
                                             ceil_dt(start_date, timedelta(minutes=30)).minute)
-            if ceil_dt(start_date, timedelta(minutes=30)).hour > 9 and ceil_dt(start_date,
-                                                                               timedelta(minutes=30)).minute == 0:
+            if ceil_dt(start_date,
+                       timedelta(minutes=30)).minute == 0:
                 course['start'] += "0"
 
             course['end'] = "{}{}".format(ceil_dt(end_date, timedelta(minutes=30)).hour,
                                           ceil_dt(end_date, timedelta(minutes=30)).minute)
-            if ceil_dt(end_date, timedelta(minutes=30)).hour > 9 and ceil_dt(end_date,
-                                                                             timedelta(minutes=30)).minute == 0:
+            if ceil_dt(end_date,
+                       timedelta(minutes=30)).minute == 0:
                 course['end'] += "0"
             course['length'] = (ceil((total_time.seconds / 60 / 60) * 2))
         times = ['700', '730', '800', '830', '900', '930', '1000', '1030', '1100', '1130', '1200', '1230', '1300',
@@ -194,17 +194,12 @@ def new_courses(request):
             earliest_hour = '{}:{}'.format(str(schedule.get('earliest'))[0:2], str(schedule.get('earliest'))[2:4])
         latest_hour_str = "{}{}".format(ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).hour,
                                         ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).minute)
-        if ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).hour > 9 and ceil_dt(dparser.parse(latest_hour),
-                                                                                           timedelta(
-                                                                                               minutes=30)).minute == 0:
+        if ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).minute == 0:
             latest_hour_str += "0"
 
         earliest_hour_str = "{}{}".format(ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).hour,
                                           ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).minute)
-        if ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).hour > 9 and ceil_dt(
-                dparser.parse(earliest_hour),
-                timedelta(
-                    minutes=30)).minute == 0:
+        if ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).minute == 0:
             earliest_hour_str += "0"
         lower_bound = times_dict[earliest_hour_str] - 1
         if lower_bound < 0:
@@ -217,7 +212,6 @@ def new_courses(request):
                 for time in times:
                     if int(time) >= int(course['start']) and int(time) < int(course['end']):
                         list_times_course.append(time)
-                # print(list_times_course)
                 for time in list_times_course:
                     new_course = course.copy()
                     if int(new_course['start']) == int(time):
