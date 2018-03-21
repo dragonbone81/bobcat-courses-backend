@@ -273,7 +273,7 @@ class CasRegistration(ViewSet):
 def calendar(request):
     if request.POST:
         # schedules, all_schedule_ids, selected_classes = create_schedules(request)
-        schedules, all_schedule_ids = new_courses(request)
+        schedules, all_schedule_ids, all_schedule_crns = new_courses(request)
         return render(request, 'calendar.html',
                       {'schedules': schedules,
                        'times': {'700': '7:00am', '730': '7:30am',
@@ -296,7 +296,7 @@ def calendar(request):
                                  '2100': '9:00pm', '2130': '9:30pm',
                                  '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
                        'total_schedules': len(schedules)
-                          , 'all_schedule_ids': all_schedule_ids, })
+                          , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns})
         #                'selected_classes': selected_classes})
     course_by_times = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
     return render(request, 'calendar.html',

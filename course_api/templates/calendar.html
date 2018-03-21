@@ -133,8 +133,25 @@
             </div>
 
         {% endif %}
-        <div class="row">
-            {% if schedules %}
+        {#        <div class="row">#}
+        {#            {% if schedules %}#}
+        {#                <div class="col-lg-3">#}
+        {#                    <div class="card" style="width: 18rem;">#}
+        {#                        <div class="card-header">#}
+        {#                            My Classes:#}
+        {##}
+        {#                        </div>#}
+        {#                        <ul class="list-group list-group-flush">#}
+        {#                            {% for course in selected_classes %}#}
+        {#                                <li class="list-group-item">{{ course }}</li>#}
+        {#                            {% endfor %}#}
+        {#                        </ul>#}
+        {#                    </div>#}
+        {#                </div>#}
+        {#            {% endif %}#}
+
+        {% for calendar in schedules %}
+            <div class="row" id="{{ calendar.unique_name }}" hidden>
                 <div class="col-lg-3">
                     <div class="card" style="width: 18rem;">
                         <div class="card-header">
@@ -142,16 +159,18 @@
 
                         </div>
                         <ul class="list-group list-group-flush">
-                            {% for course in selected_classes %}
-                                <li class="list-group-item">{{ course }}</li>
-                            {% endfor %}
+                            {% with calendar.unique_name as unique_name %}
+                                {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
+                                    {% for course in course_crn_data.data %}
+                                        <li class="list-group-item">{{ course.course_id }}: {{ course.crn }}</li>
+                                    {% endfor %}
+                                {% endwith %}
+                            {% endwith %}
                         </ul>
                     </div>
                 </div>
-            {% endif %}
-            <div class="col-lg-1"></div>
-            {% for calendar in schedules %}
-                <div class="table-responsive col-lg-8" id="{{ calendar.unique_name }}" hidden>
+                <div class="col-lg-1"></div>
+                <div class="table-responsive col-lg-8">
                     <table class="table table-bordered table-responsive">
                         <thead>
                         <tr>
@@ -197,8 +216,9 @@
                         </tbody>
                     </table>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
+        {#        </div>#}
     </div>
     <script>
         {#console.log("{{ total_schedules }}");#}

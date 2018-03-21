@@ -7,27 +7,6 @@ import string
 from course_api.data_managers.course_scheduler import CourseScheduler
 
 
-# times = [{'m': '7:00', 'c': '7:00am'}, {'m': '7:30', 'c': '7:30am'},
-#          {'m': '8:00', 'c': '8:00am'},
-#          {'m': '8:30', 'c': '8:30am'}, {'m': '9:00', 'c': '9:00am'},
-#          {'m': '9:30', 'c': '9:30am'},
-#          {'m': '10:00', 'c': '10:00am'}, {'m': '10:30', 'c': '10:30am'},
-#          {'m': '11:00', 'c': '11:00am'}, {'m': '11:30', 'c': '11:30am'},
-#          {'m': '12:00', 'c': '12:00pm'}, {'m': '12:30', 'c': '12:30pm'},
-#          {'m': '13:00', 'c': '1:00pm'}, {'m': '13:30', 'c': '1:30pm'},
-#          {'m': '14:00', 'c': '2:00pm'},
-#          {'m': '14:30', 'c': '2:30pm'},
-#          {'m': '15:00', 'c': '3:00pm'}, {'m': '15:30', 'c': '3:30pm'},
-#          {'m': '16:00', 'c': '4:00pm'}, {'m': '16:30', 'c': '4:30pm'},
-#          {'m': '17:00', 'c': '5:00pm'}, {'m': '17:30', 'c': '5:30pm'},
-#          {'m': '18:00', 'c': '6:00pm'}, {'m': '18:30', 'c': '6:30pm'},
-#          {'m': '19:00', 'c': '7:00pm'},
-#          {'m': '19:30', 'c': '7:30pm'},
-#          {'m': '20:00', 'c': '8:00pm'}, {'m': '20:30', 'c': '8:30pm'},
-#          {'m': '21:00', 'c': '9:00pm'}, {'m': '21:30', 'c': '9:30pm'},
-#          {'m': '22:00', 'c': '10:00pm'}, {'m': '22:30', 'c': '10:30pm'}]
-
-
 def create_schedules(request):
     courses = request.POST.getlist('courses')
     term = request.POST.get('term')
@@ -131,18 +110,22 @@ def create_schedules(request):
 
 def new_courses(request):
     all_schedule_ids = []
-    classes = request.POST.getlist('courses')
-    term = request.POST.get('term')
+    all_schedule_crns = {}
+    courses, term, earliest, latest, days, gaps = get_post_data(request)
     import json
-    generator = CourseScheduler('201830')
-    classes = generator.get_valid_schedules(["CSE-150", "CSE-30"])[:65]
-    # classes = classes[:1]
-    # classes = courses[0].get('schedule')
+    generator = CourseScheduler(term=term, earliest_time=earliest, latest_time=latest, days=days, gaps=gaps)
+    classes = generator.get_valid_schedules(courses)[:65]
     schedules = list()
     for schedule in classes:
         courses = []
+        actual_schedule = dict()
+        actual_schedule['unique_name'] = ''.join(
+            [random.choice(string.ascii_letters + string.digits) for n in range(16)])
+        all_schedule_ids.append(actual_schedule['unique_name'])
+        course_data = []
         for course, data in schedule.get('schedule').items():
             for section, section_data in data.items():
+                course_data.append({'crn': section_data.get('crn'), 'course_id': section_data.get('course_id')})
                 if section_data:
                     if section_data.get('lecture_crn'):
                         section_data['color'] = colorscale(
@@ -154,6 +137,7 @@ def new_courses(request):
                             ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
                                 'subject')).hex, 1.5)
                     courses.append(section_data)
+        all_schedule_crns[actual_schedule['unique_name']] = course_data
         for course in courses:
             course_days = list(course.get('days'))
 
@@ -188,7 +172,6 @@ def new_courses(request):
                                                                              timedelta(minutes=30)).minute == 0:
                 course['end'] += "0"
             course['length'] = (ceil((total_time.seconds / 60 / 60) * 2))
-        actual_schedule = {}
         times = ['700', '730', '800', '830', '900', '930', '1000', '1030', '1100', '1130', '1200', '1230', '1300',
                  '1330',
                  '1400', '1430', '1500', '1530', '1600', '1630', '1700', '1730', '1800', '1830', '1900', '1930',
@@ -243,11 +226,9 @@ def new_courses(request):
                         new_course['next'] = True
                         new_course['time'] = time
                     actual_schedule[time][day] = new_course
-        actual_schedule['unique_name'] = ''.join(
-            [random.choice(string.ascii_letters + string.digits) for n in range(16)])
-        all_schedule_ids.append(actual_schedule['unique_name'])
+
         schedules.append(actual_schedule)
-    return schedules, all_schedule_ids
+    return schedules, all_schedule_ids, all_schedule_crns
 
 
 from datetime import datetime, timedelta
@@ -255,3 +236,43 @@ from datetime import datetime, timedelta
 
 def ceil_dt(dt, delta):
     return dt + (datetime.min - dt) % delta
+
+
+def get_post_data(request):
+    courses = request.POST.getlist('courses')
+    term = request.POST.get('term')
+    selected_classes = courses
+    earliest = request.POST.get('earliest')
+    if earliest == 'any':
+        earliest = None
+    else:
+        earliest = int(earliest)
+    latest = request.POST.get('latest')
+    if latest == 'any':
+        latest = None
+    else:
+        latest = int(latest)
+    filters = request.POST.getlist('filters')
+    try:
+        filter_1 = filters[0]
+    except IndexError:
+        filter_1 = None
+    try:
+        filter_2 = filters[1]
+    except IndexError:
+        filter_2 = None
+    if filter_1 and 'gap' in filter_1:
+        gaps = filter_1
+        days = filter_2
+    else:
+        days = filter_1
+        gaps = filter_2
+    if days == 'min_days':
+        days = 'asc'
+    else:
+        days = 'desc'
+    if gaps == 'gaps_min':
+        gaps = 'asc'
+    else:
+        gaps = 'desc'
+    return courses, term, earliest, latest, days, gaps
