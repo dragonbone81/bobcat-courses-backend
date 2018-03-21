@@ -3,10 +3,9 @@ from django.template.defaulttags import register
 
 @register.filter
 def get_item(dictionary, key):
-    data = dictionary.get(key)
-    if data:
-        data['exists'] = True
+    return dictionary.get(key)
 
-    else:
-        data = {'length': 1, 'exists': False}
-    return data
+
+@register.filter
+def get_item_dict(dictionary, key):
+    return {'data': dictionary.get(key)}
