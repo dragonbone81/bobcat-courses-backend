@@ -6,7 +6,7 @@ from course_api.serializers import CourseSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
 from django.contrib.auth import authenticate, login
-from course_api.data_managers.ScheduleHTML import create_schedules
+from course_api.data_managers.ScheduleHTML import create_schedules, new_courses
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
 
@@ -272,30 +272,32 @@ class CasRegistration(ViewSet):
 
 def calendar(request):
     if request.POST:
-        schedules, all_schedule_ids, selected_classes = create_schedules(request)
+        # schedules, all_schedule_ids, selected_classes = create_schedules(request)
+        schedules, all_schedule_ids = new_courses(request)
         return render(request, 'calendar.html',
                       {'schedules': schedules,
-                       'times': [{'m': '7:00', 'c': '7:00am'}, {'m': '7:30', 'c': '7:30am'},
-                                 {'m': '8:00', 'c': '8:00am'},
-                                 {'m': '8:30', 'c': '8:30am'}, {'m': '9:00', 'c': '9:00am'},
-                                 {'m': '9:30', 'c': '9:30am'},
-                                 {'m': '10:00', 'c': '10:00am'}, {'m': '10:30', 'c': '10:30am'},
-                                 {'m': '11:00', 'c': '11:00am'}, {'m': '11:30', 'c': '11:30am'},
-                                 {'m': '12:00', 'c': '12:00pm'}, {'m': '12:30', 'c': '12:30pm'},
-                                 {'m': '13:00', 'c': '1:00pm'}, {'m': '13:30', 'c': '1:30pm'},
-                                 {'m': '14:00', 'c': '2:00pm'},
-                                 {'m': '14:30', 'c': '2:30pm'},
-                                 {'m': '15:00', 'c': '3:00pm'}, {'m': '15:30', 'c': '3:30pm'},
-                                 {'m': '16:00', 'c': '4:00pm'}, {'m': '16:30', 'c': '4:30pm'},
-                                 {'m': '17:00', 'c': '5:00pm'}, {'m': '17:30', 'c': '5:30pm'},
-                                 {'m': '18:00', 'c': '6:00pm'}, {'m': '18:30', 'c': '6:30pm'},
-                                 {'m': '19:00', 'c': '7:00pm'},
-                                 {'m': '19:30', 'c': '7:30pm'},
-                                 {'m': '20:00', 'c': '8:00pm'}, {'m': '20:30', 'c': '8:30pm'},
-                                 {'m': '21:00', 'c': '9:00pm'}, {'m': '21:30', 'c': '9:30pm'},
-                                 {'m': '22:00', 'c': '10:00pm'}, {'m': '22:30', 'c': '10:30pm'}],
-                       'total_schedules': len(schedules), 'all_schedule_ids': all_schedule_ids,
-                       'selected_classes': selected_classes})
+                       'times': {'700': '7:00am', '730': '7:30am',
+                                 '800': '8:00am',
+                                 '830': '8:30am', '900': '9:00am',
+                                 '930': '9:30am',
+                                 '1000': '10:00am', '1030': '10:30am',
+                                 '1100': '11:00am', '1130': '11:30am',
+                                 '1200': '12:00pm', '1230': '12:30pm',
+                                 '1300': '1:00pm', '1330': '1:30pm',
+                                 '1400': '2:00pm',
+                                 '1430': '2:30pm',
+                                 '1500': '3:00pm', '1530': '3:30pm',
+                                 '1600': '4:00pm', '1630': '4:30pm',
+                                 '1700': '5:00pm', '1730': '5:30pm',
+                                 '1800': '6:00pm', '1830': '6:30pm',
+                                 '1900': '7:00pm',
+                                 '1930': '7:30pm',
+                                 '2000': '8:00pm', '2030': '8:30pm',
+                                 '2100': '9:00pm', '2130': '9:30pm',
+                                 '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
+                       'total_schedules': len(schedules)
+                          , 'all_schedule_ids': all_schedule_ids, })
+        #                'selected_classes': selected_classes})
     course_by_times = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
     return render(request, 'calendar.html',
                   {'calendar': course_by_times,

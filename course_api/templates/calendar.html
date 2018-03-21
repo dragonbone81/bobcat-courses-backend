@@ -166,97 +166,32 @@
                         <script>
 
                         </script>
-                        {% for display in times %}
+                        {% for time, data in calendar.items %}
+                            {% if time == "unique_name" %}
+                            {% else %}
+                                <tr>
+                                    <td>{{ times|get_item:time }}</td>
 
-                            <tr>
-                                <td>{{ display.c }}</td>
-                                {% with calendar.M|get_item:display.m as data %}
-                                    <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                             style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                             rowspan="1">
-                                        {% if data.exists %}
-                                            <h4>{{ data.course_id }}</h4>
-                                            <h5>{{ data.type }}</h5>
-                                            <h6>{{ data.hours }}</h6>
-                                            <h6>{{ data.crn }}</h6>
-                                        {% endif %}
-                                        {% if data.length > 1 %}
-                                            <i class="fa fa-arrow-down"></i>
-                                        {% endif %}
-
-                                    </td>
-                                {% endwith %}
-
-                                {% with calendar.T|get_item:display.m as data %}
-                                    <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                             style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                             rowspan="1">
-                                        {% if data.exists %}
-                                            <h4>{{ data.course_id }}</h4>
-                                            <h5>{{ data.type }}</h5>
-                                            <h6>{{ data.hours }}</h6>
-                                            <h6>{{ data.crn }}</h6>
-                                        {% endif %}
-                                        {% if data.length > 1 %}
-                                            <i class="fa fa-arrow-down"></i>
-                                        {% endif %}
-
-                                    </td>
-                                {% endwith %}
-
-                                {% with calendar.W|get_item:display.m as data %}
-                                    <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                             style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                             rowspan="1">
-                                        {% if data.exists %}
-                                            <h4>{{ data.course_id }}</h4>
-                                            <h5>{{ data.type }}</h5>
-                                            <h6>{{ data.hours }}</h6>
-                                            <h6>{{ data.crn }}</h6>
-                                        {% endif %}
-                                        {% if data.length > 1 %}
-                                            <i class="fa fa-arrow-down"></i>
-                                        {% endif %}
-
-                                    </td>
-                                {% endwith %}
-
-                                {% with calendar.R|get_item:display.m as data %}
-                                    <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                             style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                             rowspan="1">
-                                        {% if data.exists %}
-                                            <h4>{{ data.course_id }}</h4>
-                                            <h5>{{ data.type }}</h5>
-                                            <h6>{{ data.hours }}</h6>
-                                            <h6>{{ data.crn }}</h6>
-                                        {% endif %}
-                                        {% if data.length > 1 %}
-                                            <i class="fa fa-arrow-down"></i>
-                                        {% endif %}
-
-                                    </td>
-                                {% endwith %}
-
-                                {% with calendar.F|get_item:display.m as data %}
-                                    <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                             style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                             rowspan="1">
-                                        {% if data.exists %}
-                                            <h4>{{ data.course_id }}</h4>
-                                            <h5>{{ data.type }}</h5>
-                                            <h6>{{ data.hours }}</h6>
-                                            <h6>{{ data.crn }}</h6>
-                                            {% if data.length > 1 %}
-                                                <i class="fa fa-arrow-down"></i>
+                                    {% for day, day_data in data.items %}
+                                        {% if day_data.crn %}
+                                            {% if day_data.next == False %}
+                                                <td bgcolor="{{ day_data.color }}"
+                                                    style="border: 2px solid dimgrey;"
+                                                    rowspan="{{ day_data.length }}">
+                                                    <h4>{{ day_data.course_id }}</h4>
+                                                    <h5>{{ day_data.type }}</h5>
+                                                    <h6>{{ day_data.hours }}</h6>
+                                                    <h6>{{ day_data.crn }}</h6>
+                                                    <h6>{{ day_data.days }}</h6>
+                                                </td>
+                                            {% elif day_data.next == True %}
                                             {% endif %}
-
+                                        {% else %}
+                                            <td></td>
                                         {% endif %}
-
-                                    </td>
-                                {% endwith %}
-
-                            </tr>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
                         {% endfor %}
                         </tbody>
                     </table>
@@ -350,6 +285,7 @@
             {% if schedules %}
                 var table_id = '#' + current_id;
                 $(table_id).removeAttr('hidden');
+                console.log(current_id);
             {% endif %}
             {% if selected_classes %}
                 {% for course in selected_classes %}

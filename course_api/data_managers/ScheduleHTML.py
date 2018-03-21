@@ -7,6 +7,27 @@ import string
 from course_api.data_managers.course_scheduler import CourseScheduler
 
 
+# times = [{'m': '7:00', 'c': '7:00am'}, {'m': '7:30', 'c': '7:30am'},
+#          {'m': '8:00', 'c': '8:00am'},
+#          {'m': '8:30', 'c': '8:30am'}, {'m': '9:00', 'c': '9:00am'},
+#          {'m': '9:30', 'c': '9:30am'},
+#          {'m': '10:00', 'c': '10:00am'}, {'m': '10:30', 'c': '10:30am'},
+#          {'m': '11:00', 'c': '11:00am'}, {'m': '11:30', 'c': '11:30am'},
+#          {'m': '12:00', 'c': '12:00pm'}, {'m': '12:30', 'c': '12:30pm'},
+#          {'m': '13:00', 'c': '1:00pm'}, {'m': '13:30', 'c': '1:30pm'},
+#          {'m': '14:00', 'c': '2:00pm'},
+#          {'m': '14:30', 'c': '2:30pm'},
+#          {'m': '15:00', 'c': '3:00pm'}, {'m': '15:30', 'c': '3:30pm'},
+#          {'m': '16:00', 'c': '4:00pm'}, {'m': '16:30', 'c': '4:30pm'},
+#          {'m': '17:00', 'c': '5:00pm'}, {'m': '17:30', 'c': '5:30pm'},
+#          {'m': '18:00', 'c': '6:00pm'}, {'m': '18:30', 'c': '6:30pm'},
+#          {'m': '19:00', 'c': '7:00pm'},
+#          {'m': '19:30', 'c': '7:30pm'},
+#          {'m': '20:00', 'c': '8:00pm'}, {'m': '20:30', 'c': '8:30pm'},
+#          {'m': '21:00', 'c': '9:00pm'}, {'m': '21:30', 'c': '9:30pm'},
+#          {'m': '22:00', 'c': '10:00pm'}, {'m': '22:30', 'c': '10:30pm'}]
+
+
 def create_schedules(request):
     courses = request.POST.getlist('courses')
     term = request.POST.get('term')
@@ -46,6 +67,7 @@ def create_schedules(request):
         gaps = 'desc'
     generator = CourseScheduler(term, latest_time=latest, earliest_time=earliest, days=days, gaps=gaps)
     courses = generator.get_valid_schedules(courses)[:65]
+    use_this_courses = courses
     schedules = list()
     all_schedule_ids = []
     for schedule in courses:
@@ -65,7 +87,6 @@ def create_schedules(request):
                             ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
                                 'subject')).hex, 1.5)
                     courses.append(section_data)
-
         for course in courses:
             course_days = list(course.get('days'))
 
@@ -95,4 +116,142 @@ def create_schedules(request):
         all_schedule_ids.append(course_by_times['unique_name'])
         schedules = schedules
         all_schedule_ids = all_schedule_ids
+    actual_schedule = {}
+
+    schedule = use_this_courses[0]
+    # print(schedule)
+    # for time in times:
+    #     actual_schedule[time['c']] = list()
+    schedule = new_courses()
+    # print(schedule)
+    # import json
+    # print(json.dumps(actual_schedule))
     return schedules, all_schedule_ids, selected_classes
+
+
+def new_courses(request):
+    all_schedule_ids = []
+    classes = request.POST.getlist('courses')
+    term = request.POST.get('term')
+    import json
+    generator = CourseScheduler('201830')
+    classes = generator.get_valid_schedules(["CSE-150", "CSE-30"])[:65]
+    # classes = classes[:1]
+    # classes = courses[0].get('schedule')
+    schedules = list()
+    for schedule in classes:
+        courses = []
+        for course, data in schedule.get('schedule').items():
+            for section, section_data in data.items():
+                if section_data:
+                    if section_data.get('lecture_crn'):
+                        section_data['color'] = colorscale(
+                            ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
+                                'subject')).hex, 1.5)
+
+                    else:
+                        section_data['color'] = colorscale(
+                            ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
+                                'subject')).hex, 1.5)
+                    courses.append(section_data)
+        for course in courses:
+            course_days = list(course.get('days'))
+
+            hours = convertTime(course.get('hours'))
+            start_hour = str(hours.get('start'))
+            end_hour = str(hours.get('end'))
+
+            if len(start_hour) == 3:
+                start_hour = "{}:{}".format(start_hour[0], start_hour[1:3])
+            else:
+                start_hour = '{}:{}'.format(start_hour[0:2], start_hour[2:4])
+            if len(end_hour) == 3:
+                end_hour = "{}:{}".format(end_hour[0], end_hour[1:3])
+            else:
+                end_hour = '{}:{}'.format(end_hour[0:2], end_hour[2:4])
+
+            start_date = dparser.parse(start_hour)
+            end_date = dparser.parse(end_hour)
+            total_time = end_date - start_date
+
+            course['start_str'] = hours.get('start')
+            course['end_str'] = hours.get('end')
+            course['start'] = "{}{}".format(ceil_dt(start_date, timedelta(minutes=30)).hour,
+                                            ceil_dt(start_date, timedelta(minutes=30)).minute)
+            if ceil_dt(start_date, timedelta(minutes=30)).hour > 9 and ceil_dt(start_date,
+                                                                               timedelta(minutes=30)).minute == 0:
+                course['start'] += "0"
+
+            course['end'] = "{}{}".format(ceil_dt(end_date, timedelta(minutes=30)).hour,
+                                          ceil_dt(end_date, timedelta(minutes=30)).minute)
+            if ceil_dt(end_date, timedelta(minutes=30)).hour > 9 and ceil_dt(end_date,
+                                                                             timedelta(minutes=30)).minute == 0:
+                course['end'] += "0"
+            course['length'] = (ceil((total_time.seconds / 60 / 60) * 2))
+        actual_schedule = {}
+        times = ['700', '730', '800', '830', '900', '930', '1000', '1030', '1100', '1130', '1200', '1230', '1300',
+                 '1330',
+                 '1400', '1430', '1500', '1530', '1600', '1630', '1700', '1730', '1800', '1830', '1900', '1930',
+                 '2000', '2030', '2100', '2130', '2200', '2230', '2300']
+        times_dict = {'700': 0, '730': 1, '800': 2, '830': 3, '900': 4, '930': 5, '1000': 6, '1030': 7, '1100': 8,
+                      '1130': 9,
+                      '1200': 10, '1230': 11, '1300': 12,
+                      '1330': 13,
+                      '1400': 14, '1430': 15, '1500': 16, '1530': 17, '1600': 18, '1630': 19, '1700': 20, '1730': 21,
+                      '1800': 22, '1830': 23, '1900': 24, '1930': 25,
+                      '2000': 26, '2030': 27, '2100': 28, '2130': 29, '2200': 30, '2230': 31, '2300': 32}
+        if len(str(schedule.get('latest'))) == 3:
+            latest_hour = "{}:{}".format(str(schedule.get('latest'))[0], str(schedule.get('latest'))[1:3])
+        else:
+            latest_hour = '{}:{}'.format(str(schedule.get('latest'))[0:2], str(schedule.get('latest'))[2:4])
+
+        if len(str(schedule.get('earliest'))) == 3:
+            earliest_hour = "{}:{}".format(str(schedule.get('earliest'))[0], str(schedule.get('earliest'))[1:3])
+        else:
+            earliest_hour = '{}:{}'.format(str(schedule.get('earliest'))[0:2], str(schedule.get('earliest'))[2:4])
+        latest_hour_str = "{}{}".format(ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).hour,
+                                        ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).minute)
+        if ceil_dt(dparser.parse(latest_hour), timedelta(minutes=30)).hour > 9 and ceil_dt(dparser.parse(latest_hour),
+                                                                                           timedelta(
+                                                                                               minutes=30)).minute == 0:
+            latest_hour_str += "0"
+
+        earliest_hour_str = "{}{}".format(ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).hour,
+                                          ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).minute)
+        if ceil_dt(dparser.parse(earliest_hour), timedelta(minutes=30)).hour > 9 and ceil_dt(
+                dparser.parse(earliest_hour),
+                timedelta(
+                    minutes=30)).minute == 0:
+            earliest_hour_str += "0"
+        lower_bound = times_dict[earliest_hour_str] - 1
+        if lower_bound < 0:
+            lower_bound = 0
+        for time in times[lower_bound:times_dict[latest_hour_str] + 1]:
+            actual_schedule[time] = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
+        for course in courses:
+            for day in list(course['days']):
+                list_times_course = []
+                for time in times:
+                    if int(time) >= int(course['start']) and int(time) < int(course['end']):
+                        list_times_course.append(time)
+                # print(list_times_course)
+                for time in list_times_course:
+                    new_course = course.copy()
+                    if int(new_course['start']) == int(time):
+                        new_course['next'] = False
+                    else:
+                        new_course['next'] = True
+                        new_course['time'] = time
+                    actual_schedule[time][day] = new_course
+        actual_schedule['unique_name'] = ''.join(
+            [random.choice(string.ascii_letters + string.digits) for n in range(16)])
+        all_schedule_ids.append(actual_schedule['unique_name'])
+        schedules.append(actual_schedule)
+    return schedules, all_schedule_ids
+
+
+from datetime import datetime, timedelta
+
+
+def ceil_dt(dt, delta):
+    return dt + (datetime.min - dt) % delta
