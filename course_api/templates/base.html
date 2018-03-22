@@ -1,8 +1,18 @@
+{% load static from staticfiles %}
 <!doctype html>
 <html lang="en">
 <head>
+    <meta property="og:site_name" content="Bobcat Courses"/>
+    <meta property="og:title" content="{% block preview_title %}{% endblock %}"/>
+    <meta property="og:description"
+          content="Search, for courses at UC Merced, and automatically generate schedules.
+          View your saved schedules. And Register for classes directly through the app."/>
+    <meta property="og:image" content="{% static "bobcat_courses_thumb.png" %}">
+    <meta property="og:type" content="website"/>
+
+
     <link rel="shortcut icon" type="image/png"
-          href="https://www.ucmercedbobcats.com/images/Athletics_Logos/Secondary_Mascot.png"/>
+          href="{% static "favicon.png" %}"/>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <!-- Required meta tags -->
@@ -35,7 +45,7 @@
 {% block header %}
     <nav class="navbar navbar-expand-lg navbar-expand-sm navbar-expand-xs navbar-dark bg-dark">
         <a class="navbar-brand" href="/app/bobcat-courses/schedules"><img
-                src="https://www.ucmercedbobcats.com/images/Athletics_Logos/Secondary_Mascot.png"
+                src="{% static "favicon.png" %}"
                 width="30" height="30"
                 class="d-inline-block align-top" alt="">Bobcat
             Courses</a>
