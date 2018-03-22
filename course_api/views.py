@@ -312,37 +312,40 @@ def django_saved_schedules_view(request):
     if request.POST:
         pass
     else:
-        import json
-        amount = request.GET.get('amount', 200)
-        schedules = Schedule.objects.filter(user=request.user).order_by('created')[:amount]
-        schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
-        for schedule in schedules:
-            schedule['courses'] = json.loads(schedule['courses'])
-        schedules, all_schedule_ids, all_schedule_crns, all_schedule_terms = GetSchedules(
-            schedule_crns=schedules).get_data_object()
-        return render(request, 'saved_schedules.html',
-                      {'schedules': schedules, 'times': {'700': '7:00am', '730': '7:30am',
-                                                         '800': '8:00am',
-                                                         '830': '8:30am', '900': '9:00am',
-                                                         '930': '9:30am',
-                                                         '1000': '10:00am', '1030': '10:30am',
-                                                         '1100': '11:00am', '1130': '11:30am',
-                                                         '1200': '12:00pm', '1230': '12:30pm',
-                                                         '1300': '1:00pm', '1330': '1:30pm',
-                                                         '1400': '2:00pm',
-                                                         '1430': '2:30pm',
-                                                         '1500': '3:00pm', '1530': '3:30pm',
-                                                         '1600': '4:00pm', '1630': '4:30pm',
-                                                         '1700': '5:00pm', '1730': '5:30pm',
-                                                         '1800': '6:00pm', '1830': '6:30pm',
-                                                         '1900': '7:00pm',
-                                                         '1930': '7:30pm',
-                                                         '2000': '8:00pm', '2030': '8:30pm',
-                                                         '2100': '9:00pm', '2130': '9:30pm',
-                                                         '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
-                       'total_schedules': len(schedules)
-                          , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns,
-                       'all_schedule_terms': all_schedule_terms})
+        if request.user.is_authenticated:
+            import json
+            amount = request.GET.get('amount', 200)
+            schedules = Schedule.objects.filter(user=request.user).order_by('created')[:amount]
+            schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
+            for schedule in schedules:
+                schedule['courses'] = json.loads(schedule['courses'])
+            schedules, all_schedule_ids, all_schedule_crns, all_schedule_terms = GetSchedules(
+                schedule_crns=schedules).get_data_object()
+            return render(request, 'saved_schedules.html',
+                          {'schedules': schedules, 'times': {'700': '7:00am', '730': '7:30am',
+                                                             '800': '8:00am',
+                                                             '830': '8:30am', '900': '9:00am',
+                                                             '930': '9:30am',
+                                                             '1000': '10:00am', '1030': '10:30am',
+                                                             '1100': '11:00am', '1130': '11:30am',
+                                                             '1200': '12:00pm', '1230': '12:30pm',
+                                                             '1300': '1:00pm', '1330': '1:30pm',
+                                                             '1400': '2:00pm',
+                                                             '1430': '2:30pm',
+                                                             '1500': '3:00pm', '1530': '3:30pm',
+                                                             '1600': '4:00pm', '1630': '4:30pm',
+                                                             '1700': '5:00pm', '1730': '5:30pm',
+                                                             '1800': '6:00pm', '1830': '6:30pm',
+                                                             '1900': '7:00pm',
+                                                             '1930': '7:30pm',
+                                                             '2000': '8:00pm', '2030': '8:30pm',
+                                                             '2100': '9:00pm', '2130': '9:30pm',
+                                                             '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
+                           'total_schedules': len(schedules)
+                              , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns,
+                           'all_schedule_terms': all_schedule_terms})
+        else:
+            return render(request, 'saved_schedules.html')
 
 
 def django_profile_view(request):
@@ -407,6 +410,8 @@ class SaveSchedule(ViewSet):
         if isinstance(crns, str):
             crns = crns.split(',')
         if term and crns:
+            if Schedule.objects.filter(user=request.user).count() > 20:
+                return Response({'error': 'Max saved schedules reached'})
             schedule = Schedule(
                 user=request.user,
                 term=term,

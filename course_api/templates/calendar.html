@@ -460,14 +460,27 @@
                 url: url,
                 data: data, // serializes the form's elements.
                 success: function (data) {
+                    var message = {};
+                    if (data.error) {
+                        message.error = true;
+                        message.title = data.error;
+                        message.message = "";
+                        message.type = 'warning';
+                    }
+                    if (data.success) {
+                        message.success = true;
+                        message.title = data.success;
+                        message.message = "Go to Saved Schedules to view it";
+                        message.type = 'info';
+                    }
                     $(function () {
                         $.notify({
                             // options
-                            title: 'Your schedule has been saved.<br>',
-                            message: 'Actually it hasn\'t because this feature is not yet implemented, sorry :)'
+                            title: message.title + '<br>',
+                            message: message.message
                         }, {
                             // settings
-                            type: 'info'
+                            type: message.type
                         });
                     });
                 }

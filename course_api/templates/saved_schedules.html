@@ -9,16 +9,17 @@
 
 {% block title %}Saved Schedules {% endblock %}
 {% block content %}
+    {% if request.user.is_authenticated %}
+        {% if schedules %}
+            <div class="container-fluid">
+                <div>
+                    <h2>Your Saved Schedules</h2>
+                    <form method="post" id="class_form">
+                        {% csrf_token %}
 
-    <div class="container-fluid">
-        <div>
-            <h2>Your Saved Schedules</h2>
-            <form method="post" id="class_form">
-                {% csrf_token %}
-
-                <div class="form-row align-items-center">
-                    {% if schedules %}
-                        <div class="col-auto" style="padding: 5px;">
+                        <div class="form-row align-items-center">
+                            {% if schedules %}
+                                <div class="col-auto" style="padding: 5px;">
                             <span class="d-inline-block" tabindex="0"
                                   {% if not request.user.is_authenticated %}data-toggle="tooltip"
                                   title="Login to save schedule"{% endif %}>
@@ -28,366 +29,382 @@
                                   Delete Schedule
                               </button>
                             </span>
+                                </div>
+                                <div class="col-auto" style="padding: 5px;">
+                                    <button class="btn btn-lg btn-warning" type="button" id="register" name="register"
+                                            data-toggle="modal" data-target="#register_modal">Register
+                                    </button>
+                                </div>
+                            {% endif %}
                         </div>
-                        <div class="col-auto" style="padding: 5px;">
-                            <button class="btn btn-lg btn-warning" type="button" id="register" name="register"
-                                    data-toggle="modal" data-target="#register_modal">Register
+                    </form>
+
+                </div>
+                {% if schedules %}
+                    <div class="input-group  input-group-lg mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="schedule_span">Schedule </span>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                                    onclick="toggle_tables('back', 5)"><i
+                                    class="fa fa-angle-double-left"></i> Back 5
                             </button>
                         </div>
-                    {% endif %}
-                </div>
-            </form>
-
-        </div>
-        {% if schedules %}
-            <div class="input-group  input-group-lg mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="schedule_span">Schedule </span>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                            onclick="toggle_tables('back', 5)"><i
-                            class="fa fa-angle-double-left"></i> Back 5
-                    </button>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                            onclick="toggle_tables('back', 1)"><i
-                            class="fa fa-arrow-left"></i> Previous
-                    </button>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                            onclick="toggle_tables('forward', 1)">Next
-                        <i
-                                class="fa fa-arrow-right"></i>
-                    </button>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                            onclick="toggle_tables('forward', 5)"><i
-                            class="fa fa-angle-double-right"></i> Skip 5
-                    </button>
-                </div>
-                <div class="input-group-append">
-                    <span class="input-group-text">Total Schedules : {{ total_schedules }} </span>
-                </div>
-
-
-            </div>
-        {% else %}
-            {% if not new %}
-                <div class="alert alert-danger" role="alert">
-                    <strong>No available Schedules!</strong> There are conflicts or classes are full :*(
-                </div>
-            {% endif %}
-        {% endif %}
-        {% for calendar in schedules %}
-
-            <div class="row" id="{{ calendar.unique_name }}" hidden>
-                <div class="col-lg-3">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-header">
-                            <h4>My Classes:</h4>
-
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                                    onclick="toggle_tables('back', 1)"><i
+                                    class="fa fa-arrow-left"></i> Previous
+                            </button>
                         </div>
-                        <ul class="list-group list-group-flush">
-                            {% with calendar.unique_name as unique_name %}
-                                {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
-                                    {% for course in course_crn_data.data %}
-                                        <li class="list-group-item"
-                                            style="background-color: {{ course.color }}"><h5>{{ course.course_id }}
-                                            :</h5>
-                                            <h6>{{ course.crn }}</h6></li>
-                                    {% endfor %}
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                                    onclick="toggle_tables('forward', 1)">Next
+                                <i
+                                        class="fa fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" aria-label="Small" type="button"
+                                    onclick="toggle_tables('forward', 5)"><i
+                                    class="fa fa-angle-double-right"></i> Skip 5
+                            </button>
+                        </div>
+                        <div class="input-group-append">
+                            <span class="input-group-text">Total Schedules : {{ total_schedules }} </span>
+                        </div>
+
+
+                    </div>
+                {% endif %}
+                {% for calendar in schedules %}
+
+                    <div class="row" id="{{ calendar.unique_name }}" hidden>
+                        <div class="col-lg-3">
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-header">
+                                    <h4>My Classes:</h4>
+
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    {% with calendar.unique_name as unique_name %}
+                                        {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
+                                            {% for course in course_crn_data.data %}
+                                                <li class="list-group-item"
+                                                    style="background-color: {{ course.color }}">
+                                                    <h5>{{ course.course_id }}
+                                                        :</h5>
+                                                    <h6>{{ course.crn }}</h6></li>
+                                            {% endfor %}
 
 
 
-                                    <div class="modal fade" id="register_modal{{ calendar.unique_name }}" tabindex="-1"
-                                         role="dialog"
-                                         aria-labelledby="register_modal{{ calendar.unique_name }}"
-                                         aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Register with CAS</h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    This will register your for the currently selected classes (list
-                                                    below).<br>
-                                                    You will need to provide us with your UCMerced username (not email)
-                                                    and password. Yes the one for
-                                                    CatCourses.<br>
-                                                    We promise not to store this however if you have any doubt don't use
-                                                    this and just copy the CRN
-                                                    numbers below :)<br><br>
-                                                    <i>You will be registered for these courses: </i><br>
-                                                    {% for course in course_crn_data.data %}
-                                                        {{ course.crn }},
-                                                    {% endfor %}
-                                                    <form class="px-4 py-3"
-                                                          id="register_form{{ unique_name }}" action="">
-                                                        {% csrf_token %}
-                                                        <div class="form-group">
-                                                            <label for="username">Username</label>
-                                                            <input type="text"
-                                                                   class="form-control"
-                                                                   placeholder="Username"
-                                                                   name="username" required>
+                                            <div class="modal fade" id="register_modal{{ calendar.unique_name }}"
+                                                 tabindex="-1"
+                                                 role="dialog"
+                                                 aria-labelledby="register_modal{{ calendar.unique_name }}"
+                                                 aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Register with CAS</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="password">Password</label>
-                                                            <input type="password"
-                                                                   class="form-control"
-                                                                   placeholder="Password"
-                                                                   name="password" required>
-                                                        </div>
-                                                        <button type="submit"
-                                                                class="btn btn-warning">
-                                                            Register
-                                                        </button>
-                                                    </form>
-                                                    <script>
-                                                        var form_id = "#" + "register_form{{ unique_name }}";
-                                                        $(form_id).submit(function (e) {
-                                                            e.preventDefault();
-                                                            var url = "/api/courses/course-register/"; // the script where you handle the form input.
-
-                                                            var crns = [];
+                                                        <div class="modal-body">
+                                                            This will register your for the currently selected classes
+                                                            (list
+                                                            below).<br>
+                                                            You will need to provide us with your UCMerced username (not
+                                                            email)
+                                                            and password. Yes the one for
+                                                            CatCourses.<br>
+                                                            We promise not to store this however if you have any doubt
+                                                            don't
+                                                            use
+                                                            this and just copy the CRN
+                                                            numbers below :)<br><br>
+                                                            <i>You will be registered for these courses: </i><br>
                                                             {% for course in course_crn_data.data %}
-                                                                crns.push({{ course.crn }});
+                                                                {{ course.crn }},
                                                             {% endfor %}
-                                                            var data = $(this).serializeArray();
-                                                            data.push({name: "crns", value: crns}, {
-                                                                name: "term",
-                                                                value: "{{calendar.term}}"
-                                                            });
-                                                            $.ajax({
-                                                                type: "POST",
-                                                                url: url,
-                                                                data: data, // serializes the form's elements.
-                                                                success: function (data) {
-                                                                    $(function () {
-                                                                        $(current_register_id).modal('hide');
-                                                                        $('#dialog').modal('show');
+                                                            <form class="px-4 py-3"
+                                                                  id="register_form{{ unique_name }}" action="">
+                                                                {% csrf_token %}
+                                                                <div class="form-group">
+                                                                    <label for="username">Username</label>
+                                                                    <input type="text"
+                                                                           class="form-control"
+                                                                           placeholder="Username"
+                                                                           name="username" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="password">Password</label>
+                                                                    <input type="password"
+                                                                           class="form-control"
+                                                                           placeholder="Password"
+                                                                           name="password" required>
+                                                                </div>
+                                                                <button type="submit"
+                                                                        class="btn btn-warning">
+                                                                    Register
+                                                                </button>
+                                                            </form>
+                                                            <script>
+                                                                var form_id = "#" + "register_form{{ unique_name }}";
+                                                                $(form_id).submit(function (e) {
+                                                                    e.preventDefault();
+                                                                    var url = "/api/courses/course-register/"; // the script where you handle the form input.
+
+                                                                    var crns = [];
+                                                                    {% for course in course_crn_data.data %}
+                                                                        crns.push({{ course.crn }});
+                                                                    {% endfor %}
+                                                                    var data = $(this).serializeArray();
+                                                                    data.push({name: "crns", value: crns}, {
+                                                                        name: "term",
+                                                                        value: "{{calendar.term}}"
                                                                     });
-                                                                }
-                                                            });
-                                                        });
-                                                    </script>
+                                                                    $.ajax({
+                                                                        type: "POST",
+                                                                        url: url,
+                                                                        data: data, // serializes the form's elements.
+                                                                        success: function (data) {
+                                                                            $(function () {
+                                                                                $(current_register_id).modal('hide');
+                                                                                $('#dialog').modal('show');
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                });
+                                                            </script>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                {% endwith %}
-                            {% endwith %}
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-1"></div>
-                <div class="table-responsive col-lg-8">
-                    <table class="table table-bordered table-responsive">
-                        <thead>
-                        <tr>
-                            <th>Schedule</th>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <script>
-
-                        </script>
-                        {% for time, data in calendar.items %}
-                            {% if time == "unique_name" %}
-                            {% else %}
+                                        {% endwith %}
+                                    {% endwith %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-1"></div>
+                        <div class="table-responsive col-lg-8">
+                            <table class="table table-bordered table-responsive">
+                                <thead>
                                 <tr>
-                                    <td>{{ times|get_item:time }}</td>
-
-                                    {% for day, day_data in data.items %}
-                                        {% if day_data.crn %}
-                                            {% if day_data.next == False %}
-                                                <td bgcolor="{{ day_data.color }}"
-                                                    style="border: 2px solid dimgrey;"
-                                                    rowspan="{{ day_data.length }}">
-                                                    <h4>{{ day_data.course_id }}</h4>
-                                                    <h5>{{ day_data.type }}</h5>
-                                                    <h6>{{ day_data.hours }}</h6>
-                                                    <h6>{{ day_data.crn }}</h6>
-                                                    <h6>{{ day_data.days }}</h6>
-                                                </td>
-                                            {% elif day_data.next == True %}
-                                            {% endif %}
-                                        {% else %}
-                                            <td></td>
-                                        {% endif %}
-                                    {% endfor %}
+                                    <th>Schedule</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
                                 </tr>
-                            {% endif %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                                </thead>
+                                <tbody>
+                                <script>
+
+                                </script>
+                                {% for time, data in calendar.items %}
+                                    {% if time == "unique_name" %}
+                                    {% else %}
+                                        <tr>
+                                            <td>{{ times|get_item:time }}</td>
+
+                                            {% for day, day_data in data.items %}
+                                                {% if day_data.crn %}
+                                                    {% if day_data.next == False %}
+                                                        <td bgcolor="{{ day_data.color }}"
+                                                            style="border: 2px solid dimgrey;"
+                                                            rowspan="{{ day_data.length }}">
+                                                            <h4>{{ day_data.course_id }}</h4>
+                                                            <h5>{{ day_data.type }}</h5>
+                                                            <h6>{{ day_data.hours }}</h6>
+                                                            <h6>{{ day_data.crn }}</h6>
+                                                            <h6>{{ day_data.days }}</h6>
+                                                        </td>
+                                                    {% elif day_data.next == True %}
+                                                    {% endif %}
+                                                {% else %}
+                                                    <td></td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-    </div>
-    <script>
-        var current_term = "{{ all_schedule_terms.0 }}";
-        var all_current_terms = [];
-        {% for term in all_schedule_terms %}
-            all_current_terms.push("{{ term }}");
-        {% endfor %}
-        var all_crns = {};
-        {% for course_id, data in all_schedule_crns.items %}
-            var course_id = "{{ course_id }}";
-            var crns = [];
-            {% for crn_data in data %}
-                var crn = "{{ crn_data.crn }}";
-                crns.push(crn);
-            {% endfor %}
-            all_crns[course_id] = crns;
-        {% endfor %}
-        var current_crns = [];
-        var current_id = "{{ all_schedule_ids.0 }}";
+            <script>
+                var current_term = "{{ all_schedule_terms.0 }}";
+                var all_current_terms = [];
+                {% for term in all_schedule_terms %}
+                    all_current_terms.push("{{ term }}");
+                {% endfor %}
+                var all_crns = {};
+                {% for course_id, data in all_schedule_crns.items %}
+                    var course_id = "{{ course_id }}";
+                    var crns = [];
+                    {% for crn_data in data %}
+                        var crn = "{{ crn_data.crn }}";
+                        crns.push(crn);
+                    {% endfor %}
+                    all_crns[course_id] = crns;
+                {% endfor %}
+                var current_crns = [];
+                var current_id = "{{ all_schedule_ids.0 }}";
 
 
-        var current_register_id = "#register_modal" + current_id;
-        var current_schedule = 0;
-        var all_ids = [];
-        {%  for course_id in all_schedule_ids  %}
-            all_ids.push("{{course_id}}");
-        {% endfor %}
-        $('#schedule_span').text("Schedule " + (current_schedule + 1));
-        current_crns = all_crns[current_id];
+                var current_register_id = "#register_modal" + current_id;
+                var current_schedule = 0;
+                var all_ids = [];
+                {%  for course_id in all_schedule_ids  %}
+                    all_ids.push("{{course_id}}");
+                {% endfor %}
+                $('#schedule_span').text("Schedule " + (current_schedule + 1));
+                current_crns = all_crns[current_id];
 
-        // In your Javascript (external .js resource or <script> tag)
-        function toggle_tables(way, num) {
+                // In your Javascript (external .js resource or <script> tag)
+                function toggle_tables(way, num) {
 
-            var table_id = '#' + current_id;
-            $(table_id).attr('hidden', true);
-            if (way === 'forward') {
-                if (current_schedule + num > ({{ total_schedules }}-1)) {
-                    current_schedule = 0;
-                }
-                else {
-                    current_schedule += num;
-                }
-            }
-            if (way === 'back') {
-                if (current_schedule - num < 0) {
-                    current_schedule = {{ total_schedules }}-1;
-                }
-                else {
-                    current_schedule -= num;
-                }
-            }
-            current_id = all_ids[current_schedule];
-            table_id = '#' + current_id;
-            current_register_id = "#register_modal" + current_id;
-            $("#register").attr('data-target', current_register_id);
-            $(table_id).removeAttr('hidden');
-            $('#schedule_span').text("Schedule " + (current_schedule + 1));
-            current_crns = all_crns[current_id];
-            console.log(current_schedule);
-            current_term = all_current_terms[current_schedule];
-            console.log(current_term);
-
-        }
-
-        {% if schedules %}
-            var table_id = '#' + current_id;
-            $(table_id).removeAttr('hidden');
-        {% endif %}
-
-
-        current_register_id = "#register_modal" + current_id;
-        $("#register").attr('data-target', current_register_id);
-
-
-        $(document).ready(function () {
-
-
-        });
-        $('[data-toggle="tooltip"]').tooltip();
-
-        function delete_schedule_submit(form) {
-            var data = $(form).serializeArray();
-            data.push({name: "crns", value: current_crns}, {name: "term", value: current_term});
-            var url = "/api/users/delete-schedule/"; // the script where you handle the form input.
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: data, // serializes the form's elements.
-                success: function (data) {
-                    var message = {};
-                    if (data.error) {
-                        message.error = true;
-                        message.message = data.error;
-                        message.type = 'warning';
+                    var table_id = '#' + current_id;
+                    $(table_id).attr('hidden', true);
+                    if (way === 'forward') {
+                        if (current_schedule + num > ({{ total_schedules }}-1)) {
+                            current_schedule = 0;
+                        }
+                        else {
+                            current_schedule += num;
+                        }
                     }
-                    if (data.success) {
-                        message.success = true;
-                        message.message = data.success;
-                        message.type = 'info';
+                    if (way === 'back') {
+                        if (current_schedule - num < 0) {
+                            current_schedule = {{ total_schedules }}-1;
+                        }
+                        else {
+                            current_schedule -= num;
+                        }
                     }
-                    $(function () {
-                        $.notify({
-                            // options
-                            title: message.message + '<br>',
-                            message: ''
-                        }, {
-                            // settings
-                            type: message.type
-                        });
+                    current_id = all_ids[current_schedule];
+                    table_id = '#' + current_id;
+                    current_register_id = "#register_modal" + current_id;
+                    $("#register").attr('data-target', current_register_id);
+                    $(table_id).removeAttr('hidden');
+                    $('#schedule_span').text("Schedule " + (current_schedule + 1));
+                    current_crns = all_crns[current_id];
+                    console.log(current_schedule);
+                    current_term = all_current_terms[current_schedule];
+                    console.log(current_term);
+
+                }
+
+                {% if schedules %}
+                    var table_id = '#' + current_id;
+                    $(table_id).removeAttr('hidden');
+                {% endif %}
+
+
+                current_register_id = "#register_modal" + current_id;
+                $("#register").attr('data-target', current_register_id);
+
+
+                $(document).ready(function () {
+
+
+                });
+                $('[data-toggle="tooltip"]').tooltip();
+
+                function delete_schedule_submit(form) {
+                    var data = $(form).serializeArray();
+                    data.push({name: "crns", value: current_crns}, {name: "term", value: current_term});
+                    var url = "/api/users/delete-schedule/"; // the script where you handle the form input.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: data, // serializes the form's elements.
+                        success: function (data) {
+                            var message = {};
+                            if (data.error) {
+                                message.error = true;
+                                message.message = data.error;
+                                message.type = 'warning';
+                            }
+                            if (data.success) {
+                                message.success = true;
+                                message.message = data.success;
+                                message.type = 'info';
+                            }
+                            $(function () {
+                                $.notify({
+                                    // options
+                                    title: message.message + '<br>',
+                                    message: ''
+                                }, {
+                                    // settings
+                                    type: message.type
+                                });
+                            });
+                        }
                     });
                 }
-            });
-        }
-    </script>
-    <div id="dialog" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Registration Complete</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <!-- dialog body -->
-                <div class="modal-body">
+            </script>
+            <div id="dialog" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Registration Complete</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <!-- dialog body -->
+                        <div class="modal-body">
 
-                    You have been registered, go to MyRegistration to double check :)
-                    <a target="_blank" href="https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin">https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin</a>
-                </div>
-                <!-- dialog buttons -->
-                <div class="modal-footer">
+                            You have been registered, go to MyRegistration to double check :)
+                            <a target="_blank" href="https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin">https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin</a>
+                        </div>
+                        <!-- dialog buttons -->
+                        <div class="modal-footer">
+                        </div>
+                    </div>
                 </div>
             </div>
+            <script>
+                $("#dialog").on("show", function () {    // wire up the OK button to dismiss the modal when shown
+                    $("#dialog a.btn").on("click", function (e) {
+                        $("#myModal").modal('hide');     // dismiss the dialog
+                    });
+                });
+                $("#dialog").on("hide", function () {    // remove the event listeners when the dialog is dismissed
+                    $("#dialog a.btn").off("click");
+                });
+
+                $("#dialog").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
+                    $("#dialog").remove();
+                });
+
+                $("#dialog").modal({                    // wire up the actual modal functionality and show the dialog
+                    "backdrop": "static",
+                    "keyboard": true,
+                    "show": false                     // ensure the modal is shown immediately
+                });
+            </script>
+        {% else %}
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                    <h1 class="display-4">No Saved Schedules :*(</h1>
+                    <p class="lead">Plan a schedule first to view it here</p>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Not Logged In</h1>
+                <p class="lead">Login to Save and view Saved schedules</p>
+            </div>
         </div>
-    </div>
-    <script>
-        $("#dialog").on("show", function () {    // wire up the OK button to dismiss the modal when shown
-            $("#dialog a.btn").on("click", function (e) {
-                $("#myModal").modal('hide');     // dismiss the dialog
-            });
-        });
-        $("#dialog").on("hide", function () {    // remove the event listeners when the dialog is dismissed
-            $("#dialog a.btn").off("click");
-        });
-
-        $("#dialog").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
-            $("#dialog").remove();
-        });
-
-        $("#dialog").modal({                    // wire up the actual modal functionality and show the dialog
-            "backdrop": "static",
-            "keyboard": true,
-            "show": false                     // ensure the modal is shown immediately
-        });
-    </script>
+    {% endif %}
 {% endblock %}
