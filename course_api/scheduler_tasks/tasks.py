@@ -1,6 +1,7 @@
 # from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 
+
 # scheduler = BlockingScheduler()
 
 
@@ -16,6 +17,7 @@ def timed_job():
         print('Course Pull Ran')
     else:
         print('Course Pull Failed')
+
 
 timed_job()
 # scheduler.start()
