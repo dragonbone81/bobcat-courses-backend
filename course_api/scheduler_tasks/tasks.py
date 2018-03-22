@@ -10,13 +10,10 @@ import requests
 def timed_job():
     # Todo prob move this to data_managers and figure this out
     url = "https://cse120-course-planner.herokuapp.com/course_pull"
-    response = requests.get(url=url, params={'pull': True}).json()
+    requests.get(url=url, params={'pull': True})
     url = "https://cse120-course-planner.herokuapp.com/course_pull"
-    response = requests.get(url=url, params={'simple': True}).json()
-    if response.get('success'):
-        print('Course Pull Ran')
-    else:
-        print('Course Pull Failed')
+    requests.get(url=url, params={'simple': True})
+    print('Course Pull Ran')
 
 
 timed_job()
