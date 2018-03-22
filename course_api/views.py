@@ -79,8 +79,10 @@ class UserRegistration(ViewSet):
         return Response(None)
 
     def post(self, request):
+        import random
+        from course_api.data_managers.anonymous_names import names
         first_name = request.data.get('first_name', "Anonymous")
-        last_name = request.data.get('last_name', "Panda")
+        last_name = request.data.get('last_name', random.choice(names))
         user = {'username': request.data.get('username'), 'password': request.data.get('password'),
                 'first_name': first_name, 'last_name': last_name, 'email': request.data.get('email')}
         if not User.objects.filter(username=request.data.get('username')):
@@ -313,6 +315,29 @@ def django_profile_view(request):
     if request.POST:
         pass
     return render(request, 'profile.html')
+
+
+def django_register_view(request):
+    if request.POST:
+        if not request.POST.get('password') or not request.POST.get('username'):
+            return render(request, 'register.html', {'error': 'Username or Password not provided'})
+        import random
+        from course_api.data_managers.anonymous_names import names
+        first_name = request.POST.get('first_name')
+        if not first_name:
+            first_name = "Anonymous"
+        last_name = request.POST.get('last_name')
+        if not last_name:
+            last_name = random.choice(names)
+        user = {'username': request.POST.get('username'), 'password': request.POST.get('password'),
+                'first_name': first_name, 'last_name': last_name, 'email': request.POST.get('email')}
+        if not User.objects.filter(username=request.POST.get('username')):
+            user = User.objects.create_user(**user)
+            login(request, user=user)
+            return redirect('/app/bobcat-courses/profile')
+        else:
+            return render(request, 'register.html', {'error': 'username Already Exists'})
+    return render(request, 'register.html')
 
 
 def django_login(request):

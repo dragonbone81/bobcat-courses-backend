@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
     CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, django_login, SaveSchedule, \
-    LoadSchedules, django_saved_schedules_view, django_profile_view
+    LoadSchedules, django_saved_schedules_view, django_profile_view, django_register_view
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -52,5 +52,6 @@ urlpatterns = [
     path('app/bobcat-courses', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
     path('app/bobcat-courses/schedules', django_schedules_view),
     path('app/bobcat-courses/profile', django_profile_view),
-    path('app/bobcat-courses/saved-schedules', django_saved_schedules_view)
+    path('app/bobcat-courses/saved-schedules', django_saved_schedules_view),
+    path('app/bobcat-courses/register', django_register_view)
 ]
