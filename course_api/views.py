@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login
 from course_api.data_managers.ScheduleHTML import get_html_courses
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
+from course_api.data_managers.loadSchedules import GetSchedules
 
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectCourse, Schedule
@@ -310,7 +311,38 @@ def django_schedules_view(request):
 def django_saved_schedules_view(request):
     if request.POST:
         pass
-    return render(request, 'saved_schedules.html')
+    else:
+        import json
+        amount = request.GET.get('amount', 200)
+        schedules = Schedule.objects.filter(user=request.user).order_by('created')[:amount]
+        schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
+        for schedule in schedules:
+            schedule['courses'] = json.loads(schedule['courses'])
+        schedules, all_schedule_ids, all_schedule_crns, all_schedule_terms = GetSchedules(
+            schedule_crns=schedules).get_data_object()
+        return render(request, 'saved_schedules.html',
+                      {'schedules': schedules, 'times': {'700': '7:00am', '730': '7:30am',
+                                                         '800': '8:00am',
+                                                         '830': '8:30am', '900': '9:00am',
+                                                         '930': '9:30am',
+                                                         '1000': '10:00am', '1030': '10:30am',
+                                                         '1100': '11:00am', '1130': '11:30am',
+                                                         '1200': '12:00pm', '1230': '12:30pm',
+                                                         '1300': '1:00pm', '1330': '1:30pm',
+                                                         '1400': '2:00pm',
+                                                         '1430': '2:30pm',
+                                                         '1500': '3:00pm', '1530': '3:30pm',
+                                                         '1600': '4:00pm', '1630': '4:30pm',
+                                                         '1700': '5:00pm', '1730': '5:30pm',
+                                                         '1800': '6:00pm', '1830': '6:30pm',
+                                                         '1900': '7:00pm',
+                                                         '1930': '7:30pm',
+                                                         '2000': '8:00pm', '2030': '8:30pm',
+                                                         '2100': '9:00pm', '2130': '9:30pm',
+                                                         '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
+                       'total_schedules': len(schedules)
+                          , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns,
+                       'all_schedule_terms': all_schedule_terms})
 
 
 def django_profile_view(request):
@@ -380,7 +412,37 @@ class SaveSchedule(ViewSet):
                 term=term,
                 courses=json.dumps(crns),
             )
+            schedule.save()
             return Response({'success': 'Schedule Saved!'})
+        return Response(None)
+
+
+class DeleteSchedule(ViewSet):
+    """
+    saves schedule
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        import json
+        term = request.data.get('term')
+        crns = request.data.get('crns')
+        if isinstance(crns, str):
+            crns = crns.split(',')
+        if term and crns:
+            for schedule in Schedule.objects.filter(user=request.user, term=term):
+                if set(json.loads(schedule.courses)) == set(crns):
+                    schedule.delete()
+                    return Response({'success': 'Schedule Deleted!'})
+            return Response({'error': 'Schedule DNE (Already Deleted Probably)'})
         return Response(None)
 
 
@@ -404,7 +466,7 @@ class LoadSchedules(ViewSet):
         schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
         for schedule in schedules:
             schedule['courses'] = json.loads(schedule['courses'])
-        return Response(schedules)
+        return Response(GetSchedules(schedule_crns=schedules).get_data_object())
 
     def post(self, request):
         return Response(None)
