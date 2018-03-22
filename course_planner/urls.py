@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
-    CoursesSearch, SchedulesListView, CasRegistration, calendar, GetTerms, django_login
+    CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, django_login, SaveSchedule, \
+    LoadSchedules, django_saved_schedules_view, django_profile_view
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -31,6 +32,8 @@ router.register(r'courses/schedule-search', SchedulesListView, base_name='Schedu
 router.register(r'courses/course-search', CoursesSearch, base_name='CoursesSearch')
 router.register(r'courses/course-register', CasRegistration, base_name='CasRegistration')
 router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
+router.register(r'users/save-schedule', SaveSchedule, base_name='SaveSchedule')
+router.register(r'users/load-schedules', LoadSchedules, base_name='LoadSchedules')
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
@@ -47,7 +50,7 @@ urlpatterns = [
     # local schedule urls
     path('api/calendar', RedirectView.as_view(url='/app/bobcat-courses')),
     path('app/bobcat-courses', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
-    path('app/bobcat-courses/schedules', calendar),
-    path('app/bobcat-courses/profile', calendar),
-    path('app/bobcat-courses/saved-schedules', calendar)
+    path('app/bobcat-courses/schedules', django_schedules_view),
+    path('app/bobcat-courses/profile', django_profile_view),
+    path('app/bobcat-courses/saved-schedules', django_saved_schedules_view)
 ]

@@ -1,5 +1,6 @@
 from course_api.utils.convert_24h import convertTime, colorscale
 import dateutil.parser as dparser
+from datetime import datetime, timedelta
 from colorhash import ColorHash
 from math import ceil
 import random
@@ -7,112 +8,10 @@ import string
 from course_api.data_managers.course_scheduler import CourseScheduler
 
 
-def create_schedules(request):
-    courses = request.POST.getlist('courses')
-    term = request.POST.get('term')
-    selected_classes = courses
-    earliest = request.POST.get('earliest')
-    if earliest == 'any':
-        earliest = None
-    else:
-        earliest = int(earliest)
-    latest = request.POST.get('latest')
-    if latest == 'any':
-        latest = None
-    else:
-        latest = int(latest)
-    filters = request.POST.getlist('filters')
-    try:
-        filter_1 = filters[0]
-    except IndexError:
-        filter_1 = None
-    try:
-        filter_2 = filters[1]
-    except IndexError:
-        filter_2 = None
-    if filter_1 and 'gap' in filter_1:
-        gaps = filter_1
-        days = filter_2
-    else:
-        days = filter_1
-        gaps = filter_2
-    if days == 'min_days':
-        days = 'asc'
-    else:
-        days = 'desc'
-    if gaps == 'gaps_min':
-        gaps = 'asc'
-    else:
-        gaps = 'desc'
-    generator = CourseScheduler(term, latest_time=latest, earliest_time=earliest, days=days, gaps=gaps)
-    courses = generator.get_valid_schedules(courses)[:65]
-    use_this_courses = courses
-    schedules = list()
-    all_schedule_ids = []
-    for schedule in courses:
-        course_by_times = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
-        classes = schedule.get('schedule')
-        courses = []
-        for course, data in classes.items():
-            for section, section_data in data.items():
-                if section_data:
-                    if section_data.get('lecture_crn'):
-                        section_data['color'] = colorscale(
-                            ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
-                                'subject')).hex, 1.5)
-
-                    else:
-                        section_data['color'] = colorscale(
-                            ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
-                                'subject')).hex, 1.5)
-                    courses.append(section_data)
-        for course in courses:
-            course_days = list(course.get('days'))
-
-            hours = convertTime(course.get('hours'))
-            start_hour = str(hours.get('start'))
-            end_hour = str(hours.get('end'))
-
-            if len(start_hour) == 3:
-                start_hour = "{}:{}".format(start_hour[0], start_hour[1:3])
-            else:
-                start_hour = '{}:{}'.format(start_hour[0:2], start_hour[2:4])
-            if len(end_hour) == 3:
-                end_hour = "{}:{}".format(end_hour[0], end_hour[1:3])
-            else:
-                end_hour = '{}:{}'.format(end_hour[0:2], end_hour[2:4])
-
-            start_date = dparser.parse(start_hour)
-            end_date = dparser.parse(end_hour)
-            total_time = end_date - start_date
-
-            course['length'] = (ceil((total_time.seconds / 60 / 60) * 2))
-            for day in course_days:
-                course_by_times[day][start_hour] = course
-        course_by_times['unique_name'] = ''.join(
-            [random.choice(string.ascii_letters + string.digits) for n in range(16)])
-        schedules.append(course_by_times)
-        all_schedule_ids.append(course_by_times['unique_name'])
-        schedules = schedules
-        all_schedule_ids = all_schedule_ids
-    actual_schedule = {}
-
-    schedule = use_this_courses[0]
-    # print(schedule)
-    # for time in times:
-    #     actual_schedule[time['c']] = list()
-    schedule = new_courses()
-    # print(schedule)
-    # import json
-    # print(json.dumps(actual_schedule))
-    return schedules, all_schedule_ids, selected_classes
-
-
-def new_courses(request):
+def get_html_courses(request):
     all_schedule_ids = []
     all_schedule_crns = {}
-    courses, term, earliest, latest, days, gaps = get_post_data(request)
-    import json
+    courses, term, earliest, latest, days, gaps, old_data = get_post_data(request)
     generator = CourseScheduler(term=term, earliest_time=earliest, latest_time=latest, days=days, gaps=gaps)
     classes = generator.get_valid_schedules(courses)[:65]
     schedules = list()
@@ -125,7 +24,7 @@ def new_courses(request):
         course_data = []
         for course, data in schedule.get('schedule').items():
             for section, section_data in data.items():
-                course_data.append({'crn': section_data.get('crn'), 'course_id': section_data.get('course_id')})
+
                 if section_data:
                     if section_data.get('lecture_crn'):
                         section_data['color'] = colorscale(
@@ -137,6 +36,9 @@ def new_courses(request):
                             ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
                                 'subject')).hex, 1.5)
                     courses.append(section_data)
+                course_data.append(
+                    {'crn': section_data.get('crn'), 'course_id': section_data.get('course_id'),
+                     'color': section_data['color']})
         all_schedule_crns[actual_schedule['unique_name']] = course_data
         for course in courses:
             course_days = list(course.get('days'))
@@ -222,10 +124,7 @@ def new_courses(request):
                     actual_schedule[time][day] = new_course
 
         schedules.append(actual_schedule)
-    return schedules, all_schedule_ids, all_schedule_crns
-
-
-from datetime import datetime, timedelta
+    return schedules, all_schedule_ids, all_schedule_crns, old_data
 
 
 def ceil_dt(dt, delta):
@@ -236,6 +135,12 @@ def get_post_data(request):
     courses = request.POST.getlist('courses')
     term = request.POST.get('term')
     selected_classes = courses
+    old_data = dict()
+    old_data['selected_classes'] = selected_classes
+    old_data['filters'] = request.POST.getlist('filters')
+    old_data['earliest'] = request.POST.get('earliest')
+    old_data['latest'] = request.POST.get('latest')
+    old_data['term'] = request.POST.get('term')
     earliest = request.POST.get('earliest')
     if earliest == 'any':
         earliest = None
@@ -269,4 +174,4 @@ def get_post_data(request):
         gaps = 'asc'
     else:
         gaps = 'desc'
-    return courses, term, earliest, latest, days, gaps
+    return courses, term, earliest, latest, days, gaps, old_data

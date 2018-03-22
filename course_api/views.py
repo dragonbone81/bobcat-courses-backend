@@ -2,16 +2,16 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from course_api.serializers import CourseSerializer
+from course_api.serializers import CourseSerializer, ScheduleSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
 from django.contrib.auth import authenticate, login
-from course_api.data_managers.ScheduleHTML import create_schedules, new_courses
+from course_api.data_managers.ScheduleHTML import get_html_courses
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
 
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
-from course_api.models import Course, SubjectCourse
+from course_api.models import Course, SubjectCourse, Schedule
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework import status
@@ -250,8 +250,8 @@ class CasRegistration(ViewSet):
     post: Registers you for classes
     example: {"crns":[123, 1234, 123], "username":"***", "password":"***", "term":201820} for summer term
     """
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def retrieve(self, request, pk=None):
@@ -262,6 +262,8 @@ class CasRegistration(ViewSet):
 
     def post(self, request):
         crns = request.data.get('crns')
+        if isinstance(crns, str):
+            crns = crns.split(',')
         username = request.data.get('username')
         password = request.data.get('password')
         term = request.data.get('term')
@@ -270,10 +272,9 @@ class CasRegistration(ViewSet):
         return Response(response)
 
 
-def calendar(request):
+def django_schedules_view(request):
     if request.POST:
-        # schedules, all_schedule_ids, selected_classes = create_schedules(request)
-        schedules, all_schedule_ids, all_schedule_crns = new_courses(request)
+        schedules, all_schedule_ids, all_schedule_crns, old_data = get_html_courses(request)
         return render(request, 'calendar.html',
                       {'schedules': schedules,
                        'times': {'700': '7:00am', '730': '7:30am',
@@ -296,16 +297,22 @@ def calendar(request):
                                  '2100': '9:00pm', '2130': '9:30pm',
                                  '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
                        'total_schedules': len(schedules)
-                          , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns})
-        #                'selected_classes': selected_classes})
-    course_by_times = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
+                          , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns,
+                       'old_data': old_data})
     return render(request, 'calendar.html',
-                  {'calendar': course_by_times,
-                   'times': ['7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30', '11:00', '11:30',
-                             '12:00', '12:30', '13:00', '13:30', '14:00',
-                             '14:30',
-                             '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-                             '20:00', '20:30', '21:00'], 'error': {'message': request.GET.get('error')}})
+                  {'new': True, 'error': {'message': request.GET.get('error')}})
+
+
+def django_saved_schedules_view(request):
+    if request.POST:
+        pass
+    return render(request, 'saved_schedules.html')
+
+
+def django_profile_view(request):
+    if request.POST:
+        pass
+    return render(request, 'profile.html')
 
 
 def django_login(request):
@@ -318,3 +325,59 @@ def django_login(request):
             return redirect(request.GET.get('next'), )
         else:
             return redirect(request.GET.get('next') + '?error=Credential%20were%20invalid')
+
+
+class SaveSchedule(ViewSet):
+    """
+    saves schedule
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        import json
+        term = request.data.get('term')
+        crns = request.data.get('crns')
+        if isinstance(crns, str):
+            crns = crns.split(',')
+        if term and crns:
+            schedule = Schedule(
+                user=request.user,
+                term=term,
+                courses=json.dumps(crns),
+            )
+            return Response({'success': 'Schedule Saved!'})
+        return Response(None)
+
+
+class LoadSchedules(ViewSet):
+    """
+    loads users schedules ?total=30
+    total = max schedules you want back
+    sorted in chronological order
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        import json
+        amount = request.GET.get('amount', 200)
+        schedules = Schedule.objects.filter(user=request.user).order_by('created')[:amount]
+        schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
+        for schedule in schedules:
+            schedule['courses'] = json.loads(schedule['courses'])
+        return Response(schedules)
+
+    def post(self, request):
+        return Response(None)

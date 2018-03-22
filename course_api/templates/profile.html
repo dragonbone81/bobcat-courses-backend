@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block imports %}
+
+{% endblock %}
+
+
+{% block title %}My Profile{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <h2>Hello {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %} this
+            feature is in progress</h2>
+    </div>
+{% endblock %}

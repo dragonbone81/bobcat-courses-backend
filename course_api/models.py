@@ -49,10 +49,9 @@ class Schedule(models.Model):
         verbose_name = "Schedule"
         verbose_name_plural = "Schedules"
 
-    classes = models.ManyToManyField(
-        'Course',
-        verbose_name="Classes",
-        db_index=True,
+    courses = models.TextField(
+        verbose_name="Courses",
+        default='[]',
     )
     user = models.ForeignKey(
         User,
@@ -69,6 +68,11 @@ class Schedule(models.Model):
         max_length=32,
         verbose_name="Term",
         default="201810",
+    )
+    created = models.DateTimeField(
+        verbose_name="Created",
+        db_index=True,
+        auto_now_add=True,
     )
 
     def __str__(self):

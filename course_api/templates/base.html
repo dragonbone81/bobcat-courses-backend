@@ -19,7 +19,6 @@
             crossorigin="anonymous"></script>
     {% block imports %}
     {% endblock %}
-    <title>Schedule Search</title>
     <title>{% block title %}Home{% endblock %}</title>
 </head>
 <body>
@@ -33,15 +32,22 @@
 {% endif %}
 {% block header %}
     <nav class="navbar navbar-expand-lg navbar-expand-sm navbar-expand-xs navbar-dark bg-dark">
-        <a class="navbar-brand" href="/app/bobcat-courses/schedules">Bobcat Courses</a>
+        <a class="navbar-brand" href="/app/bobcat-courses/schedules"><img
+                src="http://www.ucmercedbobcats.com/images/Athletics_Logos/Secondary_Mascot.png"
+                width="30" height="30"
+                class="d-inline-block align-top" alt="">Bobcat
+            Courses</a>
 
         <div class="navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
+                    <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
+                </li>
+                <li class="nav-item active">
                     <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Save Schedules</a>
+                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
                 </li>
             </ul>
             <ul class="navbar-nav">
