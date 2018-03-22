@@ -63,6 +63,7 @@ class SubjectClassUpdate(object):
                 course_obj = {
                     'course_name': simplified_name,
                     'term': course.term,
+                    'course_subject': course.subject,
                 }
                 course_obj = SubjectCourse(**course_obj)
                 courses["{}:{}".format(simplified_name, course.term)] = course_obj

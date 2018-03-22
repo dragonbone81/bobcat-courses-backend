@@ -42,6 +42,12 @@ class SubjectCourse(models.Model):
         verbose_name="Term",
         default="201810",
     )
+    course_subject = models.CharField(
+        verbose_name="Course Subject",
+        max_length=256,
+        db_index=True,
+        null=True,
+    )
 
 
 class Schedule(models.Model):
