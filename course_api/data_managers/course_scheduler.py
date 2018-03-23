@@ -105,6 +105,9 @@ class CourseScheduler(object):
                     finals[day].append(time)
                 else:
                     return True
+            c['final_days'] = ''.join(c['final_days'])
+            if c['final_days'] == "":
+                c['final_days'] = None
         return False
 
     def getInfoForSchedule(self, schedule):
