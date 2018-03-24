@@ -29,6 +29,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://unpkg.com/@bootstrapstudio/bootstrap-better-nav/dist/bootstrap-better-nav.min.css">
+    <script src="https://unpkg.com/@bootstrapstudio/bootstrap-better-nav/dist/bootstrap-better-nav.min.js"></script>
     {% block imports %}
     {% endblock %}
     <title>Bobcat Courses | {% block title %}Home{% endblock %}</title>
@@ -43,14 +46,17 @@
     </div>
 {% endif %}
 {% block header %}
-    <nav class="navbar navbar-expand-lg navbar-expand-sm navbar-expand-xs navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="/app/bobcat-courses/schedules"><img
                 src="{% static "favicon.png" %}"
                 width="30" height="30"
                 class="d-inline-block align-top" alt="">Bobcat
             Courses</a>
-
-        <div class="navbar-collapse" id="navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
@@ -65,7 +71,8 @@
             <ul class="navbar-nav">
                 {% if request.user.is_authenticated %}
                     <span class="navbar-text">
-                Welcome {{ request.user.username }}&nbsp;</span>
+                    Welcome {% if request.user.first_name and request.user.first_name != "Anonymous" %}
+                        {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}&nbsp;</span>
                     <form action="/api/django/logout">
                         <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
                     </form>

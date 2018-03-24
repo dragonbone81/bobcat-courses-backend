@@ -22,8 +22,8 @@
                 {% csrf_token %}
                 <div class="form-row align-items-center">
                     <div class="col-auto form-inline" style="padding: 5px;">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend input-group-prepend-sm">
                                 <span class="input-group-text"><label for="term">Term</label></span>
                             </div>
                             <select class="form-control" id="term" name="term" required>
@@ -32,7 +32,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm">
+                    <div class="col-lg-6 col-md-6 col-sm">
                         <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
                                 style="width: 100%" required>
                         </select>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="form-row align-items-center">
                     <div class="col-auto form-inline" style="padding: 5px;">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><label for="earliest">Earliest Time</label></span>
                             </div>
@@ -58,7 +58,7 @@
                         </div>
                     </div>
                     <div class="col-auto form-inline" style="padding: 5px;">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><label for="latest">Latest Time</label></span>
                             </div>
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <div class="col-auto form-inline" style="padding: 5px;">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><label for="filters">Filters</label></span>
                             </div>
@@ -93,7 +93,7 @@
                         </div>
                     </div>
                     <div class="col-auto" style="padding: 5px;">
-                        <button class="btn btn-lg btn-outline-success" type="submit" id="submit_b">Get Schedules
+                        <button class="btn btn-md btn-success" type="submit" id="submit_b">Get Schedules
                         </button>
                     </div>
                     {% if schedules %}
@@ -101,7 +101,7 @@
                             <span class="d-inline-block" tabindex="0"
                                   {% if not request.user.is_authenticated %}data-toggle="tooltip"
                                   title="Login to save schedule"{% endif %}>
-                              <button class="btn btn-lg btn-outline-info" type="button"
+                              <button class="btn btn-md btn-info" type="button"
                                       {% if not request.user.is_authenticated %}style="pointer-events: none;"
                                       disabled{% endif %} onclick="class_form_submit(this.form)">
                                   Save Schedule
@@ -111,7 +111,7 @@
                         <div class="col-auto" style="padding: 5px;">
                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
                                   title="Registration is not yet open">
-                              <button class="btn btn-lg btn-outline-info" type="button" style="pointer-events: none;"
+                              <button class="btn btn-md btn-info" type="button" style="pointer-events: none;"
                                       disabled>
                                   Register
                               </button>
@@ -129,7 +129,7 @@
 
         </div>
         {% if schedules %}
-            <div class="input-group  input-group-lg mb-3">
+            <div class="input-group input-group-sm mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="schedule_span">Schedule </span>
                 </div>
@@ -174,10 +174,57 @@
         {% for calendar in schedules %}
 
             <div class="row" id="{{ calendar.unique_name }}" hidden>
+                <div class="table-responsive col-md-8 col-lg-7">
+                    <table class="table table-bordered table-responsive table-sm" style="font-size: smaller">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Schedule</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <script>
+
+                        </script>
+                        {% for time, data in calendar.items %}
+                            {% if time == "unique_name" %}
+                            {% else %}
+                                <tr class="text-center">
+                                    <td>{{ times|get_item:time }}</td>
+
+                                    {% for day, day_data in data.items %}
+                                        {% if day_data.crn %}
+                                            {% if day_data.next == False %}
+
+                                                        <td bgcolor="{{ day_data.color }}"
+                                                            style="border: 2px solid lightgrey;"
+                                                            rowspan="{{ day_data.length }}">
+
+                                                            <div ><u>{{ day_data.course_id }}</u></div>
+                                                            Section: {{ day_data.type }}
+                                                            Hours: {{ day_data.hours }}
+                                                            CRN: {{ day_data.crn }}
+                                                        </td>
+                                            {% elif day_data.next == True %}
+                                            {% endif %}
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 <div class="col-lg-3">
                     <div class="card" style="width: 18rem;">
                         <div class="card-header">
-                            <h4>My Classes:</h4>
+                            <h6>My Classes:</h6>
 
                         </div>
                         <ul class="list-group list-group-flush">
@@ -185,9 +232,7 @@
                                 {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
                                     {% for course in course_crn_data.data %}
                                         <li class="list-group-item"
-                                            style="background-color: {{ course.color }}"><h5>{{ course.course_id }}
-                                            :</h5>
-                                            <h6>{{ course.crn }}</h6></li>
+                                            style="background-color: {{ course.color }}"><b>{{ course.course_id }}</b>: {{ course.crn }}</li>
                                     {% endfor %}
 
 
@@ -276,53 +321,6 @@
                             {% endwith %}
                         </ul>
                     </div>
-                </div>
-                <div class="col-lg-1"></div>
-                <div class="table-responsive col-lg-8">
-                    <table class="table table-bordered table-responsive">
-                        <thead>
-                        <tr>
-                            <th>Schedule</th>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <script>
-
-                        </script>
-                        {% for time, data in calendar.items %}
-                            {% if time == "unique_name" %}
-                            {% else %}
-                                <tr>
-                                    <td>{{ times|get_item:time }}</td>
-
-                                    {% for day, day_data in data.items %}
-                                        {% if day_data.crn %}
-                                            {% if day_data.next == False %}
-                                                <td bgcolor="{{ day_data.color }}"
-                                                    style="border: 2px solid dimgrey;"
-                                                    rowspan="{{ day_data.length }}">
-                                                    <h4>{{ day_data.course_id }}</h4>
-                                                    <h5>{{ day_data.type }}</h5>
-                                                    <h6>{{ day_data.hours }}</h6>
-                                                    <h6>{{ day_data.crn }}</h6>
-                                                    <h6>{{ day_data.days }}</h6>
-                                                </td>
-                                            {% elif day_data.next == True %}
-                                            {% endif %}
-                                        {% else %}
-                                            <td></td>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         {% endfor %}
