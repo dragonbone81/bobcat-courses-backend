@@ -389,6 +389,8 @@ def django_login(request):
             return redirect(request.GET.get('next'), )
         else:
             return redirect(request.GET.get('next') + '?error=Credential%20were%20invalid')
+    else:
+        return None
 
 
 class SaveSchedule(ViewSet):
