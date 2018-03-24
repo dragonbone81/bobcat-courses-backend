@@ -204,10 +204,10 @@
                                                             style="border: 2px solid lightgrey;"
                                                             rowspan="{{ day_data.length }}">
 
-                                                            <div ><u>{{ day_data.course_id }}</u></div>
-                                                            Section: {{ day_data.type }}
-                                                            Hours: {{ day_data.hours }}
-                                                            CRN: {{ day_data.crn }}
+                                                            <div><u>{{ day_data.course_id }}</u></div>
+                                                            <div>Section: {{ day_data.type }}</div>
+                                                            <div>Hours: {{ day_data.hours }}</div>
+                                                            <div>CRN: {{ day_data.crn }}</div>
                                                         </td>
                                             {% elif day_data.next == True %}
                                             {% endif %}
