@@ -24,7 +24,6 @@ def get_html_courses(request):
         course_data = []
         for course, data in schedule.get('schedule').items():
             for section, section_data in data.items():
-
                 if section_data:
                     if section_data.get('lecture_crn'):
                         section_data['color'] = colorscale(
@@ -36,9 +35,9 @@ def get_html_courses(request):
                             ColorHash(''.join(section_data.get('course_id').split('-')[0:2]) + section_data.get(
                                 'subject')).hex, 1.5)
                     courses.append(section_data)
-                course_data.append(
-                    {'crn': section_data.get('crn'), 'course_id': section_data.get('course_id'),
-                     'color': section_data['color']})
+                    course_data.append(
+                        {'crn': section_data.get('crn'), 'course_id': section_data.get('course_id'),
+                         'color': section_data['color']})
         all_schedule_crns[actual_schedule['unique_name']] = course_data
         for course in courses:
             course_days = list(course.get('days'))
