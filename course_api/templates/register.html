@@ -7,41 +7,45 @@
 {% block title %}Register{% endblock %}
 {% block content %}
     <div class="container-fluid" style="padding: 50px;">
-        <div class="card">
-            <div class="card-body">
-
-                <form method="post" action="">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Email">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" name="username"
-                                   placeholder="Username" required>
-                        </div>
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card center">
+                    <div class="card-body">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="email" id="email_label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           placeholder="Email">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="username" id="username_password">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           placeholder="Username" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" id="password_label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                       placeholder="Password" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="first_name">First Name</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name"
+                                           placeholder="First Name">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="last_name">Last Name</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name"
+                                           placeholder="Last Name">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Sign Up</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password"
-                               placeholder="Password" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="first_name">First Name</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name"
-                                   placeholder="First Name">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="last_name">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name"
-                                   placeholder="Last Name">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Sign Up</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
