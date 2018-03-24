@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static from staticfiles %}
 {% load time_converter %}
 {% block imports %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
@@ -6,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+    <link href="{% static "css/select2-bootstrap4.min.css" %}" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css"
           rel="stylesheet"/>
@@ -23,8 +25,8 @@
                 <div class="form-row align-items-center">
                     <div class="col-auto form-inline" style="padding: 5px;">
                         <div class="input-group input-group-sm">
-                            <div class="input-group-prepend input-group-prepend-sm">
-                                <span class="input-group-text"><label for="term">Term</label></span>
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Term</span>
                             </div>
                             <select class="form-control" id="term" name="term" required>
                                 <option selected value="201830">Fall 2018</option>
@@ -32,17 +34,22 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm">
-                        <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
-                                style="width: 100%" required>
-                        </select>
+                    <div class="col-lg-8 col-md-8">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Courses</span>
+                            </div>
+                            <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
+                                    style="width: 77%" required>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row align-items-center">
                     <div class="col-auto form-inline" style="padding: 5px;">
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><label for="earliest">Earliest Time</label></span>
+                                <span class="input-group-text">Earliest Time</span>
                             </div>
                             <select class="form-control" id="earliest" name="earliest" required>
                                 <option selected value="any">Any</option>
@@ -60,7 +67,7 @@
                     <div class="col-auto form-inline" style="padding: 5px;">
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><label for="latest">Latest Time</label></span>
+                                <span class="input-group-text">Latest Time</span>
                             </div>
                             <select class="form-control" id="latest" name="latest" required>
                                 <option selected value="any">Any</option>
@@ -78,9 +85,10 @@
                     <div class="col-auto form-inline" style="padding: 5px;">
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><label for="filters">Filters</label></span>
+                                <span class="input-group-text">Filters</span>
                             </div>
-                            <select class="form-control" name="filters" id="filters" multiple>
+                            <select class="form-control" name="filters" id="filters" multiple
+                                    style="height: 20px; width: 20px; font-size: 30px;">
                                 <optgroup class="gaps" label="Class Gaps">
                                     <option value="gaps_min">Minimize Gaps</option>
                                     <option value="gaps_max">Maximize Gaps</option>
@@ -172,9 +180,8 @@
             {% endif %}
         {% endif %}
         {% for calendar in schedules %}
-
             <div class="row" id="{{ calendar.unique_name }}" hidden>
-                <div class="table-responsive col-md-8 col-lg-7">
+                <div class="table-responsive col-md-7 col-lg-5">
                     <table class="table table-bordered table-responsive table-sm" style="font-size: smaller">
                         <thead>
                         <tr class="text-center">
@@ -200,15 +207,15 @@
                                         {% if day_data.crn %}
                                             {% if day_data.next == False %}
 
-                                                        <td bgcolor="{{ day_data.color }}"
-                                                            style="border: 2px solid lightgrey;"
-                                                            rowspan="{{ day_data.length }}">
+                                                <td bgcolor="{{ day_data.color }}"
+                                                    style="border: 2px solid lightgrey;"
+                                                    rowspan="{{ day_data.length }}">
 
-                                                            <div><u>{{ day_data.course_id }}</u></div>
-                                                            <div>Section: {{ day_data.type }}</div>
-                                                            <div>Hours: {{ day_data.hours }}</div>
-                                                            <div>CRN: {{ day_data.crn }}</div>
-                                                        </td>
+                                                    <div><u>{{ day_data.course_id }}</u></div>
+                                                    <div>Section: {{ day_data.type }}</div>
+                                                    <div>Hours: {{ day_data.hours }}</div>
+                                                    <div>CRN: {{ day_data.crn }}</div>
+                                                </td>
                                             {% elif day_data.next == True %}
                                             {% endif %}
                                         {% else %}
@@ -221,7 +228,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-3 col-sm-4">
                     <div class="card" style="width: 18rem;">
                         <div class="card-header">
                             <h6>My Classes:</h6>
@@ -232,12 +239,14 @@
                                 {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
                                     {% for course in course_crn_data.data %}
                                         <li class="list-group-item"
-                                            style="background-color: {{ course.color }}"><b>{{ course.course_id }}</b>: {{ course.crn }}</li>
+                                            style="background-color: {{ course.color }}">
+                                            <b>{{ course.course_id }}</b>: {{ course.crn }}</li>
                                     {% endfor %}
 
 
 
-                                    <div class="modal fade" id="register_modal{{ calendar.unique_name }}" tabindex="-1"
+                                    <div class="modal fade" id="register_modal{{ calendar.unique_name }}"
+                                         tabindex="-1"
                                          role="dialog"
                                          aria-labelledby="register_modal{{ calendar.unique_name }}"
                                          aria-hidden="true">
@@ -253,10 +262,12 @@
                                                 <div class="modal-body">
                                                     This will register your for the currently selected classes (list
                                                     below).<br>
-                                                    You will need to provide us with your UCMerced username (not email)
+                                                    You will need to provide us with your UCMerced username (not
+                                                    email)
                                                     and password. Yes the one for
                                                     CatCourses.<br>
-                                                    We promise not to store this however if you have any doubt don't use
+                                                    We promise not to store this however if you have any doubt don't
+                                                    use
                                                     this and just copy the CRN
                                                     numbers below :)<br><br>
                                                     <i>You will be registered for these courses: </i><br>
@@ -381,6 +392,7 @@
         $('.js-example-basic-single').select2({
             placeholder: "Search for Classes",
             width: 'resolve',
+            theme: "bootstrap4",
             ajax: {
                 url: '/api/courses/course-search/',
                 data: function (params) {
