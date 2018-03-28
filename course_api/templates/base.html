@@ -22,7 +22,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <script src="{% static "font-awesome/js/fontawesome-all.min.js" %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
@@ -35,8 +35,64 @@
     {% block imports %}
     {% endblock %}
     <title>Bobcat Courses | {% block title %}Home{% endblock %}</title>
+    <style>
+        #body {
+            background: #f1f7fc;
+        }
+    </style>
 </head>
-<body>
+<body id="body">
+
+{% block header %}
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px"><img
+                    src="{% static "favicon.png" %}"
+                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">Bobcat
+                Courses</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item {% if request.path == '/app/bobcat-courses/schedules' %}active{% endif %}">
+                        <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
+                    </li>
+                    <li class="nav-item {% if request.path == '/app/bobcat-courses/profile' %}active{% endif %}">
+                        <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
+                    </li>
+                    <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
+                        <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
+                    </li>
+                </ul>
+                <ul style="margin-left: -40px;margin-bottom: 0">
+                    {% if request.user.is_authenticated %}
+
+                        <form class="form-inline" action="/app/bobcat-courses/logout">
+                            <div class="form-group">
+                                <span class="navbar-text">
+                                            Welcome
+                                    {% if request.user.first_name and request.user.first_name != "Anonymous" %}
+                                        {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
+                                    &nbsp;</span>
+                                <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
+                                    Logout
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <form action="/app/bobcat-courses/login">
+                            <button type="submit"
+                                    class="btn btn-outline-success">Login
+                            </button>
+                        </form>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
 {% if error.message %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>{{ error.message }}</strong>
@@ -45,67 +101,6 @@
         </button>
     </div>
 {% endif %}
-{% block header %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="/app/bobcat-courses/schedules"><img
-                src="{% static "favicon.png" %}"
-                width="30" height="30"
-                class="d-inline-block align-top" alt="">Bobcat
-            Courses</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
-                {% if request.user.is_authenticated %}
-                    <span class="navbar-text">
-                    Welcome {% if request.user.first_name and request.user.first_name != "Anonymous" %}
-                        {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}&nbsp;</span>
-                    <form action="/api/django/logout">
-                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
-                    </form>
-                {% else %}
-                    <div class="dropdown">
-                        <button type="button" id="dropdownMenu1" data-toggle="dropdown"
-                                class="btn btn-outline-success my-2 my-sm-0 dropdown-toggle">Login <span
-                                class="caret"></span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <form method="post" class="px-4 py-3" action="/api/django/login?next={{ request.path }}">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label for="username">Username</label>
-                                    <input type="text" class="form-control" id="username"
-                                           placeholder="Username" name="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" class="form-control" id="password"
-                                           placeholder="Password" name="password" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Sign in</button>
-                            </form>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/app/bobcat-courses/register">New around here? Sign up</a>
-                        </div>
-                    </div>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-{% endblock %}
 {% block content %}
 {% endblock %}
 </body>

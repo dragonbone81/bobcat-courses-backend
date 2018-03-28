@@ -11,15 +11,33 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css"
           rel="stylesheet"/>
+    <style>
+        table.table-bordered {
+            border: 1px solid #353535;
+            margin-top: 20px;
+        }
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid #353535;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid #353535;
+        }
+
+        #main_div {
+            background: linear-gradient(white, #f1f7fc);
+        }
+    </style>
 {% endblock %}
 
 {% block preview_title %}Schedule Search{% endblock %}
 {% block title %}Schedule Search {% endblock %}
 {% block content %}
-
-    <div class="container-fluid">
+    <div class="container"
+         style="padding: 50px; max-width: 1200px; text-align: center">
         <div>
-            <h2>Search for Classes</h2>
+            <h2 style="margin-top: -40px">Plan Schedules</h2>
             <form method="post" id="class_form">
                 {% csrf_token %}
                 <div class="form-row align-items-center">
@@ -39,7 +57,8 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Courses</span>
                             </div>
-                            <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
+                            <select id="courses" class="js-example-basic-single" name="courses"
+                                    multiple="multiple"
                                     style="width: 77%" required>
                             </select>
                         </div>
@@ -181,16 +200,17 @@
         {% endif %}
         {% for calendar in schedules %}
             <div class="row" id="{{ calendar.unique_name }}" hidden>
-                <div class="table-responsive col-md-7 col-lg-5">
-                    <table class="table table-bordered table-responsive table-sm" style="font-size: smaller">
+                <div class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12">
+                    <table class="table table-bordered table-responsive table-sm"
+                           style="font-size: smaller;">
                         <thead>
                         <tr class="text-center">
-                            <th>Schedule</th>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
+                            <th style="width: 100px">Schedule</th>
+                            <th style="width: 100px">Monday</th>
+                            <th style="width: 100px">Tuesday</th>
+                            <th style="width: 100px">Wednesday</th>
+                            <th style="width: 100px">Thursday</th>
+                            <th style="width: 100px">Friday</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -208,7 +228,7 @@
                                             {% if day_data.next == False %}
 
                                                 <td bgcolor="{{ day_data.color }}"
-                                                    style="border: 2px solid lightgrey;"
+                                                    style=""
                                                     rowspan="{{ day_data.length }}">
 
                                                     <div><u>{{ day_data.course_id }}</u></div>
@@ -228,7 +248,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-lg-3 col-sm-4">
+                <div class="col-lg-4 col-sm-12 col-md-12 col-xs-12" style="margin-top: 19px">
                     <div class="card" style="width: 18rem;">
                         <div class="card-header">
                             <h6>My Classes:</h6>

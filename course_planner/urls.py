@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
-    CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, django_login, SaveSchedule, \
-    LoadSchedules, django_saved_schedules_view, django_profile_view, django_register_view, DeleteSchedule
+    CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
+    LoadSchedules, django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -45,8 +45,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
-    path('api/django/logout', logout, {'next_page': '/api/calendar'}),
-    path('api/django/login', django_login),
 
     # local schedule urls
     path('api/calendar', RedirectView.as_view(url='/app/bobcat-courses')),
@@ -54,5 +52,7 @@ urlpatterns = [
     path('app/bobcat-courses/schedules', django_schedules_view),
     path('app/bobcat-courses/profile', django_profile_view),
     path('app/bobcat-courses/saved-schedules', django_saved_schedules_view),
-    path('app/bobcat-courses/register', django_register_view)
+    path('app/bobcat-courses/register', app_register_view),
+    path('app/bobcat-courses/login', app_login),
+    path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
 ]

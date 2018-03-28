@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block imports %}
     <style>
-        #register_form {
-            max-width: 650px;
+        #login-form {
+            max-width: 320px;
             width: 90%;
             margin: 0 auto;
             background-color: #ffffff;
@@ -12,11 +12,11 @@
             box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         }
 
-        #register_div {
+        #login_div {
             padding: 80px 0;
         }
 
-        #icon_register {
+        #icon_login {
             text-align: center;
             padding-bottom: 20px;
             font-size: 100px;
@@ -35,21 +35,19 @@
             height: 42px;
         }
 
-        #register_button {
+        #login_button {
             background: #d9ca00;
             border: none;
             border-radius: 4px;
             padding: 11px;
             box-shadow: none;
             margin-top: 26px;
-            margin-left: 80px;
             text-shadow: none;
             outline: none !important;
             color: #575655;
-            width: 70%;
         }
 
-        #login {
+        #register {
             display: block;
             text-align: center;
             font-size: 12px;
@@ -60,7 +58,7 @@
             margin-bottom: -10px;
         }
 
-        #login:hover {
+        #register:hover {
             opacity: 1;
             text-decoration: none;
             color: #2d2d2d;
@@ -68,39 +66,23 @@
     </style>
 {% endblock %}
 
-{% block preview_title %}Register{% endblock %}
-{% block title %}Register{% endblock %}
+{% block preview_title %}Login{% endblock %}
+{% block title %}Login{% endblock %}
 {% block content %}
-    <div id="register_div">
-        <form method="post" action="" id="register_form">
+    <div id="login_div">
+        <form id="login-form" method="post" action="">
             {% csrf_token %}
-            <div id="icon_register"><i class="far fa-calendar-alt"></i></div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <input type="email" class="form-control" id="email" name="email"
-                           placeholder="Email">
-                </div>
-                <div class="form-group col-md-6">
-                    <input type="text" class="form-control" id="username" name="username"
-                           placeholder="Username" required>
-                </div>
+            <div id="icon_login"><i class="fas fa-book"></i></div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="username" name="username"
+                       placeholder="Username" required>
             </div>
             <div class="form-group">
                 <input type="password" class="form-control" id="password" name="password"
                        placeholder="Password" required>
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <input type="text" class="form-control" id="first_name" name="first_name"
-                           placeholder="First Name">
-                </div>
-                <div class="form-group col-md-6">
-                    <input type="text" class="form-control" id="last_name" name="last_name"
-                           placeholder="Last Name">
-                </div>
-            </div>
-            <button id="register_button" type="submit" class="btn btn-primary btn-block">Sign Up</button>
-            <a id="login" href="/app/bobcat-courses/login">Already registered? Login.</a>
+            <button id="login_button" type="submit" class="btn btn-primary btn-block">Login</button>
+            <a id="register" href="/app/bobcat-courses/register">Not a member? Sign up.</a>
         </form>
     </div>
 {% endblock %}

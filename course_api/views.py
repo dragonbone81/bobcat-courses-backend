@@ -356,7 +356,7 @@ def django_profile_view(request):
     return render(request, 'profile.html')
 
 
-def django_register_view(request):
+def app_register_view(request):
     if request.POST:
         if not request.POST.get('password') or not request.POST.get('username'):
             return render(request, 'register.html', {'error': 'Username or Password not provided'})
@@ -379,18 +379,19 @@ def django_register_view(request):
     return render(request, 'register.html')
 
 
-def django_login(request):
+def app_login(request):
     if request.POST and request.POST.get('username') and request.POST.get('password'):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect(request.GET.get('next'), )
+            return redirect('/app/bobcat-courses/schedules')
         else:
-            return redirect(request.GET.get('next') + '?error=Credential%20were%20invalid')
+            return render(request, 'login.html',
+                          {'error': {'message': 'User not found, or username or password incorrect'}})
     else:
-        return None
+        return render(request, 'login.html')
 
 
 class SaveSchedule(ViewSet):
