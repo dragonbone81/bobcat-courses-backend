@@ -3,12 +3,13 @@ from operator import itemgetter
 
 
 class CourseScheduler(object):
-    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc'):
+    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc', search_full=False):
         self.term = term
         self.earliest_time = earliest_time
         self.latest_time = latest_time
         self.gaps = gaps
         self.days = days
+        self.search_full = search_full
 
     def convertTime(self, s):
         t = s.split("-")  # separate start and end times
@@ -51,7 +52,7 @@ class CourseScheduler(object):
 
     def generateSchedules(self, courseIDs):
         classes = {}
-        course_data = get_courses(courseIDs, self.term)  #
+        course_data = get_courses(courseIDs, self.term, search_full=self.search_full)  #
         for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #

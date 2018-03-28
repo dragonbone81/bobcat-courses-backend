@@ -218,7 +218,7 @@ class SchedulesListView(ViewSet):
     """
     Requires Authentication - {Authorization: "Bearer " + access_token}
 
-    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc"}
+    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc", "search_full":false}
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -240,9 +240,11 @@ class SchedulesListView(ViewSet):
         latest_time = request.data.get('latest_time', None)
         days = request.data.get('days', 'asc')
         gaps = request.data.get('gaps', 'asc')
+        search_full = request.data.get('search_full', False)
         if not term:
             return Response({"Error": "No Term"})
-        generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps)
+        generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
+                                    search_full=search_full)
         courses = generator.get_valid_schedules(courses_to_search)
 
         return Response(courses[:65])
