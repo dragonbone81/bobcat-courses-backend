@@ -12,8 +12,8 @@
         }
 
         gtag('js', new Date());
-
-        gtag('config', 'UA-116671933-1', {'user_id': '{{ request.user.username }}'});
+        var random_id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        gtag('config', 'UA-116671933-1', {'user_id': random_id});
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
