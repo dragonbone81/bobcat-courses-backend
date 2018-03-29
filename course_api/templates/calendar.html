@@ -35,8 +35,9 @@
 
         @media (max-width: 600px) {
             #main_div {
-                padding: 10px;
+                padding: 0;
                 padding-top: 10px;
+                padding-bottom: 10px;
             }
 
             #time_id_td {
@@ -292,9 +293,9 @@
 
                                                         <div id="course_id_div"><u>{{ day_data.course_id }}</u>
                                                         </div>
-                                                        <div>Section: {{ day_data.type }}</div>
-                                                        <div>Hours: {{ day_data.hours }}</div>
-                                                        <div style="font-size: small">CRN: {{ day_data.crn }}</div>
+{#                                                        <div style="font-size: x-small">{{ day_data.type }}</div>#}
+{#                                                        <div>Hours: {{ day_data.hours }}</div>#}
+{#                                                        <div style="font-size: xx-small">{{ day_data.crn }}</div>#}
                                                         {#                                                    <div style="font-size: small">Prof: {{ day_data.instructor }}</div>#}
                                                     </td>
                                                 {% elif day_data.next == True %}
