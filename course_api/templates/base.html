@@ -13,8 +13,7 @@
 
         gtag('js', new Date());
 
-        gtag('config', 'UA-116671933-1');
-        gtag('set', {'user_id': '{{ request.user.username }}'}); // Set the user ID using signed-in user_id.
+        gtag('config', 'UA-116671933-1', {'user_id': '{{ request.user.username }}'});
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
