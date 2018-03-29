@@ -2,6 +2,20 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-116671933-1');
+    </script>
+
     <meta property="og:site_name" content="Bobcat Courses"/>
     <meta property="og:title" content="{% block preview_title %}{% endblock %}"/>
     <meta property="og:description"
