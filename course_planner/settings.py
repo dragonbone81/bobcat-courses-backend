@@ -24,7 +24,7 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     DEBUG = False
     secrets = {}
 else:
-    from course_planner import secrets
+    from course_planner.secrets import AWS_KEYS
 
     DEBUG = True
 
@@ -153,9 +153,9 @@ STATIC_URL = '/static/'
 
 django_heroku.settings(locals())
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', secrets.AWS_ACCESS_KEY_ID)
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', secrets.AWS_SECRET_ACCESS_KEY)
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', secrets.AWS_STORAGE_BUCKET_NAME)
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', AWS_KEYS.get('AWS_ACCESS_KEY_ID'))
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', AWS_KEYS.get('AWS_SECRET_ACCESS_KEY'))
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', AWS_KEYS.get('AWS_STORAGE_BUCKET_NAME'))
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
