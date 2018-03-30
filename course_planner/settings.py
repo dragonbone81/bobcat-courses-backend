@@ -22,8 +22,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'DEV_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     DEBUG = False
+    secrets = {}
 else:
     from course_planner import secrets
+
     DEBUG = True
 
 ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
