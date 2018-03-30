@@ -25,7 +25,7 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 
 # Application definition
 
