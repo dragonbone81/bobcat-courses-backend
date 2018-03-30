@@ -482,3 +482,9 @@ class LoadSchedules(ViewSet):
 
     def post(self, request):
         return Response(None)
+
+
+def user_update_script_once(request):
+    for user in User.objects.all():
+        user.save()
+    return JsonResponse({'success': True})

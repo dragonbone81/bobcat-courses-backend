@@ -23,6 +23,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'DEV_SECRET_KEY')
 if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     DEBUG = False
 else:
+    from course_planner import secrets
     DEBUG = True
 
 ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
@@ -149,3 +150,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 django_heroku.settings(locals())
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', secrets.AWS_ACCESS_KEY_ID)
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', secrets.AWS_SECRET_ACCESS_KEY)
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', secrets.AWS_STORAGE_BUCKET_NAME)
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- here is where we reference it
