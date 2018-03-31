@@ -12,8 +12,8 @@
         }
 
         gtag('js', new Date());
-        var random_id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        gtag('config', 'UA-116671933-1', {'user_id': random_id});
+        var user_id = "{{ user.scheduleuser.unique_id }}";
+        gtag('config', 'UA-116671933-1', {'user_id': user_id});
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
@@ -90,6 +90,9 @@
                                     {% if request.user.first_name and request.user.first_name != "Anonymous" %}
                                         {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
                                     &nbsp;</span>
+                                <img src="
+                                        {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
+                                     style="padding-right: 10px; max-height: 30px">
                                 <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
                                     Logout
                                 </button>

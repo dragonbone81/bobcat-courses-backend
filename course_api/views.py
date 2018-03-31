@@ -354,7 +354,10 @@ def django_saved_schedules_view(request):
 
 def django_profile_view(request):
     if request.POST:
-        pass
+        if request.user.is_authenticated and request.FILES and request.FILES.get('profile_picture'):
+            profile_picture = request.FILES.get('profile_picture')
+            request.user.scheduleuser.profile_image = profile_picture
+            request.user.scheduleuser.save()
     return render(request, 'profile.html')
 
 
