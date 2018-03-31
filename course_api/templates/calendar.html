@@ -11,6 +11,8 @@
     <link rel="stylesheet"
           href="{% static "css/bootstrap-select.min.css" %}">
     <script src="{% static "js/bootstrap-select.min.js" %}"></script>
+    <link href="{% static "css/loading.css" %}" rel="stylesheet"/>
+    <link href="{% static "css/loading-btn.css" %}" rel="stylesheet"/>
     <style>
         table.table-bordered {
             border: 1px solid #353535;
@@ -117,6 +119,7 @@
                                     {#                                <option value="201830" selected hidden>Term?</option>#}
                                     <option value="201830" selected>Fall 2018</option>
                                     <option value="201810">Spring 2018</option>
+                                    <option value="201820">Summer 2018</option>
                                 </select>
                             </div>
                         </div>
@@ -203,20 +206,11 @@
                             </span>
                                 </div>
                                 <div class="col-auto" style="padding: 5px; padding-left: 2px;padding-right: 2px">
-                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
-                                  title="Registration is not yet open">
-                              <button class="btn btn-info input_buttons" type="button" style="pointer-events: none;"
-                                      disabled>
-                                  Register
-                              </button>
-                            </span>
+                                    <button class="btn btn-warning input_buttons" type="button" id="register"
+                                            name="register"
+                                            data-toggle="modal" data-target="#register_modal">Register
+                                    </button>
                                 </div>
-                                {#                        TODO disable untill registration#}
-                                {#                        <div class="col-auto" style="padding: 5px;">#}
-                                {#                            <button class="btn btn-lg btn-warning" type="button" id="register" name="register"#}
-                                {#                                    data-toggle="modal" data-target="#register_modal">Register#}
-                                {#                            </button>#}
-                                {#                        </div>#}
                             {% endif %}
                         </div>
                     </div>
@@ -299,17 +293,15 @@
 
                                                     <td bgcolor="{{ day_data.color }}"
                                                         style="" tabindex="1"
-                                                        rowspan="{{ day_data.length }}"  data-toggle="popover" data-trigger="focus"
-                                                             title="{{ day_data.course_id }}" data-placement="left" data-html="true"
-                                                             data-content="{{ day_data.type }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
+                                                        rowspan="{{ day_data.length }}" data-toggle="popover"
+                                                        data-trigger="focus"
+                                                        title="{{ day_data.course_id }}" data-placement="left"
+                                                        data-html="true"
+                                                        data-content="{{ day_data.type }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
 
                                                         <div id="course_id_div">
                                                             <u>{{ day_data.course_id }}</u>
                                                         </div>
-                                                        {#                                                        <div style="font-size: x-small">{{ day_data.type }}</div>#}
-                                                        {#                                                        <div>Hours: {{ day_data.hours }}</div>#}
-                                                        {#                                                        <div style="font-size: xx-small">{{ day_data.crn }}</div>#}
-                                                        {#                                                    <div style="font-size: small">Prof: {{ day_data.instructor }}</div>#}
                                                     </td>
                                                 {% elif day_data.next == True %}
                                                 {% endif %}
@@ -386,14 +378,18 @@
                                                                        placeholder="Password"
                                                                        name="password" required>
                                                             </div>
-                                                            <button type="submit"
-                                                                    class="btn btn-warning">
+                                                            <button id="register_button{{ unique_name }}"
+                                                                    type="submit"
+                                                                    class="btn btn-warning ld-ext-right">
                                                                 Register
+                                                                <i class="ld ld-ring ld-spin"></i>
                                                             </button>
                                                         </form>
                                                         <script>
                                                             var form_id = "#" + "register_form{{ unique_name }}";
                                                             $(form_id).submit(function (e) {
+                                                                var button_id = "#" + "register_button{{ unique_name }}";
+                                                                $(button_id).addClass('running');
                                                                 e.preventDefault();
                                                                 var url = "/api/courses/course-register/"; // the script where you handle the form input.
 
@@ -411,9 +407,45 @@
                                                                     url: url,
                                                                     data: data, // serializes the form's elements.
                                                                     success: function (data) {
+                                                                        $(button_id).removeClass('running');
+                                                                        var message = {};
+                                                                        if (data.login) {
+                                                                            message.type = 'danger';
+                                                                            message.message = 'Your username or password was incorrect';
+                                                                            message.main = '';
+                                                                        }
+                                                                        if (data.response) {
+                                                                            if (data.response === 'reg_time_less') {
+                                                                                message.type = 'warning';
+                                                                                message.message = 'Too early. ' + data.reg_time;
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'fail') {
+                                                                                message.type = 'danger';
+                                                                                message.message = 'Not sure what happened :( try again or copy the CRN\'s bellow and register manually';
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'success') {
+                                                                                message.type = 'success';
+                                                                                message.message = 'You have been successfully registered!';
+                                                                                message.main = 'Please go to MyRegistration to check :)';
+                                                                            }
+                                                                        }
                                                                         $(function () {
                                                                             $(current_register_id).modal('hide');
-                                                                            $('#dialog').modal('show');
+                                                                            $.notify({
+                                                                                // options
+                                                                                title: message.message + '<br>',
+                                                                                message: message.main
+                                                                            }, {
+                                                                                // settings
+                                                                                type: message.type,
+                                                                                placement: {
+                                                                                    from: "top",
+                                                                                    align: "right"
+                                                                                },
+                                                                                offset: 5
+                                                                            });
                                                                         });
                                                                     }
                                                                 });
@@ -590,7 +622,7 @@
         }
 
         $(function () {
-            $('[data-toggle="popover"]').popover({ trigger: 'focus'})
+            $('[data-toggle="popover"]').popover({trigger: 'focus'})
         })
     </script>
     <div id="dialog" class="modal fade">

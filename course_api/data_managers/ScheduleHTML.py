@@ -37,7 +37,9 @@ def get_html_courses(request):
                     courses.append(section_data)
                     course_data.append(
                         {'crn': section_data.get('crn'), 'course_id': section_data.get('course_id'),
-                         'color': section_data['color']})
+                         'color': section_data['color'], 'type': section_data['type']})
+        weights = {"LECT": 0}  # to have lecture first all the time
+        course_data.sort(key=lambda val: weights.get(val.get('type'), 99))
         all_schedule_crns[actual_schedule['unique_name']] = course_data
         for course in courses:
             course_days = list(course.get('days'))

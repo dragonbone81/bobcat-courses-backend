@@ -274,11 +274,14 @@ class CasRegistration(ViewSet):
         username = request.data.get('username')
         password = request.data.get('password')
         term = request.data.get('term')
-        # response = CourseRegistration(course_crns=crns, term=term,
-        #                               auth={'username': username, 'password': password}).register()
-        # TODO turned off until registration is open
-        response = None
-        return Response(response)
+        registration = CourseRegistration(course_crns=crns, term=term,
+                                          auth={'username': username, 'password': password})
+        response = registration.cas_login()
+        if response.get('login') == 'success':
+            response = registration.register()
+            return Response(response)
+        else:
+            return Response(response)
 
 
 def django_schedules_view(request):

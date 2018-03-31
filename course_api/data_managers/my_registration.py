@@ -1,5 +1,9 @@
 import requests
 import lxml.html
+from dateutil.parser import parse
+from django.utils import timezone
+from dateutil.tz import gettz
+from bs4 import BeautifulSoup
 
 """
 Thank you my dude :D https://brennan.io/2016/03/02/logging-in-with-requests/
@@ -8,10 +12,12 @@ Thank you my dude :D https://brennan.io/2016/03/02/logging-in-with-requests/
 
 class CourseRegistration(object):
     def __init__(self, course_crns, term, auth):
+        self.errors = {}
         self.session = requests.session()
         self.service = 'https://my.ucmerced.edu/uPortal/Login'
         self.login_url = 'https://cas.ucmerced.edu/cas/login'
         self.auth = auth
+        self.term = term
         course_crns += [''] * (10 - len(course_crns))  # pad to 10 courses
         # some data that the default form submits not sure if we need everything but I couldn't be bothered to test
         self.form_data = 'term_in={term}&RSTS_IN=DUMMY&assoc_term_in=DUMMY&CRN_IN=' \
@@ -34,7 +40,7 @@ class CourseRegistration(object):
                                                                      course_7=course_crns[6], course_8=course_crns[7],
                                                                      course_9=course_crns[8],
                                                                      course_10=course_crns[9], )
-        self.cas_login()
+        self.registration_time = ''
 
     def cas_login(self):
         # Start session and get login form.
@@ -53,13 +59,33 @@ class CourseRegistration(object):
         # Finally, login and return the session.
 
         self.session.post(self.login_url, data=form, params={'service': self.service})
-        self.session.get(
+        response = self.session.get(
             'https://mystudentrecord.ucmerced.edu/pls/PROD/twbkwbis.P_WWWLogin?ret_code=R')  # gotta go here first'
+        if 'UC Merced Single Sign On - UC Merced CAS - Single Sign-On' in response.text:
+            self.errors['login'] = 'failed'
+            return self.errors
+        else:
+            self.registration_time = self.check_registration_time()
+            return {'login': 'success'}
+
+    def check_registration_time(self):
+        html = self.session.post('https://mystudentrecord.ucmerced.edu/pls/PROD/bwskrsta.P_RegsStatusDisp',
+                                 data={'term_in': self.term}).text
+        soup = BeautifulSoup(html, "html.parser")
+        html = soup.find('table', attrs={'class': 'datadisplaytable'})
+        times = html.findAll('td')
+        date = times[0].text
+        time = times[1].text
+        tzinfos = {"PST": gettz("America/Los_Angeles")}
+        return parse("{} {} {}".format(date, time, "PST"), tzinfos=tzinfos)
 
     def register(self):
+        if self.registration_time > timezone.now():
+            reg_time = self.registration_time.strftime("Your registration time is at %I:%M%p on %x")
+            return {'response': 'reg_time_less', 'reg_time': reg_time}
         response = self.session.post('https://mystudentrecord.ucmerced.edu/pls/PROD/bwckcoms.P_Regs',
                                      data=self.form_data).text
         if "If no options are listed in the" in response and "DOES NOT EXIST" not in response:
-            return True
+            return {'response': 'success'}
         else:
-            return False
+            return {'response': 'fail'}
