@@ -25,14 +25,19 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 else:
-    from course_planner.secrets import AWS_KEYS
+    from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH
 
     AWS_ACCESS_KEY_ID = AWS_KEYS.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = AWS_KEYS.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = AWS_KEYS.get('S3_BUCKET_NAME')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
     DEBUG = True
 
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/bobcat-courses'
 ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 
 # Application definition
@@ -45,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
     'rest_framework',
     'rest_framework_filters',
     'corsheaders',
@@ -61,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'course_planner.urls'
@@ -76,10 +83,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+AUTHENTICATION_BACKENDS = (
+    # 'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.twitter.TwitterOAuth',
+    # 'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 WSGI_APPLICATION = 'course_planner.wsgi.application'
 

@@ -47,6 +47,7 @@ urlpatterns = [
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
     path('sync_users', user_update_script_once),
+    path('api/oauth/', include('social_django.urls', namespace='social')),
 
     # local schedule urls
     path('api/calendar', RedirectView.as_view(url='/app/bobcat-courses')),
