@@ -295,9 +295,9 @@
                                                         style="" tabindex="1"
                                                         rowspan="{{ day_data.length }}" data-toggle="popover"
                                                         data-trigger="focus"
-                                                        title="{{ day_data.course_id }}" data-placement="left"
+                                                        title="{{ day_data.type }}" data-placement="top"
                                                         data-html="true"
-                                                        data-content="{{ day_data.type }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
+                                                        data-content="{{ day_data.course_name }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
 
                                                         <div id="course_id_div">
                                                             <u>{{ day_data.course_id }}</u>
@@ -418,6 +418,16 @@
                                                                             if (data.response === 'reg_time_less') {
                                                                                 message.type = 'warning';
                                                                                 message.message = 'Too early. ' + data.reg_time;
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'prereq') {
+                                                                                message.type = 'warning';
+                                                                                message.message = data.message;
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'course_full') {
+                                                                                message.type = 'warning';
+                                                                                message.message = data.message;
                                                                                 message.main = '';
                                                                             }
                                                                             if (data.response === 'fail') {

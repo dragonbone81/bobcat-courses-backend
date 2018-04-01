@@ -85,6 +85,12 @@ class CourseRegistration(object):
             return {'response': 'reg_time_less', 'reg_time': reg_time}
         response = self.session.post('https://mystudentrecord.ucmerced.edu/pls/PROD/bwckcoms.P_Regs',
                                      data=self.form_data).text
+        if 'Closed Section' in response:
+            return {'response': 'course_full',
+                    'message': 'Sorry, one of the courses is full. Please register manually'}
+        if "Prerequisite Not Completed" in response:
+            return {'response': 'prereq',
+                    'message': 'You have a pre-req that is not completed. Please check in MyRegistration'}
         if "If no options are listed in the" in response and "DOES NOT EXIST" not in response:
             return {'response': 'success'}
         else:
