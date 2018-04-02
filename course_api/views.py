@@ -324,7 +324,7 @@ def django_schedules_view(request):
             return render(request, 'calendar.html',
                           {'new': True, 'error': {
                               'message': 'Sorry there was an error. We are working on it and will fix ASAP, '
-                                         'bust most likely it has to do with classes that don\'t'
+                                         'but most likely it has to do with classes that don\'t'
                                          ' have a time for lecture :*('}})
     return render(request, 'calendar.html',
                   {'new': True, 'error': {'message': request.GET.get('error')}})
