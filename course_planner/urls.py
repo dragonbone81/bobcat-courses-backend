@@ -18,7 +18,7 @@ from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
     CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
     LoadSchedules, django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
-    user_update_script_once
+    user_update_script_once, ping
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -58,4 +58,7 @@ urlpatterns = [
     path('app/bobcat-courses/register', app_register_view),
     path('app/bobcat-courses/login', app_login),
     path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
+
+    # ping url
+    path('api/ping', logout),
 ]

@@ -211,6 +211,10 @@ def course_view(request):
     return JsonResponse({'success': True})
 
 
+def ping(request):
+    return JsonResponse({'status': 'UP'})
+
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all().order_by('crn')
     serializer_class = CourseSerializer

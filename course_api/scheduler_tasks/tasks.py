@@ -1,10 +1,8 @@
-import requests
+from course_api.tasks import course_push_task
 
 
 def timed_job():
-    url = "https://cse120-course-planner.herokuapp.com/course_pull"
-    requests.get(url=url)
-    print('Course Pull Ran')
+    course_push_task.delay()
 
 
 timed_job()
