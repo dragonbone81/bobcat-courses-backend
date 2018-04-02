@@ -1,3 +1,3 @@
-from course_api.tasks import add
+from course_api.tasks import push
 
-add.delay(1, 2)
+push.delay()
