@@ -216,7 +216,7 @@
                                                                 data-content="{{ day_data.course_name }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
 
                                                                 <div id="course_id_div">
-                                                                    <u>{{ day_data.course_id }}</u>
+                                                                    <u style="color: black">{{ day_data.course_id }}</u>
                                                                 </div>
                                                             </td>
                                                         {% elif day_data.next == True %}
@@ -241,7 +241,7 @@
                                             {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
                                                 {% for course in course_crn_data.data %}
                                                     <li class="list-group-item"
-                                                        style="background-color: {{ course.color }}">
+                                                        style="background-color: {{ course.color }};color: black">
                                                         <b>{{ course.course_id }}</b>: {{ course.crn }}</li>
                                                 {% endfor %}
 
