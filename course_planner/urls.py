@@ -60,5 +60,5 @@ urlpatterns = [
     path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
 
     # ping url
-    path('api/ping', logout),
+    path('api/ping', ping),
 ]
