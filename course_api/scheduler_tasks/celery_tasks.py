@@ -1,3 +1,3 @@
-from course_api.tasks import name_of_your_function
+from course_api.tasks import add
 
-name_of_your_function.delay()
+add.delay(1, 2)
