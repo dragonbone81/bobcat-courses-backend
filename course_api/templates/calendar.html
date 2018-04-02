@@ -540,16 +540,22 @@
                     var results = [];
                     data.forEach(function (course) {
                         results.push({
-                            id: course,
-                            text: course
+                            id: course.name,
+                            text: course.name + ": " + course.description
                         })
                     });
                     return {
                         results: results
                     };
                 }
-            }
+            },
+            templateSelection: formatSelection
         });
+
+        function formatSelection(course) {
+            return course.id;
+        }
+
         var filters = [];
         {% for filter in old_data.filters %}
             filters.push("{{ filter }}");

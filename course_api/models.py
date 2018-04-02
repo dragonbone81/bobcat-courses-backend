@@ -51,12 +51,21 @@ class SubjectCourse(models.Model):
         verbose_name="Term",
         default="201810",
     )
+    course_description = models.CharField(
+        verbose_name="Course Description",
+        max_length=256,
+        db_index=True,
+        null=True,
+    )
     course_subject = models.CharField(
         verbose_name="Course Subject",
         max_length=256,
         db_index=True,
         null=True,
     )
+
+    def __str__(self):
+        return "{}:{}".format(self.course_name, self.term)
 
 
 class Schedule(models.Model):

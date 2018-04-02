@@ -64,17 +64,28 @@ class SubjectClassUpdate(object):
                     'course_name': simplified_name,
                     'term': course.term,
                     'course_subject': course.subject,
+                    'course_description': course.course_name,
                 }
                 course_obj = SubjectCourse(**course_obj)
                 courses["{}:{}".format(simplified_name, course.term)] = course_obj
         return courses
 
     def update_lectures(self):
-        # screw it for this one we actually don't need to update anything so lets just get all delete and the place all
-        SubjectCourse.objects.all().delete()
+        current_subjects = SubjectCourse.objects.all()
+        current_subjects_crn = {"{}:{}".format(subj.course_name, subj.term): subj for subj in current_subjects}
+        need_added = list()
         courses = self.get_courses_lectures()
-        courses = [course for key, course in courses.items()]
-        SubjectCourse.objects.bulk_create(courses)
+        for course_str, course in courses.items():
+            if course_str not in current_subjects_crn:
+                need_added.append(course)
+            # erm y would this need to update?
+            else:
+                course_update = current_subjects_crn[course_str]
+                course_update.course_description = course.course_description
+                course_update.course_subject = course.course_subject
+                course_update.save()
+        SubjectCourse.objects.bulk_create(need_added)
+
 
 # SubjectClassUpdate().update_lectures()
 # UCMercedCoursePush().push_courses()

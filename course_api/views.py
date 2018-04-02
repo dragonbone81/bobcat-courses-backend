@@ -171,11 +171,11 @@ class CoursesSearch(ViewSet):
                 if char.isdigit():
                     course_with_dash = "{}-{}".format(course_with_dash[0:i], course_with_dash[i:])
                     break
-        simple_courses = [course.course_name for course in
+        simple_courses = [{'name': course.course_name, 'description': course.course_description} for course in
                           SubjectCourse.objects.filter(Q(course_name__icontains=course_with_dash) | Q(
                               course_subject__icontains=course_with_dash), term=term).order_by(
                               'course_name')]
-        simple_courses.sort(key=lambda x: int(''.join(filter(str.isdigit, x.split('-')[1]))))
+        simple_courses.sort(key=lambda x: int(''.join(filter(str.isdigit, x['name'].split('-')[1]))))
         return Response(simple_courses)
 
 
