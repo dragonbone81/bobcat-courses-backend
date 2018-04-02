@@ -1,10 +1,12 @@
-import requests
+from apscheduler.schedulers.blocking import BlockingScheduler
+from course_api.tasks import course_push_task
+
+scheduler = BlockingScheduler()
 
 
+@scheduler.scheduled_job('interval', minutes=3)
 def timed_job():
-    url = "https://cse120-course-planner.herokuapp.com/course_pull"
-    requests.get(url=url)
-    print('Course Pull Ran')
+    course_push_task.delay()
 
 
-timed_job()
+scheduler.start()
