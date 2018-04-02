@@ -39,7 +39,6 @@ router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSched
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(url='admin/')),
     path('api/courses/jwt-example', ExampleJWT.as_view()),
     path('course_pull/', course_view),
     path('api/', include(router.urls)),
@@ -50,6 +49,7 @@ urlpatterns = [
     path('api/oauth/', include('social_django.urls', namespace='social')),
 
     # local schedule urls
+    path('', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
     path('api/calendar', RedirectView.as_view(url='/app/bobcat-courses')),
     path('app/bobcat-courses', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
     path('app/bobcat-courses/schedules', django_schedules_view),
