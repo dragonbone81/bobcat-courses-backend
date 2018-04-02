@@ -5,6 +5,8 @@ from rest_framework import viewsets
 from course_api.serializers import CourseSerializer, ScheduleSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
+from course_api.tasks import course_push_task
+
 from django.contrib.auth import authenticate, login
 from course_api.data_managers.ScheduleHTML import get_html_courses
 from course_api.data_managers.course_scheduler import CourseScheduler
@@ -200,13 +202,12 @@ class GetTerms(ViewSet):
 
 # Create your views here.
 def course_view(request):
-    from course_api.tasks import push
-
-    push.delay()
-    # if request.GET and request.GET.get('pull'):
-    #     UCMercedCoursePush().push_courses()
-    # if request.GET and request.GET.get('simple'):
-    #     SubjectClassUpdate().update_lectures()
+    if request.GET and request.GET.get('pull'):
+        UCMercedCoursePush().push_courses()
+    elif request.GET and request.GET.get('simple'):
+        SubjectClassUpdate().update_lectures()
+    else:
+        course_push_task.delay()
     return JsonResponse({'success': True})
 
 
