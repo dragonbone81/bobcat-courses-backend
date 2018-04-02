@@ -7,25 +7,23 @@
     <link href="{% static "css/loading-btn.css" %}" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
     <style>
-        table.table-bordered {
-            border: 1px solid #353535;
-            margin-top: 20px;
+        .td-course {
+            -webkit-box-shadow: 2px 2px 3px grey;
+            -moz-box-shadow: 2px 2px 3px grey;
+            box-shadow: 2px 2px 3px grey;
         }
-
-        table.table-bordered > thead > tr > th {
-            border: 1px solid #353535;
-        }
-
-        table.table-bordered > tbody > tr > td {
-            border: 1px solid #353535;
-        }
-
-        {##main_div {#}
-        {#    background: linear-gradient(white, #f1f7fc);#}
-        {# } #}
 
         th {
             width: 150px;
+        }
+
+        #main_div {
+            margin: 10px auto;
+            background-color: #ffffff;
+            padding: 10px 40px 40px 40px;
+            border-radius: 4px;
+            color: #505e6c;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 600px) {
@@ -83,6 +81,17 @@
             .input_buttons {
                 padding: 7px;
                 font-size: 17px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            #main_div {
+                margin: 5px -10px 5px -10px;
+                background-color: #ffffff;
+                padding: 10px 10px 10px 10px;
+                border-radius: 4px;
+                color: #505e6c;
+                box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
             }
         }
     </style>
@@ -198,6 +207,7 @@
                                                         {% if day_data.next == False %}
 
                                                             <td bgcolor="{{ day_data.color }}"
+                                                                class="td-course"
                                                                 style="" tabindex="0"
                                                                 rowspan="{{ day_data.length }}"
                                                                 data-toggle="popover" data-trigger="focus"

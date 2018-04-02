@@ -53,60 +53,84 @@
         #body {
             background: #f1f7fc;
         }
+
+        @media (min-width: 890px) {
+            .navbar-expand-custom {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+
+            .navbar-expand-custom .navbar-nav {
+                flex-direction: row;
+            }
+
+            .navbar-expand-custom .navbar-nav .nav-link {
+                padding-right: .5rem;
+                padding-left: .5rem;
+            }
+
+            .navbar-expand-custom .navbar-collapse {
+                display: flex !important;
+            }
+
+            .navbar-expand-custom .navbar-toggler {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body id="body">
 
 {% block header %}
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px"><img
-                    src="{% static "favicon.png" %}"
-                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">Bobcat
-                Courses</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item {% if request.path == '/app/bobcat-courses/schedules' %}active{% endif %}">
-                        <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
-                    </li>
-                    <li class="nav-item {% if request.path == '/app/bobcat-courses/profile' %}active{% endif %}">
-                        <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
-                    </li>
-                    <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
-                        <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
-                    </li>
-                </ul>
-                <ul style="margin-left: -40px;margin-bottom: 0">
-                    {% if request.user.is_authenticated %}
+    <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
+        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px"><img
+                src="{% static "favicon.png" %}"
+                class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">Bobcat
+            Courses</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if request.path == '/app/bobcat-courses/schedules' %}active{% endif %}">
+                    <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
+                </li>
+                <li class="nav-item {% if request.path == '/app/bobcat-courses/profile' %}active{% endif %}">
+                    <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
+                </li>
+                <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
+                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
+                </li>
+            </ul>
+            <ul style="margin-left: -40px;margin-bottom: 0">
+                {% if request.user.is_authenticated %}
 
-                        <form class="form-inline" action="/app/bobcat-courses/logout">
-                            <div class="form-group">
+                    <form class="form-inline" action="/app/bobcat-courses/logout">
+                        <div class="form-group">
                                 <span class="navbar-text">
                                             Welcome
                                     {% if request.user.first_name and request.user.first_name != "Anonymous" %}
                                         {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
                                     &nbsp;</span>
-                                <img src="
-                                        {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                                     style="padding-right: 10px; max-height: 30px">
-                                <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
-                                    Logout
-                                </button>
-                            </div>
-                        </form>
-                    {% else %}
-                        <form action="/app/bobcat-courses/login">
-                            <button type="submit"
-                                    class="btn btn-outline-success">Login
+                            <img class="user-pic" src="
+
+                                    {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
+                                 style="padding-right: 10px; max-height: 30px">
+                            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
+                                Logout
                             </button>
-                        </form>
-                    {% endif %}
-                </ul>
-            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <form action="/app/bobcat-courses/login">
+                        <button type="submit"
+                                class="btn btn-outline-success">Login
+                        </button>
+                    </form>
+                {% endif %}
+            </ul>
         </div>
     </nav>
 {% endblock %}

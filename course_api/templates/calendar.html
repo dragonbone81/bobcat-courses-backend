@@ -14,22 +14,11 @@
     <link href="{% static "css/loading.css" %}" rel="stylesheet"/>
     <link href="{% static "css/loading-btn.css" %}" rel="stylesheet"/>
     <style>
-        table.table-bordered {
-            border: 1px solid #353535;
-            margin-top: 20px;
+        .td-course {
+            -webkit-box-shadow: 2px 2px 3px grey;
+            -moz-box-shadow: 2px 2px 3px grey;
+            box-shadow: 2px 2px 3px grey;
         }
-
-        table.table-bordered > thead > tr > th {
-            border: 1px solid #353535;
-        }
-
-        table.table-bordered > tbody > tr > td {
-            border: 1px solid #353535;
-        }
-
-        {##main_div {#}
-        {#    background: linear-gradient(white, #f1f7fc);#}
-        {# } #}
 
         th {
             width: 150px;
@@ -93,6 +82,26 @@
             }
         }
 
+        #main_div {
+            margin: 10px auto;
+            background-color: #ffffff;
+            padding: 10px 40px 40px 40px;
+            border-radius: 4px;
+            color: #505e6c;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 620px) {
+            #main_div {
+                margin: 5px -10px 5px -10px;
+                background-color: #ffffff;
+                padding: 10px 10px 10px 10px;
+                border-radius: 4px;
+                color: #505e6c;
+                box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            }
+        }
+
         .dropdown.bootstrap-select.show-tick.input-group-btn.form-control {
             border: solid #b6b6b6 0.1em;
         }
@@ -112,11 +121,7 @@
                     <div class="form-row align-items-center">
                         <div class="form-inline" style="padding: 5px;">
                             <div class="input-group input-group-sm">
-                                {#                            <div class="input-group-prepend">#}
-                                {#                                <span class="input-group-text">Term</span>#}
-                                {#                            </div>#}
                                 <select class="form-control" id="term" name="term" required>
-                                    {#                                <option value="201830" selected hidden>Term?</option>#}
                                     <option value="201830" selected>Fall 2018</option>
                                     <option value="201810">Spring 2018</option>
                                     <option value="201820">Summer 2018</option>
@@ -125,9 +130,6 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-7">
                             <div class="input-group input-group-sm">
-                                {#                            <div class="input-group-prepend">#}
-                                {#                                <span class="input-group-text">Courses</span>#}
-                                {#                            </div>#}
                                 <select id="courses" class="js-example-basic-single" name="courses"
                                         multiple="multiple"
                                         style="width: 100%;" required>
@@ -138,9 +140,6 @@
                     <div class="form-row align-items-center">
                         <div class="col-auto form-inline" style="padding: 5px;">
                             <div class="input-group input-group-sm">
-                                {#                            <div class="input-group-prepend">#}
-                                {#                                <span class="input-group-text">Earliest Time</span>#}
-                                {#                            </div>#}
                                 <select class="form-control" id="earliest" name="earliest" required>
                                     <option selected value="any">Earliest?</option>
                                     <option value="800">8:00am</option>
@@ -156,9 +155,6 @@
                         </div>
                         <div class="col-auto form-inline" style="padding: 5px;">
                             <div class="input-group input-group-sm">
-                                {#                            <div class="input-group-prepend">#}
-                                {#                                <span class="input-group-text">Latest Time</span>#}
-                                {#                            </div>#}
                                 <select class="form-control" id="latest" name="latest" required>
                                     <option selected value="any">Latest?</option>
                                     <option value="1700">5:00pm</option>
@@ -293,6 +289,7 @@
 
                                                     <td bgcolor="{{ day_data.color }}"
                                                         style="" tabindex="1"
+                                                        class="td-course"
                                                         rowspan="{{ day_data.length }}" data-toggle="popover"
                                                         data-trigger="focus"
                                                         title="{{ day_data.type }}" data-placement="top"
