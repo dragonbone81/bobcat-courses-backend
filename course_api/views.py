@@ -200,10 +200,13 @@ class GetTerms(ViewSet):
 
 # Create your views here.
 def course_view(request):
-    if request.GET and request.GET.get('pull'):
-        UCMercedCoursePush().push_courses()
-    if request.GET and request.GET.get('simple'):
-        SubjectClassUpdate().update_lectures()
+    from course_api.tasks import push
+
+    push.delay()
+    # if request.GET and request.GET.get('pull'):
+    #     UCMercedCoursePush().push_courses()
+    # if request.GET and request.GET.get('simple'):
+    #     SubjectClassUpdate().update_lectures()
     return JsonResponse({'success': True})
 
 
