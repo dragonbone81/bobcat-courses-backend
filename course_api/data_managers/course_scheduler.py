@@ -91,11 +91,12 @@ class CourseScheduler(object):
                     allCourses.append(return_val)
         for c in allCourses:
             for day in c.get("days"):
-                time = self.convertTime(c["hours"])
-                if not self.dayConflicts(time, times[day]):
-                    times[day].append(time)
-                else:
-                    return True
+                if time != "TBD-TBD":
+                    time = self.convertTime(c["hours"])
+                    if not self.dayConflicts(time, times[day]):
+                        times[day].append(time)
+                    else:
+                        return True
             if not c['final_days']:
                 c['final_days'] = []
             for day in c.get("final_days", []):
