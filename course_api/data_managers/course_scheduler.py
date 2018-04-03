@@ -95,7 +95,7 @@ class CourseScheduler(object):
                     allCourses.append(return_val)
         for c in allCourses:
             for day in c.get("days"):
-                if time != "TBD-TBD":
+                if c["hours"] != "TBD-TBD":
                     time = self.convertTime(c["hours"])
                     if not self.dayConflicts(time, times[day]):
                         times[day].append(time)
