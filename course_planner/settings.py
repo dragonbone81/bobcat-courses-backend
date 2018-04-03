@@ -20,9 +20,37 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('SECRET_KEY', 'DEV_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
+    DEBUG = False
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+else:
+    from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY
 
-ALLOWED_HOSTS = []
+    AWS_ACCESS_KEY_ID = AWS_KEYS.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = AWS_KEYS.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = AWS_KEYS.get('S3_BUCKET_NAME')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+    # CELERY_BROKER_URL = AMPQ_CELERY.get('CELERY_BROKER_URL')
+    DEBUG = True
+
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/bobcat-courses'
+BROKER_POOL_LIMIT = 1  # Will decrease connection usage
+BROKER_HEARTBEAT = None  # We're using TCP keep-alive instead
+BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
+CELERY_RESULT_BACKEND = None  # AMQP is not recommended as result backend as it creates thousands of queues
+CELERY_EVENT_QUEUE_EXPIRES = 1  # Will delete all celeryev. queues without consumers after 1 minute.
+CELERYD_PREFETCH_MULTIPLIER = 1  # Disable prefetching, it's causes problems and doesn't help performance
+CELERYD_CONCURRENCY = 1  # If you tasks are CPU bound, then limit to the number of cores, otherwise increase substainally
+CELERYD_TASK_TIME_LIMIT = 60
+ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 
 # Application definition
 
@@ -34,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
     'rest_framework',
     'rest_framework_filters',
     'corsheaders',
@@ -50,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'course_planner.urls'
@@ -65,10 +95,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+AUTHENTICATION_BACKENDS = (
+    # 'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.twitter.TwitterOAuth',
+    # 'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 WSGI_APPLICATION = 'course_planner.wsgi.application'
 
@@ -143,6 +182,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- here is where we reference it
 STATIC_URL = '/static/'
 
 django_heroku.settings(locals())

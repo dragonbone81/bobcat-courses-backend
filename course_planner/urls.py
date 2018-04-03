@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
-    CoursesSearch, SchedulesListView, CasRegistration, calendar
+    CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
+    LoadSchedules, django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
+    user_update_script_once, ping
 from rest_framework import routers
 from django.views.generic import RedirectView
-
+from django.contrib.auth.views import logout
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
@@ -30,15 +32,33 @@ router.register(r'courses/course-match', CourseListView, base_name='CourseListVi
 router.register(r'courses/schedule-search', SchedulesListView, base_name='SchedulesListView')
 router.register(r'courses/course-search', CoursesSearch, base_name='CoursesSearch')
 router.register(r'courses/course-register', CasRegistration, base_name='CasRegistration')
+router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
+router.register(r'users/save-schedule', SaveSchedule, base_name='SaveSchedule')
+router.register(r'users/load-schedules', LoadSchedules, base_name='LoadSchedules')
+router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(url='admin/')),
     path('api/courses/jwt-example', ExampleJWT.as_view()),
     path('course_pull/', course_view),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
-    path('api/calendar', calendar),
+    path('sync_users', user_update_script_once),
+    path('api/oauth/', include('social_django.urls', namespace='social')),
+
+    # local schedule urls
+    path('', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
+    path('api/calendar', RedirectView.as_view(url='/app/bobcat-courses')),
+    path('app/bobcat-courses', RedirectView.as_view(url='/app/bobcat-courses/schedules')),
+    path('app/bobcat-courses/schedules', django_schedules_view),
+    path('app/bobcat-courses/profile', django_profile_view),
+    path('app/bobcat-courses/saved-schedules', django_saved_schedules_view),
+    path('app/bobcat-courses/register', app_register_view),
+    path('app/bobcat-courses/login', app_login),
+    path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
+
+    # ping url
+    path('api/ping', ping),
 ]

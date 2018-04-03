@@ -1,367 +1,680 @@
+{% extends 'base.html' %}
+{% load static from staticfiles %}
 {% load time_converter %}
-<!doctype html>
-<html lang="en">
-<head>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css"
-          rel="stylesheet"/>
+{% block imports %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+    <link href="{% static "css/select2-bootstrap4.min.css" %}" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="{% static "css/bootstrap-select.min.css" %}">
+    <script src="{% static "js/bootstrap-select.min.js" %}"></script>
+    <link href="{% static "css/loading.css" %}" rel="stylesheet"/>
+    <link href="{% static "css/loading-btn.css" %}" rel="stylesheet"/>
+    <style>
+        .td-course {
+            -webkit-box-shadow: 2px 2px 3px grey;
+            -moz-box-shadow: 2px 2px 3px grey;
+            box-shadow: 2px 2px 3px grey;
+        }
+
+        th {
+            width: 150px;
+        }
+
+        @media (max-width: 600px) {
+            #main_div {
+                padding: 0;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            #course_id_div, #time_id_td {
+                font-size: smaller;
+            }
+
+            #schedule_span_append, #schedule_span {
+                font-size: 0.86em;
+                font-weight: bold;
+                padding: 0 5px 0 5px;
+            }
+
+            #button_forward_1, #button_back_1 {
+                padding-left: 15px;
+                padding-right: 15px
+            }
+
+            .input_buttons {
+                padding: 5px;
+                font-size: 0.945em;
+            }
+        }
+
+        @media (min-width: 600px) {
+            #main_div {
+                padding: 20px;
+                padding-top: 10px;
+            }
+
+            #time_id_td {
+                font-size: medium;
+            }
+
+            #course_id_div {
+                font-size: large;
+            }
+
+            #schedule_span_append, #schedule_span {
+                font-size: large;
+            }
+
+            #button_forward_1, #button_back_1 {
+                padding-left: 25px;
+                padding-right: 25px;
+                font-size: x-large;
+            }
+
+            .input_buttons {
+                padding: 7px;
+                font-size: 17px;
+            }
+        }
+
+        #main_div {
+            margin: 10px auto;
+            background-color: #ffffff;
+            padding: 10px 40px 40px 40px;
+            border-radius: 4px;
+            color: #505e6c;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 620px) {
+            #main_div {
+                margin: 5px -10px 5px -10px;
+                background-color: #ffffff;
+                padding: 10px 10px 10px 10px;
+                border-radius: 4px;
+                color: #505e6c;
+                box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .dropdown.bootstrap-select.show-tick.input-group-btn.form-control {
+            border: solid #b6b6b6 0.1em;
+        }
+    </style>
+{% endblock %}
+
+{% block preview_title %}Schedule Search{% endblock %}
+{% block title %}Schedule Search {% endblock %}
+{% block content %}
+    <div class="container"
+         style="max-width: 1200px; text-align: center">
+        <div id="main_div">
+            <div>
+                <h5>Plan Schedules</h5>
+                <form method="post" id="class_form">
+                    {% csrf_token %}
+                    <div class="form-row align-items-center">
+                        <div class="form-inline" style="padding: 5px;">
+                            <div class="input-group input-group-sm">
+                                <select class="form-control" id="term" name="term" required>
+                                    <option value="201830" selected>Fall 2018</option>
+                                    <option value="201810">Spring 2018</option>
+                                    <option value="201820">Summer 2018</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-7">
+                            <div class="input-group input-group-sm">
+                                <select id="courses" class="js-example-basic-single" name="courses"
+                                        multiple="multiple"
+                                        style="width: 100%;" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row align-items-center">
+                        <div class="col-auto form-inline" style="padding: 5px;">
+                            <div class="input-group input-group-sm">
+                                <select class="form-control" id="earliest" name="earliest" required>
+                                    <option selected value="any">Earliest?</option>
+                                    <option value="800">8:00am</option>
+                                    <option value="830">8:30am</option>
+                                    <option value="900">9:00am</option>
+                                    <option value="930">9:30am</option>
+                                    <option value="1000">10:00am</option>
+                                    <option value="1030">10:30am</option>
+                                    <option value="1100">11:00am</option>
+                                    <option value="1130">11:30am</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-auto form-inline" style="padding: 5px;">
+                            <div class="input-group input-group-sm">
+                                <select class="form-control" id="latest" name="latest" required>
+                                    <option selected value="any">Latest?</option>
+                                    <option value="1700">5:00pm</option>
+                                    <option value="1730">5:30pm</option>
+                                    <option value="1800">6:00pm</option>
+                                    <option value="1830">6:30pm</option>
+                                    <option value="1900">7:00pm</option>
+                                    <option value="1930">7:30pm</option>
+                                    <option value="2000">8:00pm</option>
+                                    <option value="2030">8:30pm</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-auto form-inline" style="padding: 5px;">
+                            <div class="input-group input-group-sm">
+                                <select class="selectpicker form-control" name="filters" id="filters" multiple
+                                        data-width="180px">
+                                    <optgroup class="gaps" label="Class Gaps" data-max-options="1">
+                                        <option value="gaps_min">Min Gaps</option>
+                                        <option value="gaps_max">Max Gaps</option>
+                                    </optgroup>
+                                    <optgroup class="days" label="Days" data-max-options="1">
+                                        <option value="min_days">Min Days</option>
+                                        <option value="max_days">Max Days</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-auto form-inline"
+                             style="padding: 5px; padding-left: 0; padding-top: 0;padding-right: 0">
+                            <div class="col-auto" style="padding: 5px;padding-right: 2px">
+                                <button class="btn btn-success input_buttons" type="submit" id="submit_b">Get Schedules
+                                </button>
+                            </div>
+                            {% if schedules %}
+                                <div class="col-auto" style="padding: 5px;padding-left: 2px; padding-right: 2px">
+                            <span class="d-inline-block" tabindex="0"
+                                  {% if not request.user.is_authenticated %}data-toggle="tooltip"
+                                  title="Login to save schedule"{% endif %}>
+                              <button class="btn btn-info input_buttons" type="button"
+                                      {% if not request.user.is_authenticated %}style="pointer-events: none;"
+                                      disabled{% endif %} onclick="class_form_submit(this.form)">
+                                  Save Schedule
+                              </button>
+                            </span>
+                                </div>
+                                <div class="col-auto" style="padding: 5px; padding-left: 2px;padding-right: 2px">
+                                    <button class="btn btn-warning input_buttons" type="button" id="register"
+                                            name="register"
+                                            data-toggle="modal" data-target="#register_modal">Register
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            {% if schedules %}
+                <div class="input-group input-group-sm mb-3 btn-block">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="schedule_span">Schedule </span>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_back_5" class="btn btn-outline-primary" aria-label="Small" type="button"
+                                onclick="toggle_tables('back', 5)"><i
+                                class="fa fa-angle-double-left"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_back_1" class="btn btn-outline-primary" aria-label="Small" type="button"
+                                onclick="toggle_tables('back', 1)"><i
+                                class="fa fa-arrow-left"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_forward_1" class="btn btn-outline-primary" aria-label="Small" type="button"
+                                onclick="toggle_tables('forward', 1)">
+                            <i
+                                    class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_forward_5" class="btn btn-outline-primary" aria-label="Small" type="button"
+                                onclick="toggle_tables('forward', 5)"><i
+                                class="fa fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append schedule_span">
+                    <span class="input-group-text" id="schedule_span_append"
+                    >Total : {{ total_schedules }}</span>
+                    </div>
 
 
-    <title>Schedule Search</title>
-</head>
-<body>
-<div class="container-fluid">
-    <div>
-        <h2>Search for Classes</h2>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-row align-items-center">
-                <div class="col-auto form-inline" style="padding: 5px;">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><label for="term">Term</label></span>
-                        </div>
-                        <select class="form-control" id="term" name="term" required>
-                            <option value="201810">Spring 2018</option>
-                            <option selected value="201830">Fall 2018</option>
-                        </select>
+                </div>
+            {% else %}
+                {% if not new %}
+                    <div class="alert alert-danger" role="alert">
+                        <strong>No available Schedules!</strong> There are conflicts or classes are full :*(
                     </div>
-                </div>
-                <div class="col-auto form-inline" style="padding: 5px;">
-                    <div class="input-group">
-                        <div class="input-group-prepend col-lg-4">
-                            <span class="input-group-text"><label for="courses">Course Search</label></span>
-                        </div>
-                        <div class="col-lg-8">
-                            <select id="courses" class="js-example-basic-single" name="courses" multiple="multiple"
-                                    style="width: 100%" required>
-                                <option>CSE-100</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row align-items-center">
-                <div class="col-auto form-inline" style="padding: 5px;">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><label for="earliest">Earliest Time</label></span>
-                        </div>
-                        <select class="form-control" id="earliest" name="earliest" required>
-                            <option selected value="any">Any</option>
-                            <option value="800">8:00am</option>
-                            <option value="830">8:30am</option>
-                            <option value="900">9:00am</option>
-                            <option value="930">9:30am</option>
-                            <option value="1000">10:00am</option>
-                            <option value="1030">10:30am</option>
-                            <option value="1100">11:00am</option>
-                            <option value="1130">11:30am</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-auto form-inline" style="padding: 5px;">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><label for="latest">Latest Time</label></span>
-                        </div>
-                        <select class="form-control" id="latest" name="latest" required>
-                            <option selected value="any">Any</option>
-                            <option value="1700">5:00pm</option>
-                            <option value="1730">5:30pm</option>
-                            <option value="1800">6:00pm</option>
-                            <option value="1830">6:30pm</option>
-                            <option value="1900">7:00pm</option>
-                            <option value="1930">7:30pm</option>
-                            <option value="2000">8:00pm</option>
-                            <option value="2030">8:30pm</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-auto form-inline" style="padding: 5px;">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><label for="filters">Filters</label></span>
-                        </div>
-                        <select class="form-control" name="filters" id="filters" multiple>
-                            <optgroup class="gaps" label="Class Gaps">
-                                <option value="gaps_min">Minimize Gaps</option>
-                                <option value="gaps_max">Maximize Gaps</option>
-                            </optgroup>
-                            <optgroup class="days" label="Days">
-                                <option value="min_days">Minimize Days</option>
-                                <option value="max_days">Maximize Days</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-auto" style="padding: 5px;">
-                    <button class="btn btn-outline-success" type="submit" id="submit_b">Get Schedules</button>
-                </div>
-            </div>
-        </form>
+                {% endif %}
+            {% endif %}
 
-    </div>
-    {% if schedules %}
-        <div class="input-group  input-group-lg mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="schedule_span">Schedule </span>
-            </div>
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                        onclick="toggle_tables('back', 5)"><i
-                        class="fa fa-angle-double-left"></i> Back 5
-                </button>
-            </div>
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                        onclick="toggle_tables('back', 1)"><i
-                        class="fa fa-arrow-left"></i> Previous
-                </button>
-            </div>
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                        onclick="toggle_tables('forward', 1)">Next
-                    <i
-                            class="fa fa-arrow-right"></i>
-                </button>
-            </div>
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" aria-label="Small" type="button"
-                        onclick="toggle_tables('forward', 5)"><i
-                        class="fa fa-angle-double-right"></i> Skip 5
-                </button>
-            </div>
-            <div class="input-group-append">
-                <span class="input-group-text">Total Schedules : {{ total_schedules }} </span>
-            </div>
+            {% for calendar in schedules %}
+                <div class="row" id="{{ calendar.unique_name }}" hidden>
+                    <div class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12">
+                        <table class="table table-bordered table-responsive table-sm"
+                               style="font-size: smaller;">
+                            <thead>
+                            <tr class="text-center">
+                                <th>Time</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <script>
+
+                            </script>
+                            {% for time, data in calendar.items %}
+                                {% if time == "unique_name" %}
+                                {% else %}
+                                    <tr class="text-center">
+                                        <td id="time_id_td">{{ times|get_item:time }}</td>
+
+                                        {% for day, day_data in data.items %}
+                                            {% if day_data.crn %}
+                                                {% if day_data.next == False %}
+
+                                                    <td bgcolor="{{ day_data.color }}"
+                                                        style="" tabindex="1"
+                                                        class="td-course"
+                                                        rowspan="{{ day_data.length }}" data-toggle="popover"
+                                                        data-trigger="focus"
+                                                        title="{{ day_data.type }}" data-placement="top"
+                                                        data-html="true"
+                                                        data-content="{{ day_data.course_name }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
+
+                                                        <div id="course_id_div">
+                                                            <u style="color: black">{{ day_data.course_id }}</u>
+                                                        </div>
+                                                    </td>
+                                                {% elif day_data.next == True %}
+                                                {% endif %}
+                                            {% else %}
+                                                <td></td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-4 col-sm-12 col-md-12 col-xs-12" style="margin-top: 19px">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header">
+                                <h6>My Classes:</h6>
+
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% with calendar.unique_name as unique_name %}
+                                    {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
+                                        {% for course in course_crn_data.data %}
+                                            <li class="list-group-item"
+                                                style="background-color: {{ course.color }};color: black">
+                                                <b>{{ course.course_id }}</b>: {{ course.crn }}</li>
+                                        {% endfor %}
 
 
+
+                                        <div class="modal fade" id="register_modal{{ calendar.unique_name }}"
+                                             tabindex="-1"
+                                             role="dialog"
+                                             aria-labelledby="register_modal{{ calendar.unique_name }}"
+                                             aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Register with CAS</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        This will register your for the currently selected classes (list
+                                                        below).<br>
+                                                        You will need to provide us with your UCMerced username (not
+                                                        email)
+                                                        and password. Yes the one for
+                                                        CatCourses.<br>
+                                                        We promise not to store this however if you have any doubt don't
+                                                        use
+                                                        this and just copy the CRN
+                                                        numbers below :)<br><br>
+                                                        <i>You will be registered for these courses: </i><br>
+                                                        {% for course in course_crn_data.data %}
+                                                            {{ course.crn }},
+                                                        {% endfor %}
+                                                        <form class="px-4 py-3"
+                                                              id="register_form{{ unique_name }}" action="">
+                                                            {% csrf_token %}
+                                                            <div class="form-group">
+                                                                <label for="username">Username</label>
+                                                                <input type="text"
+                                                                       class="form-control"
+                                                                       placeholder="Username"
+                                                                       name="username" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="password">Password</label>
+                                                                <input type="password"
+                                                                       class="form-control"
+                                                                       placeholder="Password"
+                                                                       name="password" required>
+                                                            </div>
+                                                            <button id="register_button{{ unique_name }}"
+                                                                    type="submit"
+                                                                    class="btn btn-warning ld-ext-right">
+                                                                Register
+                                                                <i class="ld ld-ring ld-spin"></i>
+                                                            </button>
+                                                        </form>
+                                                        <script>
+                                                            var form_id = "#" + "register_form{{ unique_name }}";
+                                                            $(form_id).submit(function (e) {
+                                                                var button_id = "#" + "register_button{{ unique_name }}";
+                                                                $(button_id).addClass('running');
+                                                                e.preventDefault();
+                                                                var url = "/api/courses/course-register/"; // the script where you handle the form input.
+
+                                                                var crns = [];
+                                                                {% for course in course_crn_data.data %}
+                                                                    crns.push({{ course.crn }});
+                                                                {% endfor %}
+                                                                var data = $(this).serializeArray();
+                                                                data.push({name: "crns", value: crns}, {
+                                                                    name: "term",
+                                                                    value: "{{old_data.term}}"
+                                                                });
+                                                                $.ajax({
+                                                                    type: "POST",
+                                                                    url: url,
+                                                                    data: data, // serializes the form's elements.
+                                                                    success: function (data) {
+                                                                        $(button_id).removeClass('running');
+                                                                        var message = {};
+                                                                        if (data.login) {
+                                                                            message.type = 'danger';
+                                                                            message.message = 'Your username or password was incorrect';
+                                                                            message.main = '';
+                                                                        }
+                                                                        if (data.response) {
+                                                                            if (data.response === 'reg_time_less') {
+                                                                                message.type = 'warning';
+                                                                                message.message = 'Too early. ' + data.reg_time;
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'prereq') {
+                                                                                message.type = 'warning';
+                                                                                message.message = data.message;
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'course_full') {
+                                                                                message.type = 'warning';
+                                                                                message.message = data.message;
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'fail') {
+                                                                                message.type = 'danger';
+                                                                                message.message = 'Not sure what happened :( try again or copy the CRN\'s bellow and register manually';
+                                                                                message.main = '';
+                                                                            }
+                                                                            if (data.response === 'success') {
+                                                                                message.type = 'success';
+                                                                                message.message = 'You have been successfully registered!';
+                                                                                message.main = 'Please go to MyRegistration to check :)';
+                                                                            }
+                                                                        }
+                                                                        $(function () {
+                                                                            $(current_register_id).modal('hide');
+                                                                            $.notify({
+                                                                                // options
+                                                                                title: message.message + '<br>',
+                                                                                message: message.main
+                                                                            }, {
+                                                                                // settings
+                                                                                type: message.type,
+                                                                                placement: {
+                                                                                    from: "top",
+                                                                                    align: "right"
+                                                                                },
+                                                                                offset: 5
+                                                                            });
+                                                                        });
+                                                                    }
+                                                                });
+                                                            });
+                                                        </script>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endwith %}
+                                {% endwith %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-
-    {% endif %}
-    <div class="row">
-        {% if schedules %}
-            <div class="col-lg-3">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-header">
-                        My Classes:
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        {% for course in selected_classes %}
-                            <li class="list-group-item">{{ course }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
-        <div class="col-lg-1"></div>
-        {% for calendar in schedules %}
-            <div class="table-responsive col-lg-8" id="{{ calendar.unique_name }}" hidden>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Schedule</th>
-                        <th width="20%">Monday</th>
-                        <th width="20%">Tuesday</th>
-                        <th width="20%">Wednesday</th>
-                        <th width="20%">Thursday</th>
-                        <th width="20%">Friday</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <script>
-
-                    </script>
-                    {% for display in times %}
-
-                        <tr>
-                            <td>{{ display.c }}</td>
-                            {% with calendar.M|get_item:display.m as data %}
-                                <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
-                                    {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
-                                        <h6>{{ data.hours }}</h6>
-                                    {% endif %}
-
-                                </td>
-                            {% endwith %}
-
-                            {% with calendar.T|get_item:display.m as data %}
-                                <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
-                                    {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
-                                        <h6>{{ data.hours }}</h6>
-                                    {% endif %}
-
-                                </td>
-                            {% endwith %}
-
-                            {% with calendar.W|get_item:display.m as data %}
-                                <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
-                                    {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
-                                        <h6>{{ data.hours }}</h6>
-                                    {% endif %}
-
-                                </td>
-                            {% endwith %}
-
-                            {% with calendar.R|get_item:display.m as data %}
-                                <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
-                                    {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
-                                        <h6>{{ data.hours }}</h6>
-                                    {% endif %}
-
-                                </td>
-                            {% endwith %}
-
-                            {% with calendar.F|get_item:display.m as data %}
-                                <td {% if data.exists %} bgcolor="{{ data.color }}"
-                                                         style="border: 2px solid dimgrey;"{% else %}{% endif %}
-                                                         rowspan="{{ data.length }}">
-                                    {% if data.exists %}
-                                        <h3>{{ data.course_id }}</h3>
-                                        <h4>{{ data.type }}</h4>
-                                        <h6>{{ data.hours }}</h6>
-                                    {% endif %}
-
-                                </td>
-                            {% endwith %}
-
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endfor %}
     </div>
-</div>
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-<script>
-    {#console.log("{{ total_schedules }}");#}
-    var current_id = "{{ all_schedule_ids.0 }}";
-    var current_schedule = 0;
-    var all_ids = [];
-    {%  for course_id in all_schedule_ids  %}
-        all_ids.push("{{course_id}}");
-    {% endfor %}
-    {#console.log(current_id);#}
-    $('#schedule_span').text("Schedule " + (current_schedule + 1));
-
-
-    // In your Javascript (external .js resource or <script> tag)
-    function toggle_tables(way, num) {
-
-        var table_id = '#' + current_id;
-        $(table_id).attr('hidden', true);
-        if (way === 'forward') {
-            if (current_schedule + num > ({{ total_schedules }}-1)) {
-                current_schedule = 0;
-            }
-            else {
-                current_schedule += num;
-            }
-        }
-        if (way === 'back') {
-            if (current_schedule - num < 0) {
-                current_schedule = {{ total_schedules }}-1;
-            }
-            else {
-                current_schedule -= num;
-            }
-        }
-        current_id = all_ids[current_schedule];
-        {#console.log(current_id);#}
-        table_id = '#' + current_id;
-        $(table_id).removeAttr('hidden');
+    <script>
+        var all_crns = {};
+        {% for course_id, data in all_schedule_crns.items %}
+            var course_id = "{{ course_id }}";
+            var crns = [];
+            {% for crn_data in data %}
+                var crn = "{{ crn_data.crn }}";
+                crns.push(crn);
+            {% endfor %}
+            all_crns[course_id] = crns;
+        {% endfor %}
+        var current_crns = [];
+        var current_id = "{{ all_schedule_ids.0 }}";
+        var current_register_id = "#register_modal" + current_id;
+        var current_schedule = 0;
+        var all_ids = [];
+        {%  for course_id in all_schedule_ids  %}
+            all_ids.push("{{course_id}}");
+        {% endfor %}
         $('#schedule_span').text("Schedule " + (current_schedule + 1));
+        current_crns = all_crns[current_id];
 
-    }
+        // In your Javascript (external .js resource or <script> tag)
+        function toggle_tables(way, num) {
 
-    $('.js-example-basic-single').select2({
-        placeholder: "Search for Classes",
-        width: 'resolve',
-        ajax: {
-            url: '/api/courses/course-search/',
-            data: function (params) {
-                return {
-                    course: params.term,
-                    term: $('#term').val()
-                };
-            },
-            processResults: function (data) {
-                var results = [];
-                data.forEach(function (course) {
-                    results.push({
-                        id: course,
-                        text: course
-                    })
-                });
-                return {
-                    results: results
-                };
-            }
-        }
-    });
-    $('#filters').multiselect({
-        onChange: function (options, checked) {
-            var $option = $(options);
-            if ($option.length === 1) {
-
-                var $group = $option.parent('optgroup');
-                var $options = $('option', $group);
-                $options = $options.filter(':selected');
-
-                if (checked && $options.length > 1) {
-                    $("#filters").multiselect('deselect', $option.val());
+            var table_id = '#' + current_id;
+            $(table_id).attr('hidden', true);
+            if (way === 'forward') {
+                if (current_schedule + num > ({{ total_schedules }}-1)) {
+                    current_schedule = 0;
+                }
+                else {
+                    current_schedule += num;
                 }
             }
+            if (way === 'back') {
+                if (current_schedule - num < 0) {
+                    current_schedule = {{ total_schedules }}-1;
+                }
+                else {
+                    current_schedule -= num;
+                }
+            }
+            current_id = all_ids[current_schedule];
+            table_id = '#' + current_id;
+            current_register_id = "#register_modal" + current_id;
+            $("#register").attr('data-target', current_register_id);
+            $(table_id).removeAttr('hidden');
+            $('#schedule_span').text("Schedule " + (current_schedule + 1));
+            current_crns = all_crns[current_id];
+
         }
 
-    });
-    $(document).ready(function () {
+        $('.js-example-basic-single').select2({
+            placeholder: "Search for Classes",
+            width: 'resolve',
+            theme: "bootstrap4",
+            ajax: {
+                url: '/api/courses/course-search/',
+                data: function (params) {
+                    return {
+                        course: params.term,
+                        term: $('#term').val()
+                    };
+                },
+                processResults: function (data) {
+                    var results = [];
+                    data.forEach(function (course) {
+                        results.push({
+                            id: course.name,
+                            text: course.name + ": " + course.description
+                        })
+                    });
+                    return {
+                        results: results
+                    };
+                }
+            },
+            templateSelection: formatSelection
+        });
+
+        function formatSelection(course) {
+            return course.id;
+        }
+
+        var filters = [];
+        {% for filter in old_data.filters %}
+            filters.push("{{ filter }}");
+        {% endfor %}
+        $('#filters').selectpicker({
+            noneSelectedText: 'Filters'
+        }).selectpicker('val', filters);
+        {% if old_data.latest %}
+            $("#latest").val("{{ old_data.latest }}");
+        {% endif %}
+        {% if old_data.earliest %}
+            $("#earliest").val("{{ old_data.earliest }}");
+        {% endif %}
+        {% if old_data.term %}
+            $("#term").val("{{ old_data.term }}");
+        {% endif %}
         {% if schedules %}
             var table_id = '#' + current_id;
             $(table_id).removeAttr('hidden');
         {% endif %}
+        {% if old_data.selected_classes %}
+            {% for course in old_data.selected_classes %}
+                var option = new Option("{{ course }}", "{{ course }}");
+                option.selected = true;
 
-    });
-</script>
-</body>
+                $("#courses").append(option);
 
-</html>
+            {% endfor %}
+            $("#courses").trigger("change");
+        {% endif %}
+
+
+        current_register_id = "#register_modal" + current_id;
+        $("#register").attr('data-target', current_register_id);
+
+
+        $(document).ready(function () {
+
+
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+
+        function class_form_submit(form) {
+            var data = $(form).serializeArray();
+            data.push({name: "crns", value: current_crns});
+            var url = "/api/users/save-schedule/"; // the script where you handle the form input.
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data, // serializes the form's elements.
+                success: function (data) {
+                    var message = {};
+                    if (data.error) {
+                        message.error = true;
+                        message.title = data.error;
+                        message.message = "";
+                        message.type = 'warning';
+                    }
+                    if (data.success) {
+                        message.success = true;
+                        message.title = data.success;
+                        message.message = "Go to Saved Schedules to view it";
+                        message.type = 'info';
+                    }
+                    $(function () {
+                        $.notify({
+                            // options
+                            title: message.title + '<br>',
+                            message: message.message
+                        }, {
+                            // settings
+                            type: message.type
+                        });
+                    });
+                }
+            });
+        }
+
+        $(function () {
+            $('[data-toggle="popover"]').popover({trigger: 'focus'})
+        })
+    </script>
+    <div id="dialog" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registration Complete</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- dialog body -->
+                <div class="modal-body">
+
+                    You have been registered, go to MyRegistration to double check :)
+                    <a target="_blank" href="https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin">https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin</a>
+                </div>
+                <!-- dialog buttons -->
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#dialog").on("show", function () {    // wire up the OK button to dismiss the modal when shown
+            $("#dialog a.btn").on("click", function (e) {
+                $("#myModal").modal('hide');     // dismiss the dialog
+            });
+        });
+        $("#dialog").on("hide", function () {    // remove the event listeners when the dialog is dismissed
+            $("#dialog a.btn").off("click");
+        });
+
+        $("#dialog").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
+            $("#dialog").remove();
+        });
+
+        $("#dialog").modal({                    // wire up the actual modal functionality and show the dialog
+            "backdrop": "static",
+            "keyboard": true,
+            "show": false                     // ensure the modal is shown immediately
+        });
+    </script>
+{% endblock %}

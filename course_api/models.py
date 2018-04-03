@@ -2,6 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class ScheduleUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    unique_id = models.CharField(max_length=100)
+    profile_image = models.ImageField(upload_to='profiles/images', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+
 class SubjectClass(models.Model):
     class Meta:
         verbose_name = "Subject Class"
@@ -42,6 +51,21 @@ class SubjectCourse(models.Model):
         verbose_name="Term",
         default="201810",
     )
+    course_description = models.CharField(
+        verbose_name="Course Description",
+        max_length=256,
+        db_index=True,
+        null=True,
+    )
+    course_subject = models.CharField(
+        verbose_name="Course Subject",
+        max_length=256,
+        db_index=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return "{}:{}".format(self.course_name, self.term)
 
 
 class Schedule(models.Model):
@@ -49,10 +73,9 @@ class Schedule(models.Model):
         verbose_name = "Schedule"
         verbose_name_plural = "Schedules"
 
-    classes = models.ManyToManyField(
-        'Course',
-        verbose_name="Classes",
-        db_index=True,
+    courses = models.TextField(
+        verbose_name="Courses",
+        default='[]',
     )
     user = models.ForeignKey(
         User,
@@ -69,6 +92,11 @@ class Schedule(models.Model):
         max_length=32,
         verbose_name="Term",
         default="201810",
+    )
+    created = models.DateTimeField(
+        verbose_name="Created",
+        db_index=True,
+        auto_now_add=True,
     )
 
     def __str__(self):

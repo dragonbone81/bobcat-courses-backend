@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block imports %}
+    <style>
+        #login-form {
+            max-width: 320px;
+            width: 90%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 0 40px 40px 40px;
+            border-radius: 4px;
+            color: #505e6c;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #login_div {
+            padding: 80px 0;
+        }
+
+        #icon_login {
+            text-align: center;
+            padding-bottom: 20px;
+            font-size: 100px;
+            color: rgb(59, 157, 244);
+        }
+
+        .form-control {
+            background: #f7f9fc;
+            border: none;
+            border-bottom: 1px solid #dfe7f1;
+            border-radius: 0;
+            box-shadow: none;
+            outline: none;
+            color: inherit;
+            text-indent: 8px;
+            height: 42px;
+        }
+
+        #login_button {
+            background: #d9ca00;
+            border: none;
+            border-radius: 4px;
+            padding: 11px;
+            box-shadow: none;
+            margin-top: 26px;
+            text-shadow: none;
+            outline: none !important;
+            color: #575655;
+        }
+
+        #register {
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            color: #6f7a85;
+            opacity: 0.9;
+            text-decoration: none;
+            padding-top: 10px;
+            margin-bottom: -10px;
+        }
+
+        #register:hover {
+            opacity: 1;
+            text-decoration: none;
+            color: #2d2d2d;
+        }
+
+        .social-login-btn {
+            width: 80px;
+        }
+
+        .social-icon {
+            font-size: 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block preview_title %}Login{% endblock %}
+{% block title %}Login{% endblock %}
+{% block content %}
+    {% if not user.is_authenticated %}
+        <div id="login_div">
+            <div id="login-form">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div id="icon_login"><i class="fas fa-book"></i></div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="username" name="username"
+                               placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="Password" required>
+                    </div>
+                    <button id="login_button" type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+                <p style="text-align: center; padding-top: 5px; margin-bottom: 5px"><strong>-- OR --</strong></p>
+                <div class="btn-group" role="group" style="text-align: center">
+                    <a href="{% url 'social:begin' 'google-oauth2' %}"
+                       class="social-login-btn btn disabled" role="button" style="margin: 0;background-color: #DB4437"><i
+                            class="fab fa-google social-icon disabled" style="color: white;"></i></a>
+                    <button href="{% url 'social:begin' 'facebook' %}" class="social-login-btn disabled btn"
+                            style="margin: 0;background-color: #3B5998"><i
+                            class="fab fa-facebook-f social-icon" style="color: white"></i></button>
+                    <button href="{% url 'social:begin' 'github' %}" class="social-login-btn btn disabled"
+                            style="margin: 0;background-color: #b52bc4"><i
+                            class="fab fa-github social-icon disabled" style="color: black"></i></button>
+                </div>
+                <a id="register" href="/app/bobcat-courses/register">Not a member? Sign up.</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">You are already logged in</h1>
+                <p class="lead">Go plan your schedule or register for classes :)</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
