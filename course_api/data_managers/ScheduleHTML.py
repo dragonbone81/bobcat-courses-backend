@@ -12,7 +12,8 @@ def get_html_courses(request):
     all_schedule_ids = []
     all_schedule_crns = {}
     courses, term, earliest, latest, days, gaps, old_data = get_post_data(request)
-    generator = CourseScheduler(term=term, earliest_time=earliest, latest_time=latest, days=days, gaps=gaps, filters=True)
+    generator = CourseScheduler(term=term, earliest_time=earliest, latest_time=latest, days=days, gaps=gaps,
+                                filters=True)
     classes = generator.get_valid_schedules(courses)[:65]
     schedules = list()
     for schedule in classes:

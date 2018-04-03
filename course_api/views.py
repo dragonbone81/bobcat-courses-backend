@@ -337,10 +337,8 @@ def django_saved_schedules_view(request):
         if request.user.is_authenticated:
             import json
             amount = request.GET.get('amount', 200)
-            schedules = Schedule.objects.filter(user=request.user).order_by('created')[:amount]
-            schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
-            for schedule in schedules:
-                schedule['courses'] = json.loads(schedule['courses'])
+            schedules = [{'courses': json.loads(str(schedule.courses)), 'term': schedule.term} for schedule in
+                         Schedule.objects.filter(user=request.user).order_by('-created')[:amount]]
             schedules, all_schedule_ids, all_schedule_crns, all_schedule_terms = GetSchedules(
                 schedule_crns=schedules).get_data_object()
             return render(request, 'saved_schedules.html',

@@ -9,7 +9,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
-    # import json
     courses = serializers.CharField()
 
     class Meta:
