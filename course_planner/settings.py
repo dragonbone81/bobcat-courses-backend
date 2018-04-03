@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'scout_apm.django',
     'social_django',
     'rest_framework',
     'rest_framework_filters',
