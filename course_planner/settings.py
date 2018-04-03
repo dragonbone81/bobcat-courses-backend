@@ -49,6 +49,7 @@ CELERY_RESULT_BACKEND = None  # AMQP is not recommended as result backend as it 
 CELERY_EVENT_QUEUE_EXPIRES = 1  # Will delete all celeryev. queues without consumers after 1 minute.
 CELERYD_PREFETCH_MULTIPLIER = 1  # Disable prefetching, it's causes problems and doesn't help performance
 CELERYD_CONCURRENCY = 1  # If you tasks are CPU bound, then limit to the number of cores, otherwise increase substainally
+CELERYD_TASK_TIME_LIMIT = 60
 ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 
 # Application definition
