@@ -170,9 +170,24 @@ class CoursesSearch(ViewSet):
                     course_with_dash = "{}-{}".format(course_with_dash[0:i], course_with_dash[i:])
                     break
         simple_courses = [{'name': course.course_name, 'description': course.course_description} for course in
-                          SubjectCourse.objects.filter(Q(course_name__icontains=course_with_dash) | Q(
-                              course_subject__icontains=course_with_dash), term=term).order_by(
+                          SubjectCourse.objects.filter(Q(course_name__icontains=course_with_dash), term=term).order_by(
                               'course_name')]
+        if not simple_courses:
+            simple_courses = [{'name': course.course_name, 'description': course.course_description} for course in
+                              SubjectCourse.objects.filter(course_description__icontains=course, term=term).order_by(
+                                  'course_name')]
+            temp_list = []
+            course_list = course.split()
+            for course_filter in simple_courses:
+                course_filter_list = course_filter.get('description').split()
+                match = False
+                for item in course_list:
+                    for item_course in course_filter_list:
+                        if item_course.startswith(item):
+                            match = True
+                if match:
+                    temp_list.append(course_filter)
+            simple_courses = temp_list
         simple_courses.sort(key=lambda x: int(''.join(filter(str.isdigit, x['name'].split('-')[1]))))
         return Response(simple_courses)
 
