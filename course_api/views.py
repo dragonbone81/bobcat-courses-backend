@@ -27,6 +27,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.shortcuts import render, redirect
+from course_api.utils.get_schedule_info import getInfoForSchedule
 
 
 # TODO schedule view
@@ -511,6 +512,40 @@ class LoadSchedules(ViewSet):
         for schedule in schedules:
             schedule['courses'] = json.loads(schedule['courses'])
         return Response(GetSchedules(schedule_crns=schedules).get_data_object())
+
+    def post(self, request):
+        return Response(None)
+
+
+class UserLoadSchedules(ViewSet):
+    """
+    requieres user auth
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        import json
+        schedules = Schedule.objects.filter(user=request.user).order_by('created')
+        gen_schedules = []
+        for schedule in schedules:
+            courses = json.loads(schedule.courses)
+            schedule = {}
+            for course in courses:
+                course_obj = Course.objects.get(crn=course)
+                if 'schedule' in schedule and course_obj.simple_name in schedule['schedule']:
+                    schedule['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(course_obj).data
+                else:
+                    schedule['schedule'] = {}
+                    schedule['schedule'][course_obj.simple_name] = {}
+                    schedule['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(course_obj).data
+            schedule['info'] = getInfoForSchedule(schedule['schedule'])
+            gen_schedules.append(schedule)
+        return Response(gen_schedules)
 
     def post(self, request):
         return Response(None)
