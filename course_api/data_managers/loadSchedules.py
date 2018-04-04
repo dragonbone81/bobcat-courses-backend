@@ -41,47 +41,53 @@ class GetSchedules(object):
                         ColorHash(''.join(course.get('course_id').split('-')[0:2]) + course.get(
                             'subject')).hex, 1.5)
                 courses.append(course)
+                if course['hours'] == 'TBD-TBD':
+                    length = 0
+                else:
+                    length = 9
                 course_data.append(
                     {'crn': course.get('crn'), 'course_id': course.get('course_id'),
-                     'color': course['color']})
-            all_schedule_crns[actual_schedule['unique_name']] = course_data
+                     'color': course['color'], 'length': length})
+                all_schedule_crns[actual_schedule['unique_name']] = course_data
             for course in courses:
                 course_days = list(course.get('days'))
-
-                hours = convertTime(course.get('hours'))
-                start_hour = str(hours.get('start'))
-                end_hour = str(hours.get('end'))
-                if schedule.get('earliest') > int(start_hour):
-                    schedule['earliest'] = int(start_hour)
-                if schedule.get('latest') < int(end_hour):
-                    schedule['latest'] = int(end_hour)
-                if len(start_hour) == 3:
-                    start_hour = "{}:{}".format(start_hour[0], start_hour[1:3])
+                if course.get('hours') == "TBD-TBD":
+                    course['length'] = 0
                 else:
-                    start_hour = '{}:{}'.format(start_hour[0:2], start_hour[2:4])
-                if len(end_hour) == 3:
-                    end_hour = "{}:{}".format(end_hour[0], end_hour[1:3])
-                else:
-                    end_hour = '{}:{}'.format(end_hour[0:2], end_hour[2:4])
+                    hours = convertTime(course.get('hours'))
+                    start_hour = str(hours.get('start'))
+                    end_hour = str(hours.get('end'))
+                    if schedule.get('earliest') > int(start_hour):
+                        schedule['earliest'] = int(start_hour)
+                    if schedule.get('latest') < int(end_hour):
+                        schedule['latest'] = int(end_hour)
+                    if len(start_hour) == 3:
+                        start_hour = "{}:{}".format(start_hour[0], start_hour[1:3])
+                    else:
+                        start_hour = '{}:{}'.format(start_hour[0:2], start_hour[2:4])
+                    if len(end_hour) == 3:
+                        end_hour = "{}:{}".format(end_hour[0], end_hour[1:3])
+                    else:
+                        end_hour = '{}:{}'.format(end_hour[0:2], end_hour[2:4])
 
-                start_date = dparser.parse(start_hour)
-                end_date = dparser.parse(end_hour)
-                total_time = end_date - start_date
+                    start_date = dparser.parse(start_hour)
+                    end_date = dparser.parse(end_hour)
+                    total_time = end_date - start_date
 
-                course['start_str'] = hours.get('start')
-                course['end_str'] = hours.get('end')
-                course['start'] = "{}{}".format(ceil_dt(start_date, timedelta(minutes=30)).hour,
-                                                ceil_dt(start_date, timedelta(minutes=30)).minute)
-                if ceil_dt(start_date,
-                           timedelta(minutes=30)).minute == 0:
-                    course['start'] += "0"
+                    course['start_str'] = hours.get('start')
+                    course['end_str'] = hours.get('end')
+                    course['start'] = "{}{}".format(ceil_dt(start_date, timedelta(minutes=30)).hour,
+                                                    ceil_dt(start_date, timedelta(minutes=30)).minute)
+                    if ceil_dt(start_date,
+                               timedelta(minutes=30)).minute == 0:
+                        course['start'] += "0"
 
-                course['end'] = "{}{}".format(ceil_dt(end_date, timedelta(minutes=30)).hour,
-                                              ceil_dt(end_date, timedelta(minutes=30)).minute)
-                if ceil_dt(end_date,
-                           timedelta(minutes=30)).minute == 0:
-                    course['end'] += "0"
-                course['length'] = (ceil((total_time.seconds / 60 / 60) * 2))
+                    course['end'] = "{}{}".format(ceil_dt(end_date, timedelta(minutes=30)).hour,
+                                                  ceil_dt(end_date, timedelta(minutes=30)).minute)
+                    if ceil_dt(end_date,
+                               timedelta(minutes=30)).minute == 0:
+                        course['end'] += "0"
+                    course['length'] = (ceil((total_time.seconds / 60 / 60) * 2))
             times = ['700', '730', '800', '830', '900', '930', '1000', '1030', '1100', '1130', '1200', '1230', '1300',
                      '1330',
                      '1400', '1430', '1500', '1530', '1600', '1630', '1700', '1730', '1800', '1830', '1900', '1930',
@@ -118,21 +124,23 @@ class GetSchedules(object):
             for time in times[lower_bound:times_dict[latest_hour_str] + 1]:
                 actual_schedule[time] = {'M': {}, 'T': {}, 'W': {}, 'R': {}, 'F': {}}
             for course in courses:
-                for day in list(course['days']):
-                    list_times_course = []
-                    for time in times:
-                        if int(time) >= int(course['start']) and int(time) < int(course['end']):
-                            list_times_course.append(time)
-                    for time in list_times_course:
-                        new_course = course.copy()
-                        if int(new_course['start']) == int(time):
-                            new_course['next'] = False
-                        else:
-                            new_course['next'] = True
-                            new_course['time'] = time
-                        actual_schedule[time][day] = new_course
+                if course['length'] != 0:
+                    for day in list(course['days']):
+                        list_times_course = []
+                        for time in times:
+                            if int(time) >= int(course['start']) and int(time) < int(course['end']):
+                                list_times_course.append(time)
+                        for time in list_times_course:
+                            new_course = course.copy()
+                            if int(new_course['start']) == int(time):
+                                new_course['next'] = False
+                            else:
+                                new_course['next'] = True
+                                new_course['time'] = time
+                            actual_schedule[time][day] = new_course
 
             schedules.append(actual_schedule)
+            all_schedule_crns[actual_schedule['unique_name']] = course_data
         return schedules, all_schedule_ids, all_schedule_crns, all_schedule_terms
 
 

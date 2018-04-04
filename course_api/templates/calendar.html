@@ -324,7 +324,11 @@
                                         {% for course in course_crn_data.data %}
                                             <li class="list-group-item"
                                                 style="background-color: {{ course.color }};color: black">
-                                                <b>{{ course.course_id }}</b>: {{ course.crn }}</li>
+                                                <b>{{ course.course_id }}</b>: {{ course.crn }}<br>
+                                                {% if course.length == 0 %}
+                                                    <u>This section has no Time (Online?)</u>
+                                                {% endif %}
+                                            </li>
                                         {% endfor %}
 
 
