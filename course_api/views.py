@@ -71,8 +71,8 @@ class UserRegistration(ViewSet):
 
     post: Return user info and access_tokens when post : {username, email, name, firstname, lastname, password}
     """
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAdminUser,)
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def retrieve(self, request, pk=None):
