@@ -94,12 +94,13 @@ class CourseScheduler(object):
                 if return_val:
                     allCourses.append(return_val)
         for c in allCourses:
-            for day in c.get("days"):
-                time = self.convertTime(c["hours"])
-                if not self.dayConflicts(time, times[day]):
-                    times[day].append(time)
-                else:
-                    return True
+            if c["hours"] != "TBD-TBD":
+                for day in c.get("days"):
+                    time = self.convertTime(c["hours"])
+                    if not self.dayConflicts(time, times[day]):
+                        times[day].append(time)
+                    else:
+                        return True
             if not c['final_days']:
                 c['final_days'] = []
             for day in c.get("final_days", []):
@@ -120,7 +121,7 @@ class CourseScheduler(object):
 
         for key, section in schedule.items():
             for key, course in section.items():
-                if course:
+                if course and course["hours"] != "TBD-TBD":
                     for day in course["days"]:
                         time = self.convertTime(course["hours"])
                         times[day].append(time)
