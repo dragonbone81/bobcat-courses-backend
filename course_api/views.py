@@ -136,9 +136,7 @@ class CourseListView(ViewSet):
         for course in courses_to_search:
             if isinstance(course, str):
                 courses[course] = [CourseSerializer(course).data for course in
-                                   Course.objects.filter(
-                                       (Q(course_id__istartswith=course) | Q(simple_name__icontains=course)) & Q(
-                                           term=term))]
+                                   Course.objects.filter(simple_name__iexact=course)]
             if isinstance(course, dict):
                 courses[course.get('id')] = [CourseSerializer(course).data for course in
                                              Course.objects.filter(simple_name__icontains=course.get('id'), term=term)]
