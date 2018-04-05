@@ -19,6 +19,8 @@ class UCMercedCoursePush(object):
             course['units'] = int(course['units'])
             course['capacity'] = int(course['capacity'])
             course['enrolled'] = int(course['enrolled'])
+            while course['course_name'].endswith('\\t'):
+                course['course_name'] = course['course_name'][:-2]
             course['simple_name'] = get_simple(course['course_id'])
             if course['available'] == 'Closed':
                 course['available'] = 0
@@ -52,6 +54,14 @@ class UCMercedCoursePush(object):
             bulk_update(updated_others, batch_size=10)
         else:
             bulk_update(updated_others, batch_size=1000)
+        self.link_labs()
+
+    def link_labs(self):
+        for course in Course.objects.filter(type='LAB'):
+            if course.discussion_crn:
+                discussion = Course.objects.get(crn=course.discussion_crn)
+                discussion.discussion_crn = course.crn
+                discussion.save()
 
 
 class SubjectClassUpdate(object):
@@ -85,7 +95,6 @@ class SubjectClassUpdate(object):
                 course_update.course_subject = course.course_subject
                 course_update.save()
         SubjectCourse.objects.bulk_create(need_added)
-
 
 # SubjectClassUpdate().update_lectures()
 # UCMercedCoursePush().push_courses()

@@ -112,11 +112,10 @@ class CourseListView(ViewSet):
     """
     View to receive a class (GLOBAL) and return all associated possibilities.
     * Sample python request -- {"course_list": ["CSE-120", "CSE-150"], "term":"201810"}
-    * Requires token authentication.
     """
 
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def retrieve(self, request, pk=None):
@@ -238,12 +237,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class SchedulesListView(ViewSet):
     """
-    Requires Authentication - {Authorization: "Bearer " + access_token}
-
     post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc", "search_full":false}
     """
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def retrieve(self, request, pk=None):
