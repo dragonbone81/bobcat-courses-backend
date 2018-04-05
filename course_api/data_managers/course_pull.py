@@ -119,7 +119,7 @@ class UCMercedClassParser(object):
                     line['lecture_crn'] = current_lect
                     # this is for lab discussion linking idk if this works
                     if line['type'] == 'LAB' and previous_discussion:
-                        line['discussion_crn'] = previous_discussion
+                        line['attached_crn'] = previous_discussion
         return data
 
 # print(len(UCMercedClassParser(terms=["201830", "201810", "201830", "201830"]).parse_terms()))
