@@ -205,12 +205,12 @@ class Course(models.Model):
         verbose_name="Associated Discussion",  # Used for linked labs
         on_delete=models.CASCADE
     )
-    discussion_crn = models.CharField(
+    attached_crn = models.CharField(
         max_length=256,
         null=True,
         blank=True,
         db_index=True,
-        verbose_name="Discussion CRN",
+        verbose_name="Attached CRN",
     )
     term = models.CharField(
         max_length=256,

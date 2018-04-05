@@ -58,9 +58,9 @@ class UCMercedCoursePush(object):
 
     def link_labs(self):
         for course in Course.objects.filter(type='LAB'):
-            if course.discussion_crn:
-                discussion = Course.objects.get(crn=course.discussion_crn)
-                discussion.discussion_crn = course.crn
+            if course.attached_crn:
+                discussion = Course.objects.get(crn=course.attached_crn)
+                discussion.attached_crn = course.crn
                 discussion.save()
 
 
