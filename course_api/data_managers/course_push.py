@@ -71,7 +71,8 @@ class UCMercedCoursePush(object):
 class SubjectClassUpdate(object):
     def get_courses_lectures(self):
         courses = dict()
-        for course in Course.objects.all():
+        all_courses = Course.objects.all()
+        for course in all_courses:
             simplified_name = get_simple(course.course_id)
             if not courses.get(simplified_name):
                 course_obj = {
@@ -85,20 +86,10 @@ class SubjectClassUpdate(object):
         return courses
 
     def update_lectures(self):
-        current_subjects = SubjectCourse.objects.all()
-        current_subjects_crn = {"{}:{}".format(subj.course_name, subj.term): subj for subj in current_subjects}
-        need_added = list()
+        SubjectCourse.objects.all().delete()
         courses = self.get_courses_lectures()
-        for course_str, course in courses.items():
-            if course_str not in current_subjects_crn:
-                need_added.append(course)
-            # erm y would this need to update?
-            else:
-                course_update = current_subjects_crn[course_str]
-                course_update.course_description = course.course_description
-                course_update.course_subject = course.course_subject
-                course_update.save()
-        SubjectCourse.objects.bulk_create(need_added)
+        courses = [course for key, course in courses.items()]
+        SubjectCourse.objects.bulk_create(courses)
 
 # SubjectClassUpdate().update_lectures()
 # UCMercedCoursePush().push_courses()
