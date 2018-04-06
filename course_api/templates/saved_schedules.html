@@ -546,7 +546,7 @@
                             'F'
                         ];
                         for (var sched = 0; sched < schedules.length; sched++) {
-                            body += '<div id="' + sched + '" class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12" hidden>';
+                            body += '<div id="' + sched + '" class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12" style="display: none;">';
                             body += '<table class="table table-bordered table-responsive table-sm" style="font-size: smaller;">';
                             body += '<thead> <tr class="text-center"> <th>Time</th> <th>Mon</th> <th>Tue</th> <th>Wed</th> <th>Thu</th> <th>Fri</th> </tr> </thead>';
                             body += '<tbody id="table_body">';
@@ -583,7 +583,7 @@
                                                 course.data.crn + '<br/>Hours: ' + course.data.hours +
                                                 '<br/>Prof: ' + course.data.instructor + '">'
                                                 + '<div id="course_id_div"><u style="color: black">'
-                                                + course.data.course_id + '</u></div>' + '</td>';
+                                                + course.data.course_id +'</u></div>' + '</td>';
                                         }
                                         else {
                                         }
@@ -600,7 +600,7 @@
                             '</div> <ul id="course_list_info" class="list-group list-group-flush" style="font-size: medium">' +
                             ' </ul> </div> </div>';
                         $("#main_div").html(body);
-                        $("#0").removeAttr('hidden');
+                        $("#0").fadeIn(0, function () {});
                         $("#schedule_span_append").html("Total: " + schedules.length);
                         make_list_info();
 
@@ -633,7 +633,7 @@
 
                     function toggle_tables(way, num) {
                         var table_id = '#' + current_id;
-                        $(table_id).attr('hidden', true);
+                        $(table_id).fadeOut(0, function () {});
                         if (way === 'forward') {
                             if (current_id + num > (schedules.length - 1)) {
                                 current_id = 0;
@@ -651,7 +651,7 @@
                             }
                         }
                         table_id = '#' + current_id;
-                        $(table_id).removeAttr('hidden');
+                        $(table_id).fadeIn(300, function () {});
                         $('#schedule_span').text("Schedule " + (current_id + 1));
                         make_list_info();
 
