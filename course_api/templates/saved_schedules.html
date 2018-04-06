@@ -117,9 +117,9 @@
                             <span class="d-inline-block" tabindex="0"
                                   {% if not request.user.is_authenticated %}data-toggle="tooltip"
                                   title="Login to save schedule"{% endif %}>
-                              <button class="btn btn-info input_buttons" type="button"
+                              <button class="btn btn-info input_buttons" id="delete_sched" type="button"
                                       {% if not request.user.is_authenticated %}style="pointer-events: none;"
-                                      disabled{% endif %} onclick="delete_schedule_submit(this.form)">
+                                      disabled{% endif %} onclick="delete_schedule_submit(this.form)" hidden>
                                   Delete Schedule
                               </button>
                             </span>
@@ -127,14 +127,14 @@
                             <div class="col-auto" style="padding: 5px;">
                                 <button class="btn btn-warning input_buttons" type="button" id="register"
                                         name="register"
-                                        data-toggle="modal" data-target="#register_modal">Register
+                                        data-toggle="modal" data-target="#register_modal" hidden>Register
                                 </button>
                             </div>
                         </div>
                     </form>
 
                 </div>
-                <div class="input-group input-group-sm mb-3 btn-block">
+                <div class="input-group input-group-sm mb-3 btn-block" id="navigate_buttons" hidden>
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="schedule_span">Schedule 1</span>
                     </div>
@@ -320,12 +320,26 @@
                     var all_crns = [];
                     var current_id = 0;
                     var schedules = {};
+                    $("#navigate_buttons").attr('hidden', true);
+                    $("#register").attr('hidden', true);
+                    $("#save_sched").attr('hidden', true);
+                    $("#delete_sched").attr('hidden', true);
                     axios.get('/api/users/schedule-dump/', {}, {
                         headers: {Authorization: 'Bearer {{ access_token }}'}
                     })
                         .then(function (response) {
                             schedules = response.data;
-                            generate_schedules(schedules, create_data(schedules));
+                            if (schedules.length > 0) {
+                                generate_schedules(schedules, create_data(schedules));
+                                $("#navigate_buttons").removeAttr('hidden');
+                                $("#register").removeAttr('hidden');
+                                $("#save_sched").removeAttr('hidden');
+                                $("#delete_sched").removeAttr('hidden');
+                            }
+                            else {
+                                var body = '<div class="alert alert-danger" role="alert" style="margin: auto"> <strong>No saved Schedules!</strong></div>';
+                                $("#main_div").html(body);
+                            }
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -583,7 +597,7 @@
                                                 course.data.crn + '<br/>Hours: ' + course.data.hours +
                                                 '<br/>Prof: ' + course.data.instructor + '">'
                                                 + '<div id="course_id_div"><u style="color: black">'
-                                                + course.data.course_id +'</u></div>' + '</td>';
+                                                + course.data.course_id + '</u></div>' + '</td>';
                                         }
                                         else {
                                         }
@@ -600,7 +614,8 @@
                             '</div> <ul id="course_list_info" class="list-group list-group-flush" style="font-size: medium">' +
                             ' </ul> </div> </div>';
                         $("#main_div").html(body);
-                        $("#0").fadeIn(0, function () {});
+                        $("#0").fadeIn(0, function () {
+                        });
                         $("#schedule_span_append").html("Total: " + schedules.length);
                         make_list_info();
 
@@ -633,7 +648,8 @@
 
                     function toggle_tables(way, num) {
                         var table_id = '#' + current_id;
-                        $(table_id).fadeOut(0, function () {});
+                        $(table_id).fadeOut(0, function () {
+                        });
                         if (way === 'forward') {
                             if (current_id + num > (schedules.length - 1)) {
                                 current_id = 0;
@@ -651,7 +667,8 @@
                             }
                         }
                         table_id = '#' + current_id;
-                        $(table_id).fadeIn(300, function () {});
+                        $(table_id).fadeIn(300, function () {
+                        });
                         $('#schedule_span').text("Schedule " + (current_id + 1));
                         make_list_info();
 

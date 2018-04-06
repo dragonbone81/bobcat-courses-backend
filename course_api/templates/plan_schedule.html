@@ -805,6 +805,42 @@
             });
         }
 
+        function class_form_submit(form) {
+            var data = $(form).serializeArray();
+            data.push({name: "crns", value: all_crns[current_id]});
+            var url = "/api/users/save-schedule/"; // the script where you handle the form input.
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data, // serializes the form's elements.
+                success: function (data) {
+                    var message = {};
+                    if (data.error) {
+                        message.error = true;
+                        message.title = data.error;
+                        message.message = "";
+                        message.type = 'warning';
+                    }
+                    if (data.success) {
+                        message.success = true;
+                        message.title = data.success;
+                        message.message = "Go to Saved Schedules to view it";
+                        message.type = 'info';
+                    }
+                    $(function () {
+                        $.notify({
+                            // options
+                            title: message.title + '<br>',
+                            message: message.message
+                        }, {
+                            // settings
+                            type: message.type
+                        });
+                    });
+                }
+            });
+        }
+
         $('[data-toggle="tooltip"]').tooltip();
     </script>
 {% endblock %}
