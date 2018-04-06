@@ -8,10 +8,8 @@ from course_api.utils.simplified_course_name import get_simple
 from course_api.tasks import course_push_task
 
 from django.contrib.auth import authenticate, login
-from course_api.data_managers.ScheduleHTML import get_html_courses
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
-from course_api.data_managers.loadSchedules import GetSchedules
 
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectCourse, Schedule
@@ -261,16 +259,33 @@ class SchedulesListView(ViewSet):
         Return a list of all courses.
         """
         courses_to_search = request.data.get('course_list', [])
+        if courses_to_search and isinstance(courses_to_search, str):
+            courses_to_search = request.data.getlist('course_list', [])
+            earliest_time = request.data.get('earliest_time', None)
+            if earliest_time and earliest_time != 'any':
+                earliest_time = int(earliest_time)
+            else:
+                earliest_time = None
+            latest_time = request.data.get('latest_time', None)
+            if latest_time and latest_time != 'any':
+                latest_time = int(latest_time)
+            else:
+                latest_time = None
+            days = request.data.get('days', 'asc')
+            gaps = request.data.get('gaps', 'asc')
+            filters = True
+        else:
+            earliest_time = None
+            latest_time = None
+            days = None
+            gaps = None
+            filters = request.data.get('filters', False)
         term = request.data.get('term', None)
-        earliest_time = request.data.get('earliest_time', None)
-        latest_time = request.data.get('latest_time', None)
-        days = request.data.get('days', 'asc')
-        gaps = request.data.get('gaps', 'asc')
         search_full = request.data.get('search_full', False)
         if not term:
             return Response({"Error": "No Term"})
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
-                                    search_full=search_full)
+                                    search_full=search_full, filters=filters)
         courses = generator.get_valid_schedules(courses_to_search)
 
         return Response(courses[:65])
@@ -312,34 +327,7 @@ class CasRegistration(ViewSet):
 
 
 def django_schedules_view(request):
-    if request.POST:
-        schedules, all_schedule_ids, all_schedule_crns, old_data = get_html_courses(request)
-        return render(request, 'calendar.html',
-                      {'schedules': schedules,
-                       'times': {'700': '7:00am', '730': '7:30am',
-                                 '800': '8:00am',
-                                 '830': '8:30am', '900': '9:00am',
-                                 '930': '9:30am',
-                                 '1000': '10:00am', '1030': '10:30am',
-                                 '1100': '11:00am', '1130': '11:30am',
-                                 '1200': '12:00pm', '1230': '12:30pm',
-                                 '1300': '1:00pm', '1330': '1:30pm',
-                                 '1400': '2:00pm',
-                                 '1430': '2:30pm',
-                                 '1500': '3:00pm', '1530': '3:30pm',
-                                 '1600': '4:00pm', '1630': '4:30pm',
-                                 '1700': '5:00pm', '1730': '5:30pm',
-                                 '1800': '6:00pm', '1830': '6:30pm',
-                                 '1900': '7:00pm',
-                                 '1930': '7:30pm',
-                                 '2000': '8:00pm', '2030': '8:30pm',
-                                 '2100': '9:00pm', '2130': '9:30pm',
-                                 '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'},
-                       'total_schedules': len(schedules)
-                          , 'all_schedule_ids': all_schedule_ids, 'all_schedule_crns': all_schedule_crns,
-                       'old_data': old_data})
-    return render(request, 'calendar.html',
-                  {'new': True, 'error': {'message': request.GET.get('error')}})
+    return render(request, 'plan_schedule.html')
 
 
 def django_saved_schedules_view(request):
@@ -456,32 +444,6 @@ class DeleteSchedule(ViewSet):
         return Response(None)
 
 
-class LoadSchedules(ViewSet):
-    """
-    loads users schedules ?total=30
-    total = max schedules you want back
-    sorted in chronological order
-    """
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-
-    def retrieve(self, request, pk=None):
-        return Response(None)
-
-    def list(self, request, format=None):
-        import json
-        amount = request.GET.get('amount', 200)
-        schedules = Schedule.objects.filter(user=request.user).order_by('created')[:amount]
-        schedules = [ScheduleSerializer(schedule).data for schedule in schedules]
-        for schedule in schedules:
-            schedule['courses'] = json.loads(schedule['courses'])
-        return Response(GetSchedules(schedule_crns=schedules).get_data_object())
-
-    def post(self, request):
-        return Response(None)
-
-
 class UserLoadSchedules(ViewSet):
     """
     requieres user auth
@@ -495,7 +457,7 @@ class UserLoadSchedules(ViewSet):
 
     def list(self, request, format=None):
         import json
-        schedules = Schedule.objects.filter(user=request.user).order_by('created')
+        schedules = Schedule.objects.filter(user=request.user).order_by('-created')
         gen_schedules = []
         for schedule in schedules:
             courses = json.loads(schedule.courses)

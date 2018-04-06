@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
     CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
-    LoadSchedules, django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
+    django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet
 from rest_framework import routers
 from django.views.generic import RedirectView
@@ -35,7 +35,6 @@ router.register(r'courses/course-dump', SubjectCourseViewSet, base_name='Subject
 router.register(r'courses/course-register', CasRegistration, base_name='CasRegistration')
 router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
 router.register(r'users/save-schedule', SaveSchedule, base_name='SaveSchedule')
-router.register(r'users/load-schedules', LoadSchedules, base_name='LoadSchedules')
 router.register(r'users/schedule-dump', UserLoadSchedules, base_name='UserLoadSchedules')
 router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
 urlpatterns = [
