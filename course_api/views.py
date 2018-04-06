@@ -474,6 +474,7 @@ class DeleteSchedule(ViewSet):
         return Response(None)
 
     def post(self, request):
+        print(request.data)
         import json
         term = request.data.get('term')
         crns = request.data.get('crns')
@@ -551,3 +552,9 @@ def user_update_script_once(request):
     for user in User.objects.all():
         user.save()
     return JsonResponse({'success': True})
+
+
+def generate_scheds(request):
+    if request.user.is_authenticated:
+        token_jwt = RefreshToken.for_user(request.user)
+        return render(request, 'schedule_search_vue.html', {'access_token': str(token_jwt.access_token)})
