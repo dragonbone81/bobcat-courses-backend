@@ -161,7 +161,7 @@ class CoursesSearch(ViewSet):
         term = request.GET.get('term', None)
         if not course or not term:
             return Response(None)
-        course_with_dash = course
+        course_with_dash = ''.join(course.split())
         if '-' not in course_with_dash:
             for i, char in enumerate(course_with_dash):
                 if char.isdigit():
