@@ -60,7 +60,8 @@ class UserInfo(ViewSet):
 
     def list(self, request, format=None):
         user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name(),
-                'first_name': request.user.first_name, 'last_name': request.user.last_name}
+                'first_name': request.user.first_name, 'last_name': request.user.last_name,
+                'unique_id': request.user.scheduleuser.unique_id}
         return Response(user)
 
 

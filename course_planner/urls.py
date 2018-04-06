@@ -26,7 +26,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
 router.register(r'courses-list', CourseViewSet, base_name='courses')
-router.register(r'login', UserInfo, base_name='login')
 router.register(r'register', UserRegistration, base_name='register')
 router.register(r'courses/course-match', CourseListView, base_name='CourseListView')
 router.register(r'courses/schedule-search', SchedulesListView, base_name='SchedulesListView')
@@ -36,6 +35,7 @@ router.register(r'courses/course-register', CasRegistration, base_name='CasRegis
 router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
 router.register(r'users/save-schedule', SaveSchedule, base_name='SaveSchedule')
 router.register(r'users/schedule-dump', UserLoadSchedules, base_name='UserLoadSchedules')
+router.register(r'users/user-info', UserInfo, base_name='user-info')
 router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
