@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from course_api.serializers import CourseSerializer, ScheduleSerializer
+from course_api.serializers import CourseSerializer, ScheduleSerializer, SubjectCourseSerializer
 import re
 from course_api.utils.simplified_course_name import get_simple
 from course_api.tasks import course_push_task
@@ -231,6 +231,13 @@ def ping(request):
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all().order_by('crn')
     serializer_class = CourseSerializer
+    filter_fields = '__all__'
+    search_fields = '__all__'
+
+
+class SubjectCourseViewSet(viewsets.ModelViewSet):
+    queryset = SubjectCourse.objects.all().order_by('course_name')
+    serializer_class = SubjectCourseSerializer
     filter_fields = '__all__'
     search_fields = '__all__'
 

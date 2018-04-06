@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from course_api.models import Course, Schedule
+from course_api.models import Course, Schedule, SubjectCourse
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -13,4 +13,10 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
+        fields = '__all__'
+
+
+class SubjectCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubjectCourse
         fields = '__all__'
