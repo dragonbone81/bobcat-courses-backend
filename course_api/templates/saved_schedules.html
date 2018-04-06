@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
-{% load time_converter %}
 {% load static from staticfiles %}
 {% block imports %}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{% static "js/color-hash.js" %}"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
     <link href="{% static "css/loading.css" %}" rel="stylesheet"/>
     <link href="{% static "css/loading-btn.css" %}" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+
     <style>
         .td-course {
             -webkit-box-shadow: 2px 2px 3px grey;
@@ -17,7 +19,7 @@
             width: 150px;
         }
 
-        #main_div {
+        #top_div {
             margin: 10px auto;
             background-color: #ffffff;
             padding: 10px 40px 40px 40px;
@@ -27,7 +29,7 @@
         }
 
         @media (max-width: 600px) {
-            #main_div {
+            #top_div {
                 padding: 0;
                 padding-top: 10px;
                 padding-bottom: 10px;
@@ -55,7 +57,7 @@
         }
 
         @media (min-width: 600px) {
-            #main_div {
+            #top_div {
                 padding: 20px;
                 padding-top: 10px;
             }
@@ -85,7 +87,7 @@
         }
 
         @media (max-width: 620px) {
-            #main_div {
+            #top_div {
                 margin: 5px -10px 5px -10px;
                 background-color: #ffffff;
                 padding: 10px 10px 10px 10px;
@@ -96,23 +98,22 @@
         }
     </style>
 {% endblock %}
+
 {% block preview_title %}Saved Schedules{% endblock %}
 
 {% block title %}Saved Schedules {% endblock %}
 {% block content %}
     <div class="container"
          style="max-width: 1200px; text-align: center">
-        <div id="main_div">
+        <div id="top_div">
             {% if request.user.is_authenticated %}
-                {% if schedules %}
-                    <div>
-                        <h5>Saved Schedules</h5>
-                        <form method="post" id="class_form">
-                            {% csrf_token %}
+                <div>
+                    <h5>Saved Schedules</h5>
+                    <form method="post" id="class_form">
+                        {% csrf_token %}
 
-                            <div class="form-row align-items-center">
-                                {% if schedules %}
-                                    <div class="col-auto" style="padding: 5px;">
+                        <div class="form-row align-items-center">
+                            <div class="col-auto" style="padding: 5px;">
                             <span class="d-inline-block" tabindex="0"
                                   {% if not request.user.is_authenticated %}data-toggle="tooltip"
                                   title="Login to save schedule"{% endif %}>
@@ -122,448 +123,577 @@
                                   Delete Schedule
                               </button>
                             </span>
-                                    </div>
-                                    <div class="col-auto" style="padding: 5px;">
-                                        <button class="btn btn-warning input_buttons" type="button" id="register"
-                                                name="register"
-                                                data-toggle="modal" data-target="#register_modal">Register
-                                        </button>
-                                    </div>
-                                {% endif %}
                             </div>
-                        </form>
+                            <div class="col-auto" style="padding: 5px;">
+                                <button class="btn btn-warning input_buttons" type="button" id="register"
+                                        name="register"
+                                        data-toggle="modal" data-target="#register_modal">Register
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
+                </div>
+                <div class="input-group input-group-sm mb-3 btn-block">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="schedule_span">Schedule </span>
                     </div>
-                    {% if schedules %}
-                        <div class="input-group input-group-sm mb-3 btn-block">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="schedule_span">Schedule </span>
-                            </div>
-                            <div class="input-group-append">
-                                <button id="button_back_5" class="btn btn-outline-primary" aria-label="Small"
-                                        type="button"
-                                        onclick="toggle_tables('back', 5)"><i
-                                        class="fa fa-angle-double-left"></i>
-                                </button>
-                            </div>
-                            <div class="input-group-append">
-                                <button id="button_back_1" class="btn btn-outline-primary" aria-label="Small"
-                                        type="button"
-                                        onclick="toggle_tables('back', 1)"><i
-                                        class="fa fa-arrow-left"></i>
-                                </button>
-                            </div>
-                            <div class="input-group-append">
-                                <button id="button_forward_1" class="btn btn-outline-primary" aria-label="Small"
-                                        type="button"
-                                        onclick="toggle_tables('forward', 1)">
-                                    <i
-                                            class="fa fa-arrow-right"></i>
-                                </button>
-                            </div>
-                            <div class="input-group-append">
-                                <button id="button_forward_5" class="btn btn-outline-primary" aria-label="Small"
-                                        type="button"
-                                        onclick="toggle_tables('forward', 5)"><i
-                                        class="fa fa-angle-double-right"></i>
-                                </button>
-                            </div>
-                            <div class="input-group-append schedule_span">
+                    <div class="input-group-append">
+                        <button id="button_back_5" class="btn btn-outline-primary" aria-label="Small"
+                                type="button"
+                                onclick="toggle_tables('back', 5)"><i
+                                class="fa fa-angle-double-left"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_back_1" class="btn btn-outline-primary" aria-label="Small"
+                                type="button"
+                                onclick="toggle_tables('back', 1)"><i
+                                class="fa fa-arrow-left"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_forward_1" class="btn btn-outline-primary" aria-label="Small"
+                                type="button"
+                                onclick="toggle_tables('forward', 1)">
+                            <i
+                                    class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append">
+                        <button id="button_forward_5" class="btn btn-outline-primary" aria-label="Small"
+                                type="button"
+                                onclick="toggle_tables('forward', 5)"><i
+                                class="fa fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                    <div class="input-group-append schedule_span">
                     <span class="input-group-text" id="schedule_span_append"
-                    >Total : {{ total_schedules }}</span>
+                    >Total: 0</span>
+                    </div>
+
+
+                </div>
+                <div id="main_div" class="row">
+                    <i style="font-size: 15em;padding: 30px;margin: auto" class="fas fa-sync fa-spin"></i>
+                </div>
+
+                <div class="modal fade"
+                     id="register_modal"
+                     tabindex="-1"
+                     role="dialog"
+                     aria-labelledby="register_modal"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Register with CAS</h5>
+                                <button type="button" class="close"
+                                        data-dismiss="modal"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-
-
-                        </div>
-                    {% endif %}
-                    {% for calendar in schedules %}
-
-                        <div class="row" id="{{ calendar.unique_name }}" hidden>
-                            <div class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12">
-                                <table class="table table-bordered table-responsive table-sm"
-                                       style="font-size: smaller;">
-                                    <thead>
-                                    <tr class="text-center">
-                                        <th>Time</th>
-                                        <th>Mon</th>
-                                        <th>Tue</th>
-                                        <th>Wed</th>
-                                        <th>Thu</th>
-                                        <th>Fri</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <script>
-
-                                    </script>
-                                    {% for time, data in calendar.items %}
-                                        {% if time == "unique_name" %}
-                                        {% else %}
-                                            <tr class="text-center">
-                                                <td id="time_id_td">{{ times|get_item:time }}</td>
-
-                                                {% for day, day_data in data.items %}
-                                                    {% if day_data.crn %}
-                                                        {% if day_data.next == False %}
-
-                                                            <td bgcolor="{{ day_data.color }}"
-                                                                class="td-course"
-                                                                style="" tabindex="0"
-                                                                rowspan="{{ day_data.length }}"
-                                                                data-toggle="popover" data-trigger="focus"
-                                                                title="{{ day_data.type }}" data-placement="top"
-                                                                data-html="true"
-                                                                data-content="{{ day_data.course_name }}<br/>CRN: {{ day_data.crn }}<br/>Hours: {{ day_data.hours }}<br/>Prof: {{ day_data.instructor }}">
-
-                                                                <div id="course_id_div">
-                                                                    <u style="color: black">{{ day_data.course_id }}</u>
-                                                                </div>
-                                                            </td>
-                                                        {% elif day_data.next == True %}
-                                                        {% endif %}
-                                                    {% else %}
-                                                        <td></td>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-lg-4 col-sm-12 col-md-12 col-xs-12" style="margin-top: 19px">
-                                <div class="card" style="width: 18rem;">
-                                    <div class="card-header">
-                                        <h6>My Classes:</h6>
-                                    </div>
-                                    <ul class="list-group list-group-flush" style="font-size: smaller">
-                                        {% with calendar.unique_name as unique_name %}
-                                            {% with all_schedule_crns|get_item_dict:unique_name as course_crn_data %}
-                                                {% for course in course_crn_data.data %}
-                                                    <li class="list-group-item"
-                                                        style="background-color: {{ course.color }};color: black">
-                                                        <b>{{ course.course_id }}</b>: {{ course.crn }}<br>
-                                                        {% if course.length == 0 %}
-                                                            <u>This section has no Time (Online?)</u>
-                                                        {% endif %}
-                                                    </li>
-
-                                                {% endfor %}
-
-
-
-                                                <div class="modal fade"
-                                                     id="register_modal{{ calendar.unique_name }}"
-                                                     tabindex="-1"
-                                                     role="dialog"
-                                                     aria-labelledby="register_modal{{ calendar.unique_name }}"
-                                                     aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">Register with CAS</h5>
-                                                                <button type="button" class="close"
-                                                                        data-dismiss="modal"
-                                                                        aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                This will register your for the currently selected
-                                                                classes
-                                                                (list
-                                                                below).<br>
-                                                                You will need to provide us with your UCMerced
-                                                                username
-                                                                (not
-                                                                email)
-                                                                and password. Yes the one for
-                                                                CatCourses.<br>
-                                                                We promise not to store this however if you have any
-                                                                doubt
-                                                                don't
-                                                                use
-                                                                this and just copy the CRN
-                                                                numbers below :)<br><br>
-                                                                <i>You will be registered for these
-                                                                    courses: </i><br>
-                                                                {% for course in course_crn_data.data %}
-                                                                    {{ course.crn }},
-                                                                {% endfor %}
-                                                                <form class="px-4 py-3"
-                                                                      id="register_form{{ unique_name }}" action="">
-                                                                    {% csrf_token %}
-                                                                    <div class="form-group">
-                                                                        <label for="username">Username</label>
-                                                                        <input type="text"
-                                                                               class="form-control"
-                                                                               placeholder="Username"
-                                                                               name="username" required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="password">Password</label>
-                                                                        <input type="password"
-                                                                               class="form-control"
-                                                                               placeholder="Password"
-                                                                               name="password" required>
-                                                                    </div>
-                                                                    <button id="register_button{{ unique_name }}"
-                                                                            type="submit"
-                                                                            class="btn btn-warning ld-ext-right">
-                                                                        Register
-                                                                        <i class="ld ld-ring ld-spin"></i>
-                                                                    </button>
-                                                                </form>
-                                                                <script>
-                                                                    var form_id = "#" + "register_form{{ unique_name }}";
-                                                                    $(form_id).submit(function (e) {
-                                                                        var button_id = "#" + "register_button{{ unique_name }}";
-                                                                        $(button_id).addClass('running');
-                                                                        e.preventDefault();
-                                                                        var url = "/api/courses/course-register/"; // the script where you handle the form input.
-                                                                        var crns = [];
-                                                                        {% for course in course_crn_data.data %}
-                                                                            crns.push({{ course.crn }});
-                                                                        {% endfor %}
-                                                                        var data = $(this).serializeArray();
-                                                                        data.push({name: "crns", value: crns}, {
-                                                                            name: "term",
-                                                                            value: current_term
-                                                                        });
-                                                                        $.ajax({
-                                                                            type: "POST",
-                                                                            url: url,
-                                                                            data: data, // serializes the form's elements.
-                                                                            success: function (data) {
-                                                                                $(button_id).removeClass('running');
-                                                                                var message = {};
-                                                                                if (data.login) {
-                                                                                    message.type = 'danger';
-                                                                                    message.message = 'Your username or password was incorrect';
-                                                                                    message.main = '';
-                                                                                }
-                                                                                if (data.response) {
-                                                                                    if (data.response === 'reg_time_less') {
-                                                                                        message.type = 'warning';
-                                                                                        message.message = 'Too early. ' + data.reg_time;
-                                                                                        message.main = '';
-                                                                                    }
-                                                                                    if (data.response === 'prereq') {
-                                                                                        message.type = 'warning';
-                                                                                        message.message = data.message;
-                                                                                        message.main = '';
-                                                                                    }
-                                                                                    if (data.response === 'course_full') {
-                                                                                        message.type = 'warning';
-                                                                                        message.message = data.message;
-                                                                                        message.main = '';
-                                                                                    }
-                                                                                    if (data.response === 'fail') {
-                                                                                        message.type = 'danger';
-                                                                                        message.message = 'Not sure what happened :( try again or copy the CRN\'s bellow and register manually';
-                                                                                        message.main = '';
-                                                                                    }
-                                                                                    if (data.response === 'success') {
-                                                                                        message.type = 'success';
-                                                                                        message.message = 'You have been successfully registered!';
-                                                                                        message.main = 'Please go to MyRegistration to check :)';
-                                                                                    }
-                                                                                }
-                                                                                $(function () {
-                                                                                    $(current_register_id).modal('hide');
-                                                                                    $.notify({
-                                                                                        // options
-                                                                                        title: message.message + '<br>',
-                                                                                        message: message.main
-                                                                                    }, {
-                                                                                        // settings
-                                                                                        type: message.type,
-                                                                                        placement: {
-                                                                                            from: "top",
-                                                                                            align: "right"
-                                                                                        },
-                                                                                        offset: 5
-                                                                                    });
-                                                                                });
-                                                                            }
-                                                                        });
-                                                                    });
-                                                                </script>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endwith %}
-                                        {% endwith %}
-                                    </ul>
+                            <div class="modal-body">
+                                This will register your for the currently selected
+                                classes
+                                (list
+                                below).<br>
+                                You will need to provide us with your UCMerced
+                                username
+                                (not
+                                email)
+                                and password. Yes the one for
+                                CatCourses.<br>
+                                We promise not to store this however if you have any
+                                doubt
+                                don't
+                                use
+                                this and just copy the CRN
+                                numbers below :)<br><br>
+                                <i>You will be registered for these
+                                    courses: </i><br>
+                                <div id="courses_reg_list">
                                 </div>
-                            </div>
+                                <form class="px-4 py-3"
+                                      id="register_form" action="">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="Username"
+                                               name="username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="password"
+                                               class="form-control"
+                                               placeholder="Password"
+                                               name="password" required>
+                                    </div>
+                                    <button id="register_button"
+                                            type="submit"
+                                            class="btn btn-warning ld-ext-right">
+                                        Register
+                                        <i class="ld ld-ring ld-spin"></i>
+                                    </button>
+                                </form>
+                                <script>
+                                    $("#register_form").submit(function (e) {
+                                        $("#register_button").addClass('running');
+                                        e.preventDefault();
+                                        var url = "/api/courses/course-register/"; // the script where you handle the form input.
 
-                        </div>
-                    {% endfor %}
-                    <script>
-                        var current_term = "{{ all_schedule_terms.0 }}";
-                        var all_current_terms = [];
-                        {% for term in all_schedule_terms %}
-                            all_current_terms.push("{{ term }}");
-                        {% endfor %}
-                        var all_crns = {};
-                        {% for course_id, data in all_schedule_crns.items %}
-                            var course_id = "{{ course_id }}";
-                            var crns = [];
-                            {% for crn_data in data %}
-                                var crn = "{{ crn_data.crn }}";
-                                crns.push(crn);
-                            {% endfor %}
-                            all_crns[course_id] = crns;
-                        {% endfor %}
-                        var current_crns = [];
-                        var current_id = "{{ all_schedule_ids.0 }}";
-
-
-                        var current_register_id = "#register_modal" + current_id;
-                        var current_schedule = 0;
-                        var all_ids = [];
-                        {%  for course_id in all_schedule_ids  %}
-                            all_ids.push("{{course_id}}");
-                        {% endfor %}
-                        $('#schedule_span').text("Schedule " + (current_schedule + 1));
-                        current_crns = all_crns[current_id];
-
-                        // In your Javascript (external .js resource or <script> tag)
-                        function toggle_tables(way, num) {
-
-                            var table_id = '#' + current_id;
-                            $(table_id).attr('hidden', true);
-                            if (way === 'forward') {
-                                if (current_schedule + num > ({{ total_schedules }}-1)) {
-                                    current_schedule = 0;
-                                }
-                                else {
-                                    current_schedule += num;
-                                }
-                            }
-                            if (way === 'back') {
-                                if (current_schedule - num < 0) {
-                                    current_schedule = {{ total_schedules }}-1;
-                                }
-                                else {
-                                    current_schedule -= num;
-                                }
-                            }
-                            current_id = all_ids[current_schedule];
-                            table_id = '#' + current_id;
-                            current_register_id = "#register_modal" + current_id;
-                            $("#register").attr('data-target', current_register_id);
-                            $(table_id).removeAttr('hidden');
-                            $('#schedule_span').text("Schedule " + (current_schedule + 1));
-                            current_crns = all_crns[current_id];
-                            current_term = all_current_terms[current_schedule];
-
-                        }
-
-                        {% if schedules %}
-                            var table_id = '#' + current_id;
-                            $(table_id).removeAttr('hidden');
-                        {% endif %}
-
-
-                        current_register_id = "#register_modal" + current_id;
-                        $("#register").attr('data-target', current_register_id);
-
-
-                        $(document).ready(function () {
-
-
-                        });
-                        $('[data-toggle="tooltip"]').tooltip();
-
-                        function delete_schedule_submit(form) {
-                            var data = $(form).serializeArray();
-                            data.push({name: "crns", value: current_crns}, {name: "term", value: current_term});
-                            var url = "/api/users/delete-schedule/"; // the script where you handle the form input.
-                            $.ajax({
-                                type: "POST",
-                                url: url,
-                                data: data, // serializes the form's elements.
-                                success: function (data) {
-                                    var message = {};
-                                    if (data.error) {
-                                        message.error = true;
-                                        message.message = data.error;
-                                        message.type = 'warning';
-                                    }
-                                    if (data.success) {
-                                        message.success = true;
-                                        message.message = data.success;
-                                        message.type = 'info';
-                                    }
-                                    $(function () {
-                                        $.notify({
-                                            // options
-                                            title: message.message + '<br>',
-                                            message: ''
-                                        }, {
-                                            // settings
-                                            type: message.type
+                                        var data = $(this).serializeArray();
+                                        data.push({name: "crns", value: all_crns[current_id]}, {
+                                            name: "term",
+                                            value: course_list_info[current_id][0].term
+                                        });
+                                        $.ajax({
+                                            type: "POST",
+                                            url: url,
+                                            data: data, // serializes the form's elements.
+                                            success: function (data) {
+                                                $("#register_button").removeClass('running');
+                                                var message = {};
+                                                if (data.login) {
+                                                    message.type = 'danger';
+                                                    message.message = 'Your username or password was incorrect';
+                                                    message.main = '';
+                                                }
+                                                if (data.response) {
+                                                    if (data.response === 'reg_time_less') {
+                                                        message.type = 'warning';
+                                                        message.message = 'Too early. ' + data.reg_time;
+                                                        message.main = '';
+                                                    }
+                                                    if (data.response === 'prereq') {
+                                                        message.type = 'warning';
+                                                        message.message = data.message;
+                                                        message.main = '';
+                                                    }
+                                                    if (data.response === 'course_full') {
+                                                        message.type = 'warning';
+                                                        message.message = data.message;
+                                                        message.main = '';
+                                                    }
+                                                    if (data.response === 'fail') {
+                                                        message.type = 'danger';
+                                                        message.message = 'Not sure what happened :( try again or copy the CRN\'s bellow and register manually';
+                                                        message.main = '';
+                                                    }
+                                                    if (data.response === 'success') {
+                                                        message.type = 'success';
+                                                        message.message = 'You have been successfully registered!';
+                                                        message.main = 'Please go to MyRegistration to check :)';
+                                                    }
+                                                }
+                                                $(function () {
+                                                    $("#register_modal").modal('hide');
+                                                    $.notify({
+                                                        // options
+                                                        title: message.message + '<br>',
+                                                        message: message.main
+                                                    }, {
+                                                        // settings
+                                                        type: message.type,
+                                                        placement: {
+                                                            from: "top",
+                                                            align: "right"
+                                                        },
+                                                        offset: 5
+                                                    });
+                                                });
+                                            }
                                         });
                                     });
-                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    var course_list_info = [];
+                    var colorHash = new ColorHash({lightness: [0.7]});
+                    var all_crns = [];
+                    var current_id = 0;
+                    var schedules = {};
+                    axios.get('/api/users/schedule-dump/', {}, {
+                        headers: {Authorization: 'Bearer {{ access_token }}'}
+                    })
+                        .then(function (response) {
+                            schedules = response.data;
+                            generate_schedules(schedules, create_data(schedules));
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+
+                    function create_data(schedules) {
+                        var schedules_times_table = [];
+                        for (var sched_number = 0; sched_number < schedules.length; sched_number++) {
+                            var times = {
+                                '700': {},
+                                '730': {},
+                                '800': {},
+                                '830': {},
+                                '900': {},
+                                '930': {},
+                                '1000': {},
+                                '1030': {},
+                                '1100': {},
+                                '1130': {},
+                                '1200': {},
+                                '1230': {},
+                                '1300': {},
+                                '1330': {},
+                                '1400': {},
+                                '1430': {},
+                                '1500': {},
+                                '1530': {},
+                                '1600': {},
+                                '1630': {},
+                                '1700': {},
+                                '1730': {},
+                                '1800': {},
+                                '1830': {},
+                                '1900': {},
+                                '1930': {},
+                                '2000': {},
+                                '2030': {},
+                                '2100': {},
+                                '2130': {},
+                                '2200': {},
+                                '2230': {},
+                                '2300': {},
+                                '2330': {}
+                            };
+                            var times_list = [
+                                '700',
+                                '730',
+                                '800',
+                                '830',
+                                '900',
+                                '930',
+                                '1000',
+                                '1030',
+                                '1100',
+                                '1130',
+                                '1200',
+                                '1230',
+                                '1300',
+                                '1330',
+                                '1400',
+                                '1430',
+                                '1500',
+                                '1530',
+                                '1600',
+                                '1630',
+                                '1700',
+                                '1730',
+                                '1800',
+                                '1830',
+                                '1900',
+                                '1930',
+                                '2000',
+                                '2030',
+                                '2100',
+                                '2130',
+                                '2200',
+                                '2230',
+                                '2300',
+                                '2330'];
+                            var times_table = {
+                                M: {},
+                                T: {},
+                                W: {},
+                                R: {},
+                                F: {}
+                            };
+                            $.each(schedules[sched_number].schedule, function (simple_name, course_sections) {
+                                $.each(course_sections, function (section_type, section_data) {
+                                    if (!all_crns[sched_number]) {
+                                        all_crns[sched_number] = [];
+                                    }
+                                    all_crns[sched_number].push(section_data.crn);
+                                    if (!course_list_info[sched_number]) {
+                                        course_list_info[sched_number] = [];
+                                    }
+                                    course_list_info[sched_number].push({
+                                        section_data: section_data,
+                                        term: section_data.term
+                                    });
+                                    if (section_data.hours === 'TBD-TBD') {
+
+                                    }
+                                    else {
+                                        var hours = convert_24(section_data.hours);
+                                        section_data.length = Math.ceil((hours.end_time - hours.start_time) / 50);
+
+                                        $.each(section_data.days.split(""), function (index, day) {
+                                            var start_index = times_list.indexOf((hours.start_time).toString());
+                                            for (var hhour = 0; hhour < section_data.length; hhour++) {
+                                                if (hhour === 0) {
+                                                    times_table[day][times_list[start_index + hhour]] = {
+                                                        first: true,
+                                                        data: section_data
+                                                    };
+                                                }
+                                                else {
+                                                    times_table[day][times_list[start_index + hhour]] = {
+                                                        first: false,
+                                                        data: section_data
+                                                    };
+                                                }
+                                            }
+                                        });
+                                    }
+
+                                });
                             });
+                            schedules_times_table.push(times_table);
                         }
+                        return schedules_times_table;
+                    }
+
+                    function convert_24(time) {
+                        time = time.split('-');
+                        var start_time = time[0].split(':');
+                        var end_time = time[1].split(':');
+                        if (end_time[1].includes('pm')) {
+                            if (end_time[0] !== "12") {
+                                end_time[0] = (parseInt(end_time[0]) + 12).toString();
+                            }
+                            if (start_time[0] !== "12") {
+                                start_time[0] = (parseInt(start_time[0]) + 12).toString();
+                            }
+                        }
+                        end_time[1] = end_time[1].slice(0, 2);
+                        if (parseInt(start_time[0]) > parseInt(end_time[0])) {
+                            start_time[0] = (parseInt(start_time[0]) - 12).toString();
+                        }
+                        return {
+                            start_time: parseInt(start_time[0] + start_time[1]),
+                            end_time: parseInt(end_time[0] + end_time[1])
+                        };
+                    }
+
+                    function generate_schedules(schedules, schedules_times_tables) {
+                        var body = "";
+                        var times_list = [
+                            '700',
+                            '730',
+                            '800',
+                            '830',
+                            '900',
+                            '930',
+                            '1000',
+                            '1030',
+                            '1100',
+                            '1130',
+                            '1200',
+                            '1230',
+                            '1300',
+                            '1330',
+                            '1400',
+                            '1430',
+                            '1500',
+                            '1530',
+                            '1600',
+                            '1630',
+                            '1700',
+                            '1730',
+                            '1800',
+                            '1830',
+                            '1900',
+                            '1930',
+                            '2000',
+                            '2030',
+                            '2100',
+                            '2130',
+                            '2200',
+                            '2230',
+                            '2300',
+                            '2330'];
+                        var times = {
+                            '700': '7:00am', '730': '7:30am',
+                            '800': '8:00am',
+                            '830': '8:30am', '900': '9:00am',
+                            '930': '9:30am',
+                            '1000': '10:00am', '1030': '10:30am',
+                            '1100': '11:00am', '1130': '11:30am',
+                            '1200': '12:00pm', '1230': '12:30pm',
+                            '1300': '1:00pm', '1330': '1:30pm',
+                            '1400': '2:00pm',
+                            '1430': '2:30pm',
+                            '1500': '3:00pm', '1530': '3:30pm',
+                            '1600': '4:00pm', '1630': '4:30pm',
+                            '1700': '5:00pm', '1730': '5:30pm',
+                            '1800': '6:00pm', '1830': '6:30pm',
+                            '1900': '7:00pm',
+                            '1930': '7:30pm',
+                            '2000': '8:00pm', '2030': '8:30pm',
+                            '2100': '9:00pm', '2130': '9:30pm',
+                            '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'
+                        };
+                        var days_list = [
+                            'M',
+                            'T',
+                            'W',
+                            'R',
+                            'F'
+                        ];
+                        for (var sched = 0; sched < schedules.length; sched++) {
+                            body += '<div id="' + sched + '" class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12" hidden>';
+                            body += '<table class="table table-bordered table-responsive table-sm" style="font-size: smaller;">';
+                            body += '<thead> <tr class="text-center"> <th>Time</th> <th>Mon</th> <th>Tue</th> <th>Wed</th> <th>Thu</th> <th>Fri</th> </tr> </thead>';
+                            body += '<tbody id="table_body">';
+                            var start_index = times_list.indexOf((schedules[sched].info.earliest).toString());
+                            var end_time_str = (schedules[sched].info.latest).toString();
+                            if (parseInt(end_time_str[end_time_str.length - 1]) === 5) {
+                                end_time_str = end_time_str.replaceAt(end_time_str.length - 1, '0');
+                            }
+                            if (parseInt(end_time_str[end_time_str.length - 2]) < 3) {
+                                end_time_str = end_time_str.replaceAt(end_time_str.length - 2, '3');
+                            }
+                            if (parseInt(end_time_str[end_time_str.length - 2]) > 3) {
+                                end_time_str = end_time_str.replaceAt(end_time_str.length - 2, '0');
+                                end_time_str = (parseInt(end_time_str) + 100).toString();
+                            }
+                            var end_index = times_list.indexOf(end_time_str);
+                            for (var time = start_index; time < end_index + 1; time++) {
+                                body += '<tr>';
+                                for (var i = 0; i < 6; i++) {
+                                    if (i === 0) {
+                                        body += '<td id="time_id_td" class="time_td">' + times[times_list[time]] + '</td>';
+                                    }
+                                    else {
+                                        var course = schedules_times_tables[sched][days_list[i - 1]][times_list[time]];
+                                        if (!course) {
+                                            body += '<td></td>';
+                                        }
+                                        else if (course.data && course.first) {
+                                            body += '<td tabindex="0" bgcolor="' + colorHash.hex(course.data.course_name)
+                                                + '" class="td-course" rowspan="' + course.data.length + '"' +
+                                                ' data-toggle="popover" data-trigger="focus" title="' +
+                                                course.data.type + '" data-placement="top" data-html="true" ' +
+                                                'data-content="' + course.data.course_name + '<br/>CRN: ' +
+                                                course.data.crn + '<br/>Hours: ' + course.data.hours +
+                                                '<br/>Prof: ' + course.data.instructor + '">'
+                                                + '<div id="course_id_div"><u style="color: black">'
+                                                + course.data.course_id + '</u></div>' + '</td>';
+                                        }
+                                        else {
+                                        }
+
+
+                                    }
+                                }
+                                body += '</tr>';
+                            }
+                            body += '</tbody> </table> </div>';
+                        }
+                        body += '<div class="col-lg-4 col-sm-12 col-md-12 col-xs-12"> ' +
+                            '<div class="card" style="width: 18rem;"> <div class="card-header"> <h6>My Classes:</h6> ' +
+                            '</div> <ul id="course_list_info" class="list-group list-group-flush" style="font-size: medium">' +
+                            ' </ul> </div> </div>';
+                        $("#main_div").html(body);
+                        $("#0").removeAttr('hidden');
+                        $("#schedule_span_append").html("Total: " + schedules.length);
+                        make_list_info();
 
                         $(function () {
                             $('[data-toggle="popover"]').popover({trigger: 'focus'})
-                        })
-                    </script>
-                    <div id="dialog" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Registration Complete</h5>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                </div>
-                                <!-- dialog body -->
-                                <div class="modal-body">
+                        });
+                    }
 
-                                    You have been registered, go to MyRegistration to double check :)
-                                    <a target="_blank"
-                                       href="https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin">https://mystudentrecord.ucmerced.edu/pls/PROD/bwskfreg.P_AltPin</a>
-                                </div>
-                                <!-- dialog buttons -->
-                                <div class="modal-footer">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <script>
-                        $("#dialog").on("show", function () {    // wire up the OK button to dismiss the modal when shown
-                            $("#dialog a.btn").on("click", function (e) {
-                                $("#myModal").modal('hide');     // dismiss the dialog
-                            });
-                        });
-                        $("#dialog").on("hide", function () {    // remove the event listeners when the dialog is dismissed
-                            $("#dialog a.btn").off("click");
-                        });
+                    String.prototype.replaceAt = function (index, replacement) {
+                        return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+                    };
 
-                        $("#dialog").on("hidden", function () {  // remove the actual elements from the DOM when fully hidden
-                            $("#dialog").remove();
+                    function make_list_info() {
+                        var course_body = '';
+                        $.each(course_list_info[current_id], function (index, course_data) {
+                            var info;
+                            if (course_data.section_data.hours === 'TBD-TBD') {
+                                info = '<u>This section has no Time (Online?)</u>';
+                            }
+                            else {
+                                info = '';
+                            }
+                            course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name) +
+                                ';color: black"> <b>' + course_data.section_data.course_id + '</b>: ' +
+                                course_data.section_data.crn + '<br>' + info + '</li>';
                         });
+                        $("#courses_reg_list").html(all_crns[current_id].join(', '));
+                        $("#course_list_info").html(course_body);
+                    }
 
-                        $("#dialog").modal({                    // wire up the actual modal functionality and show the dialog
-                            "backdrop": "static",
-                            "keyboard": true,
-                            "show": false                     // ensure the modal is shown immediately
+                    function toggle_tables(way, num) {
+                        var table_id = '#' + current_id;
+                        $(table_id).attr('hidden', true);
+                        if (way === 'forward') {
+                            if (current_id + num > (schedules.length - 1)) {
+                                current_id = 0;
+                            }
+                            else {
+                                current_id += num;
+                            }
+                        }
+                        if (way === 'back') {
+                            if (current_id - num < 0) {
+                                current_id = schedules.length - 1;
+                            }
+                            else {
+                                current_id -= num;
+                            }
+                        }
+                        table_id = '#' + current_id;
+                        $(table_id).removeAttr('hidden');
+                        $('#schedule_span').text("Schedule " + (current_id + 1));
+                        make_list_info();
+
+                    }
+
+                    function delete_schedule_submit(form) {
+                        var data = $(form).serializeArray();
+                        data.push({name: "crns", value: all_crns[current_id]}, {
+                            name: "term",
+                            value: course_list_info[current_id][0].term
                         });
-                    </script>
-                {% else %}
-                    <div class="jumbotron jumbotron-fluid">
-                        <div class="container">
-                            <h1 class="display-4">No Saved Schedules :*(</h1>
-                            <p class="lead">Plan a schedule first to view it here</p>
-                        </div>
-                    </div>
-                {% endif %}
+                        var url = "/api/users/delete-schedule/"; // the script where you handle the form input.
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: data, // serializes the form's elements.
+                            success: function (data) {
+                                var message = {};
+                                if (data.error) {
+                                    message.error = true;
+                                    message.message = data.error;
+                                    message.type = 'warning';
+                                }
+                                if (data.success) {
+                                    message.success = true;
+                                    message.message = data.success;
+                                    message.type = 'info';
+                                }
+                                $(function () {
+                                    $.notify({
+                                        // options
+                                        title: message.message + '<br>',
+                                        message: ''
+                                    }, {
+                                        // settings
+                                        type: message.type
+                                    });
+                                });
+                            }
+                        });
+                    }
+                </script>
             {% else %}
                 <div class="jumbotron jumbotron-fluid">
                     <div class="container">
@@ -574,4 +704,5 @@
             {% endif %}
         </div>
     </div>
+
 {% endblock %}
