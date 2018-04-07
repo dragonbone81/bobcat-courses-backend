@@ -162,6 +162,7 @@ class CoursesSearch(ViewSet):
         term = request.GET.get('term', None)
         if not course or not term:
             return Response(None)
+        course = course.lower()
         course_with_dash = ''.join(course.split())
         if '-' not in course_with_dash:
             for i, char in enumerate(course_with_dash):
@@ -176,9 +177,9 @@ class CoursesSearch(ViewSet):
                               SubjectCourse.objects.filter(course_description__icontains=course, term=term).order_by(
                                   'course_name')]
             temp_list = []
-            course_list = course.split()
+            course_list = course.lower().split()
             for course_filter in simple_courses:
-                course_filter_list = course_filter.get('description').split()
+                course_filter_list = course_filter.get('description').lower().split()
                 match = False
                 for item in course_list:
                     for item_course in course_filter_list:
