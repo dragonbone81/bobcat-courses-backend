@@ -771,11 +771,14 @@
         });
 
         function submit_form(form) {
+            var data = $(form).serializeArray();
+            if(data.length<5){
+                return 0;
+            }
             $("#navigate_buttons").attr('hidden', true);
             $("#register").attr('hidden', true);
             $("#save_sched").attr('hidden', true);
             $("#main_div").html('<i style="font-size: 15em;padding: 30px;margin: auto" class="fas fa-sync fa-spin"></i>');
-            var data = $(form).serializeArray();
             var url = "/api/courses/schedule-search/";
             $.ajax({
                 type: "POST",
