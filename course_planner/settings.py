@@ -30,6 +30,7 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    WSGI_APPLICATION = 'course_planner.wsgi.application'
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY
 
@@ -193,3 +194,10 @@ DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- her
 STATIC_URL = '/static/'
 
 django_heroku.settings(locals())
+if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
+    DATABASES['default']['ENGINE'] = 'django_db_geventpool.backends.postgresql_psycopg2',
+    DATABASES['default']['ATOMIC_REQUESTS'] = False
+    DATABASES['default']['CONN_MAX_AGE'] = 0
+    DATABASES['default']['OPTIONS'] = {
+        'MAX_CONNS': 20
+    }
