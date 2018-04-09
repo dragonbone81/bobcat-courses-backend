@@ -689,7 +689,8 @@
                                     course.data.type + '" data-placement="top" data-html="true" ' +
                                     'data-content="' + course.data.course_name + '<br/>CRN: ' +
                                     course.data.crn + '<br/>Hours: ' + course.data.hours +
-                                    '<br/>Prof: ' + course.data.instructor + '">'
+                                    '<br/>Prof: ' + course.data.instructor + '<br/>Enrolled: ' +
+                                    course.data.enrolled + '/' + course.data.capacity + '">'
                                     + '<div id="course_id_div"><u style="color: black">'
                                     + course.data.course_id + '</u></div>' + '</td>';
                             }
@@ -774,7 +775,7 @@
 
         function submit_form(form) {
             var data = $(form).serializeArray();
-            if(data.length<5){
+            if (data.length < 5) {
                 return 0;
             }
             $("#navigate_buttons").attr('hidden', true);
