@@ -429,10 +429,10 @@
                             };
                             $.each(schedules[sched_number].schedule, function (simple_name, course_sections) {
                                 $.each(course_sections, function (section_type, section_data) {
+                                    if (!full_courses[sched_number]) {
+                                        full_courses[sched_number] = [];
+                                    }
                                     if (section_data.available === 0) {
-                                        if (!full_courses[sched_number]) {
-                                            full_courses[sched_number] = [];
-                                        }
                                         full_courses[sched_number].push(section_data.course_id);
                                     }
                                     if (!all_crns[sched_number]) {
