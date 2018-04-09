@@ -28,6 +28,7 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'course_api',
+    'storages',
 ]
 
 MIDDLEWARE = [
