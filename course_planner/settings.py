@@ -199,5 +199,5 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     DATABASES['default']['ATOMIC_REQUESTS'] = False
     DATABASES['default']['CONN_MAX_AGE'] = 0
     DATABASES['default']['OPTIONS'] = {
-        'MAX_CONNS': 20
+        'MAX_CONNS': 4
     }
