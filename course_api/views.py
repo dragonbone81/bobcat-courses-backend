@@ -314,7 +314,6 @@ class CasRegistration(ViewSet):
         crns = request.data.get('crns')
         if isinstance(crns, str):
             crns = crns.split(',')
-        print(crns)
         username = request.data.get('username')
         password = request.data.get('password')
         term = request.data.get('term')
@@ -323,8 +322,10 @@ class CasRegistration(ViewSet):
         response = registration.cas_login()
         if response.get('login') == 'success':
             response = registration.register()
+            print("User {} tried to save a schedule, response {}".format(request.user.username, response))
             return Response(response)
         else:
+            print("User {} tried to save a schedule, response {}".format(request.user.username, response))
             return Response(response)
 
 
@@ -387,6 +388,9 @@ def app_login(request):
 class SaveSchedule(ViewSet):
     """
     saves schedule
+    Needs user authentication and saves schedule to that user
+    post term, crns:['34454', '45556',...]
+    if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -420,6 +424,9 @@ class SaveSchedule(ViewSet):
 class DeleteSchedule(ViewSet):
     """
     saves schedule
+    Needs user authentication and deletes that users schedule
+    post term, crns:['34454', '45556',...] <-of schedule you want to delete
+    if schedule not found returns {'error': 'Schedule DNE (Already Deleted Probably)'}
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -448,7 +455,7 @@ class DeleteSchedule(ViewSet):
 
 class UserLoadSchedules(ViewSet):
     """
-    requieres user auth
+    Just requires user auth and returns all schedules the user has saved
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
