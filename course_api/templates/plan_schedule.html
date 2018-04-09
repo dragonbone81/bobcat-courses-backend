@@ -520,6 +520,8 @@
                 };
                 $.each(schedules[sched_number].schedule, function (simple_name, course_sections) {
                     $.each(course_sections, function (section_type, section_data) {
+                        if (section_data === null)
+                            return true;
                         if (!all_crns[sched_number]) {
                             all_crns[sched_number] = [];
                         }
@@ -784,6 +786,7 @@
                 success: function (data) {
                     $("#main_div").html('');
                     schedules = data;
+                    console.log(schedules);
                     if (schedules.length > 0) {
                         course_list_info = [];
                         all_crns = [];
