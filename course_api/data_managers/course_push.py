@@ -80,9 +80,7 @@ class SubjectClassUpdate(object):
                     'term': course.term,
                     'course_subject': course.subject,
                     'course_description': course.course_name,
-                    'type': course.type,
                 }
-                course_obj.pop('type')
                 course_obj = SubjectCourse(**course_obj)
                 courses["{}:{}".format(simplified_name, course.term)] = course_obj
         return courses
