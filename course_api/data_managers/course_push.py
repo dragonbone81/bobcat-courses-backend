@@ -74,13 +74,15 @@ class SubjectClassUpdate(object):
         all_courses = Course.objects.all()
         for course in all_courses:
             simplified_name = get_simple(course.course_id)
-            if not courses.get(simplified_name):
+            if not courses.get("{}:{}".format(simplified_name, course.term)):
                 course_obj = {
                     'course_name': simplified_name,
                     'term': course.term,
                     'course_subject': course.subject,
                     'course_description': course.course_name,
+                    'type': course.type,
                 }
+                course_obj.pop('type')
                 course_obj = SubjectCourse(**course_obj)
                 courses["{}:{}".format(simplified_name, course.term)] = course_obj
         return courses
