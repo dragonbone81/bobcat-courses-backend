@@ -315,6 +315,7 @@
                 </div>
 
                 <script>
+                    var full_courses = [];
                     var course_list_info = [];
                     var colorHash = new ColorHash({lightness: [0.7]});
                     var all_crns = [];
@@ -428,6 +429,12 @@
                             };
                             $.each(schedules[sched_number].schedule, function (simple_name, course_sections) {
                                 $.each(course_sections, function (section_type, section_data) {
+                                    if (section_data.available === 0) {
+                                        if (!full_courses[sched_number]) {
+                                            full_courses[sched_number] = [];
+                                        }
+                                        full_courses[sched_number].push(section_data.course_id);
+                                    }
                                     if (!all_crns[sched_number]) {
                                         all_crns[sched_number] = [];
                                     }
@@ -639,9 +646,18 @@
                             else {
                                 info = '';
                             }
-                            course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name) +
-                                ';color: black"> <b>' + course_data.section_data.course_id + '</b>: ' +
-                                course_data.section_data.crn + '<br>' + info + '</li>';
+                            if (full_courses[current_id].indexOf(course_data.section_data.course_id) === -1) {
+                                course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name) +
+                                    ';color: black"> <b>' + course_data.section_data.course_id + '</b>: ' +
+                                    course_data.section_data.crn + '<br>' + info + '</li>';
+                            }
+                            else {
+                                info = '<u>This section is full</u>';
+                                course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name) +
+                                    ';color: #A94442"> <b>' + course_data.section_data.course_id + '</b>: ' +
+                                    course_data.section_data.crn + '<br>' + info + '</li>';
+                            }
+
                         });
                         $("#courses_reg_list").html(all_crns[current_id].join(', '));
                         $("#course_list_info").html(course_body);
