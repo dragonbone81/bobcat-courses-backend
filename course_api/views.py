@@ -350,7 +350,7 @@ def django_profile_view(request):
 def app_register_view(request):
     if request.POST:
         if not request.POST.get('password') or not request.POST.get('username'):
-            return render(request, 'register.html', {'error': 'Username or Password not provided'})
+            return render(request, 'register.html', {'error': {'message': 'Username or Password not provided'}})
         import random
         from course_api.data_managers.anonymous_names import names
         first_name = request.POST.get('first_name')
@@ -366,7 +366,7 @@ def app_register_view(request):
             login(request, user=user)
             return redirect('/app/bobcat-courses/profile')
         else:
-            return render(request, 'register.html', {'error': 'username Already Exists'})
+            return render(request, 'register.html', {'error': {'message': 'Username Already Exists'}})
     return render(request, 'register.html')
 
 
