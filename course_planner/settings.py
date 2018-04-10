@@ -30,6 +30,10 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY
 
