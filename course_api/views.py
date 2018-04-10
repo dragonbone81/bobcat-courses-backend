@@ -273,8 +273,20 @@ class SchedulesListView(ViewSet):
                 latest_time = int(latest_time)
             else:
                 latest_time = None
-            days = request.data.get('days', 'asc')
-            gaps = request.data.get('gaps', 'asc')
+            filters_list = request.data.getlist('filters', [])
+            gaps = 'asc'
+            if 'gaps_min' in filters_list:
+                gaps = 'asc'
+            if 'gaps_max' in filters_list:
+                gaps = 'desc'
+            days = 'desc'
+            if 'min_days' in filters_list:
+                days = 'asc'
+            if 'max_days' in filters_list:
+                days = 'desc'
+            search_full = False
+            if 'search_full' in filters_list:
+                search_full = True
             filters = True
         else:
             earliest_time = None
@@ -282,8 +294,8 @@ class SchedulesListView(ViewSet):
             days = None
             gaps = None
             filters = request.data.get('filters', False)
+            search_full = request.data.get('search_full', False)
         term = request.data.get('term', None)
-        search_full = request.data.get('search_full', False)
         if not term:
             return Response({"Error": "No Term"})
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
