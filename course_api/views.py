@@ -322,10 +322,10 @@ class CasRegistration(ViewSet):
         response = registration.cas_login()
         if response.get('login') == 'success':
             response = registration.register()
-            print("User {} tried to save a schedule, response {}".format(request.user.username, response))
+            print("User {} tried to register, response {}".format(request.user.username, response))
             return Response(response)
         else:
-            print("User {} tried to save a schedule, response {}".format(request.user.username, response))
+            print("User {} tried to register, response {}".format(request.user.username, response))
             return Response(response)
 
 

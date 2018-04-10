@@ -2,6 +2,7 @@ import requests
 import lxml.html
 from dateutil.parser import parse
 from django.utils import timezone
+from datetime import timedelta
 from dateutil.tz import gettz
 from bs4 import BeautifulSoup
 
@@ -83,6 +84,8 @@ class CourseRegistration(object):
         if self.registration_time > timezone.now():
             reg_time = self.registration_time.strftime("Your registration time is at %I:%M%p on %x")
             return {'response': 'reg_time_less', 'reg_time': reg_time}
+        if self.registration_time > timezone.now() - timedelta(seconds=30):
+            return {'response': 'reg_time_almost'}
         response = self.session.post('https://mystudentrecord.ucmerced.edu/pls/PROD/bwckcoms.P_Regs',
                                      data=self.form_data).text
         if 'Closed Section' in response:
