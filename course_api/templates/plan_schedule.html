@@ -340,6 +340,11 @@
                                                         message.message = 'Too early. ' + data.reg_time;
                                                         message.main = '';
                                                     }
+                                                    if (data.response === 'reg_time_almost') {
+                                                        message.type = 'warning';
+                                                        message.message = 'Your registration time is just about here, try in 30 seconds :)';
+                                                        message.main = '';
+                                                    }
                                                     if (data.response === 'prereq') {
                                                         message.type = 'warning';
                                                         message.message = data.message;
