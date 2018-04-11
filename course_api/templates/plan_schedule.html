@@ -441,10 +441,29 @@
     <script>
         var full_courses = [];
         var course_list_info = [];
-        var colorHash = new ColorHash({lightness: [0.7]});
         var all_crns = [];
         var current_id = 0;
         var schedules = {};
+        var colors = ['#ff7575', '#ffe575', '#bdff91', '#91ffec', '#91b5ff', '#ebaaff', '#f993b9'];
+        var courses_done = [];
+
+        function makeIterator(array) {
+            var nextIndex = 0;
+
+            return {
+                next: function () {
+                    if (nextIndex < array.length) {
+                        return {value: array[nextIndex++], done: false}
+                    }
+                    else {
+                        nextIndex = 0;
+                        return {value: array[nextIndex++], done: false}
+                    }
+                }
+            };
+        }
+
+        var it = makeIterator(colors);
 
         function create_data(schedules) {
             var schedules_times_table = [];
@@ -548,6 +567,12 @@
                             section_data: section_data,
                             term: section_data.term
                         });
+                        if (!courses_done[sched_number]) {
+                            courses_done[sched_number] = {}
+                        }
+                        if (!(section_data.simple_name in courses_done)) {
+                            courses_done[sched_number][section_data.simple_name] = it.next().value;
+                        }
                         if (section_data.hours === 'TBD-TBD') {
 
                         }
@@ -698,7 +723,7 @@
                                 body += '<td></td>';
                             }
                             else if (course.data && course.first) {
-                                body += '<td tabindex="0" bgcolor="' + colorHash.hex(course.data.course_name + course.data.simple_name)
+                                body += '<td tabindex="0" bgcolor="' + courses_done[sched][course.data.simple_name]
                                     + '" class="td-course" rowspan="' + course.data.length + '"' +
                                     ' data-toggle="popover" data-trigger="focus" title="' +
                                     course.data.type + '" data-placement="top" data-html="true" ' +
@@ -749,13 +774,13 @@
                     info = '';
                 }
                 if (full_courses[current_id].indexOf(course_data.section_data.course_id) === -1) {
-                    course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name + course_data.section_data.simple_name) +
+                    course_body += '<li class="list-group-item" style="background-color:' + courses_done[current_id][course_data.section_data.simple_name] +
                         ';color: black"> <b>' + course_data.section_data.course_id + '</b>: ' +
                         course_data.section_data.crn + '<br>' + info + '</li>';
                 }
                 else {
                     info = '<u style="color: black;">This section is full</u>';
-                    course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name + course_data.section_data.simple_name) +
+                    course_body += '<li class="list-group-item" style="background-color:' + courses_done[current_id][course_data.section_data.simple_name] +
                         ';color: #A94442"> <b>' + course_data.section_data.course_id + '</b>: ' +
                         course_data.section_data.crn + '<br>' + info + '</li>';
                 }
