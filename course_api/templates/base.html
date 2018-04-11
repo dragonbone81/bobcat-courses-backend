@@ -24,6 +24,7 @@
     <meta property="og:image" content="{% static "favicon.png" %}">
     <meta property="og:type" content="website"/>
     <meta name="theme-color" content="#313D42"/>
+    <link rel="manifest" href="{% static "manifest.json" %}">
 
 
     <link rel="shortcut icon" type="image/png"
@@ -47,6 +48,19 @@
     <link rel="stylesheet"
           href="{% static "css/bootstrap-better-nav.min.css" %}">
     <script src="{% static "js/bootstrap-better-nav.min.js" %}"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('{% static "js/sw.js" %}').then(function (registration) {
+                    // Registration was successful
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function (err) {
+                    // registration failed :(
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
     {% block imports %}
     {% endblock %}
     <title>Bobcat Courses | {% block title %}Home{% endblock %}</title>
@@ -116,6 +130,9 @@
                                         {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
                                     &nbsp;</span>
                             <img class="user-pic" src="
+
+
+
 
 
                                     {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"

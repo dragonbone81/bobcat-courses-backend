@@ -1,0 +1,21 @@
+{
+  "name": "BobcatCourses",
+  "short_name": "Lynx",
+  "icons": [
+    {
+      "src": "https://i.imgur.com/BzkZwmE.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.imgur.com/BrhQl1s.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "gcm_sender_id": "103953800507",
+  "display": "standalone",
+  "background_color": "#F0F7FC",
+  "theme_color": "#313D42"
+}
