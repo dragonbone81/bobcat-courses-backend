@@ -629,6 +629,12 @@
                         });
                         $("#schedule_span_append").html("Total: " + schedules.length);
                         make_list_info();
+                        if (full_courses[current_id].length > 0) {
+                            $("#register").prop("disabled", true);
+                        }
+                        else {
+                            $("#register").prop("disabled", false);
+                        }
 
                         $(function () {
                             $('[data-toggle="popover"]').popover({trigger: 'focus'})
@@ -691,6 +697,12 @@
                         });
                         $('#schedule_span').text("Schedule " + (current_id + 1));
                         make_list_info();
+                        if (full_courses[current_id].length > 0) {
+                            $("#register").prop("disabled", true);
+                        }
+                        else {
+                            $("#register").prop("disabled", false);
+                        }
 
                     }
 
@@ -730,6 +742,8 @@
                             }
                         });
                     }
+
+
                 </script>
             {% else %}
                 <div class="jumbotron jumbotron-fluid">
