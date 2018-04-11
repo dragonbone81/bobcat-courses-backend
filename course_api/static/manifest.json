@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "start_url": "https://cse120-course-planner.herokuapp.com/app/bobcat-courses/schedules",
   "gcm_sender_id": "103953800507",
   "display": "standalone",
   "background_color": "#F0F7FC",
