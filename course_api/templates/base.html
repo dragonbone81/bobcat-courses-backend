@@ -23,6 +23,7 @@
           View your saved schedules. And Register for classes directly through the app."/>
     <meta property="og:image" content="{% static "favicon.png" %}">
     <meta property="og:type" content="website"/>
+    <meta name="theme-color" content="#313D42"/>
 
 
     <link rel="shortcut icon" type="image/png"
@@ -115,6 +116,7 @@
                                         {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
                                     &nbsp;</span>
                             <img class="user-pic" src="
+
 
                                     {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
                                  style="padding-right: 10px; max-height: 30px">
