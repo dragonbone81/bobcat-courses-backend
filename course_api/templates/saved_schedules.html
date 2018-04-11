@@ -599,7 +599,7 @@
                                             body += '<td></td>';
                                         }
                                         else if (course.data && course.first) {
-                                            body += '<td tabindex="0" bgcolor="' + colorHash.hex(course.data.course_name)
+                                            body += '<td tabindex="0" bgcolor="' + colorHash.hex(course.data.course_name + course.data.simple_name)
                                                 + '" class="td-course" rowspan="' + course.data.length + '"' +
                                                 ' data-toggle="popover" data-trigger="focus" title="' +
                                                 course.data.type + '" data-placement="top" data-html="true" ' +
@@ -650,13 +650,13 @@
                                 info = '';
                             }
                             if (full_courses[current_id].indexOf(course_data.section_data.course_id) === -1) {
-                                course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name) +
+                                course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name + course_data.section_data.simple_name) +
                                     ';color: black"> <b>' + course_data.section_data.course_id + '</b>: ' +
                                     course_data.section_data.crn + '<br>' + info + '</li>';
                             }
                             else {
                                 info = '<u>This section is full</u>';
-                                course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name) +
+                                course_body += '<li class="list-group-item" style="background-color:' + colorHash.hex(course_data.section_data.course_name + course_data.section_data.simple_name) +
                                     ';color: #A94442"> <b>' + course_data.section_data.course_id + '</b>: ' +
                                     course_data.section_data.crn + '<br>' + info + '</li>';
                             }
