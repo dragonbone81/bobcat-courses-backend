@@ -792,11 +792,9 @@
                     }
 
                     function starred() {
-                        {#console.log($('#class_form').serialize());#}
                         var starred = $('#starred');
                         starred.toggleClass('starred_click');
                         if (starred.hasClass("starred_click")) {
-                            console.log('is selecrted');
                             star_schedule(true);
                         }
                         else {
