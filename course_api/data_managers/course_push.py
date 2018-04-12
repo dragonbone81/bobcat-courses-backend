@@ -12,15 +12,18 @@ class UCMercedCoursePush(object):
             terms = ["201830", "201810"]
         self.data = UCMercedClassParser(terms=terms).parse_terms()
 
+    def delete_courses(self):
+        current_courses = Course.objects.all()
+        new_course_crn_list = [str(course['crn']) for course in self.data]
+        current_course_crn_list = [str(course.crn) for course in current_courses]
+        need_deleted = list(set(current_course_crn_list) - set(new_course_crn_list))
+        Course.objects.filter(crn__in=need_deleted).delete()  # delete courses that don't exists anymore
+
     def push_courses(self):
         current_courses = Course.objects.all()
         current_course_crn = {str(course.crn): course for course in current_courses}
         need_added = list()
         need_update = list()
-        new_course_crn_list = [str(course['crn']) for course in self.data]
-        current_course_crn_list = [str(course.crn) for course in current_courses]
-        need_deleted = list(set(current_course_crn_list) - set(new_course_crn_list))
-        Course.objects.filter(crn__in=need_deleted).delete()  # delete courses that don't exists anymore
         for course in self.data:
             course['units'] = int(course['units'])
             course['capacity'] = int(course['capacity'])
