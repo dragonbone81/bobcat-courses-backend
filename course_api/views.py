@@ -221,7 +221,7 @@ def course_view(request):
     elif request.GET and request.GET.get('simple'):
         SubjectClassUpdate().update_lectures()
     else:
-        course_push_task.delay()
+        course_push_task()
     return JsonResponse({'success': True})
 
 
