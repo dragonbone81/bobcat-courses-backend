@@ -93,9 +93,17 @@
                 display: none;
             }
         }
+
+        .footer {
+            width: 100%;
+            height: 35px;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
     </style>
 </head>
-<body id="body">
+<body class="body" id="body">
 
 {% block header %}
     <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
@@ -124,13 +132,13 @@
 
                     <form class="form-inline" action="/app/bobcat-courses/logout">
                         <div class="form-group">
-                                <span class="navbar-text">
-                                            Welcome
-                                    {% if request.user.first_name and request.user.first_name != "Anonymous" %}
-                                        {{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
-                                    &nbsp;</span>
+                                    <span class="navbar-text">
+                                                Welcome
+                                        {% if request.user.first_name and request.user.first_name != "Anonymous" %}
+                                            {{ request.user.first_name }}{% else %}
+                                            {{ request.user.username }}{% endif %}
+                                        &nbsp;</span>
                             <img class="user-pic" src="
-
 
 
 
@@ -163,5 +171,15 @@
 {% endif %}
 {% block content %}
 {% endblock %}
+<footer onclick="about()" class="footer">
+    <div class="container">
+        <span class="text-muted">&#169;BobcatCourses 2018</span>
+    </div>
+    <script>
+        function about() {
+            window.location.href = "/app/bobcat-courses/about";
+        }
+    </script>
+</footer>
 </body>
 </html>

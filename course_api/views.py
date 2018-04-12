@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer, ScheduleSerializer, SubjectCourseSerializer
+from django.core.mail import send_mail
 import re
 from course_api.utils.simplified_course_name import get_simple
 from course_api.tasks import course_push_task
@@ -380,6 +381,25 @@ def app_register_view(request):
         else:
             return render(request, 'register.html', {'error': {'message': 'Username Already Exists'}})
     return render(request, 'register.html')
+
+
+def app_about_view(request):
+    if request.POST:
+        if not request.user.is_authenticated:
+            username = None
+            name = request.POST.get('name', "Anonymous")
+            email = request.POST.get('email', "blank@blank.com")
+        else:
+            username = request.user.username
+            name = request.user.get_full_name() or request.POST.get('name', "Anonymous") or request.user.username
+            email = request.user.email or request.POST.get('email', "blank@blank.com")
+        message = request.POST.get('message')
+        send_mail('User {} submitted a comment, username:{}, email:{}'.format(name, username, email), message,
+                  'support@bobcat-courses.com',
+                  ['mmoison@ucmerced.edu', 'mhernandez268@ucmerced.edu', 'fdietz@ucmerced.edu',
+                   'cvernikoff@ucmerced.edu'],
+                  fail_silently=True)
+    return render(request, 'about.html')
 
 
 def app_login(request):

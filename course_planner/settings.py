@@ -34,8 +34,9 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 else:
-    from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY
+    from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY, SENDGRID_API_KEY
 
     AWS_ACCESS_KEY_ID = AWS_KEYS.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = AWS_KEYS.get('AWS_SECRET_ACCESS_KEY')
@@ -195,5 +196,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_LOCATION = 'static'
 DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- here is where we reference it
 STATIC_URL = '/static/'
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
 django_heroku.settings(locals())
