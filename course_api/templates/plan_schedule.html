@@ -238,11 +238,18 @@
                                   {% if not request.user.is_authenticated %}data-toggle="tooltip"
                                   title="Login to save schedule"{% endif %}>
                               <button class="btn btn-info input_buttons" type="button"
-                                      {% if not request.user.is_authenticated %}style="pointer-events: none;"
-                                      disabled{% endif %} onclick="class_form_submit(this.form)">
-                                  Save Schedule
+                                      {% if not request.user.is_authenticated %}style="pointer-events: none;min-width: 80px"
+                                      disabled{% endif %} style="min-width: 80px"
+                                      onclick="class_form_submit(this.form)">
+                                  Save
                               </button>
                             </span>
+                            </div>
+                            <div class="col-auto" style="padding: 5px; padding-left: 2px;padding-right: 2px" hidden
+                                 id="sections_info_button_div">
+                                <button class="btn btn-info input_buttons" type="button" id="schedule_info_button"
+                                        onclick="switch_to_sections()">Sections
+                                </button>
                             </div>
                             <div class="col-auto" style="padding: 5px; padding-left: 2px;padding-right: 2px" hidden
                                  id="register">
@@ -252,6 +259,25 @@
                                 </button>
                             </div>
                         </div>
+                        {#                    <div class="btn-group">#}
+                        {#                                <button type="button" onclick="submit_form(this.form)" class="btn btn-info">Get#}
+                        {#                                    Schedules#}
+                        {#                                </button>#}
+                        {#                                <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split"#}
+                        {#                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+                        {#                                    <span class="sr-only">Toggle Dropdown</span>#}
+                        {#                                </button>#}
+                        {#                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">#}
+                        {#                                    <button class="dropdown-item"#}
+                        {#                                            type="button" onclick="class_form_submit(this.form)"#}
+                        {#                                            {% if not request.user.is_authenticated %}disabled{% endif %}>#}
+                        {#                                        Save#}
+                        {#                                    </button>#}
+                        {#                                    <button class="dropdown-item" type="button" data-toggle="modal"#}
+                        {#                                            data-target="#register_modal">Register#}
+                        {#                                    </button>#}
+                        {#                                </div>#}
+                        {#                            </div>#}
                     </div>
                 </form>
                 <div class="modal fade"
@@ -394,7 +420,7 @@
                 </div>
 
             </div>
-            <div onclick="about()" style="text-align: left">
+            <div onclick="about()" style="text-align: left; max-width: 300px">
                 <small>Have any suggestions? Let us know here. <i class="fas fa-external-link-alt"></i></small>
                 <script>
                     function about() {
@@ -443,6 +469,9 @@
 
             </div>
             <div id="main_div" class="row">
+            </div>
+            <div id="section_div" class="row" style="display: none;">
+                lol
             </div>
         </div>
     </div>
@@ -853,6 +882,7 @@
             }
             $("#navigate_buttons").attr('hidden', true);
             $("#register").attr('hidden', true);
+            $("#sections_info_button_div").attr('hidden', true);
             $("#save_sched").attr('hidden', true);
             $("#main_div").html('<i style="font-size: 15em;padding: 30px;margin: auto" class="fas fa-sync fa-spin"></i>');
             var url = "/api/courses/schedule-search/";
@@ -869,11 +899,29 @@
                         current_id = 0;
                         $("#navigate_buttons").removeAttr('hidden');
                         $("#register").removeAttr('hidden');
+                        $("#sections_info_button_div").removeAttr('hidden');
                         $("#save_sched").removeAttr('hidden');
                         generate_schedules(schedules, create_data(schedules));
                         current_id = 0;
                         $('#schedule_span').text("Schedule " + (current_id + 1));
                         make_list_info();
+
+
+                        url = "/api/courses/course-match/";
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: {
+                                course_list: Object.keys(schedules[current_id].schedule),
+                                term: course_list_info[current_id][0].term,
+                                csrfmiddlewaretoken: '{{ csrf_token }}'
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                generate_sections(data);
+                            }
+                        });
+
                     }
                     else {
                         var body = '<div class="alert alert-danger" role="alert" style="margin: auto"> <strong>No available Schedules!</strong> There are conflicts :*(</div>';
@@ -882,6 +930,14 @@
 
                 }
             });
+        }
+
+        function generate_sections(data) {
+            var sections_html = '';
+            $.each(data, function (section_name, section_data) {
+                sections_html += section_name + section_data;
+            });
+            $("#section_div").html(sections_html);
         }
 
         function class_form_submit(form) {
@@ -918,6 +974,10 @@
                     });
                 }
             });
+        }
+
+        function switch_to_sections() {
+            $('#main_div, #section_div').toggle(200);
         }
 
         $('[data-toggle="tooltip"]').tooltip();
