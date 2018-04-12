@@ -221,6 +221,8 @@ def course_view(request):
         UCMercedCoursePush(terms=[str(term)]).push_courses()
     elif request.GET and request.GET.get('simple'):
         SubjectClassUpdate().update_lectures()
+    elif request.GET and request.GET.get('delete'):
+        UCMercedCoursePush().delete_courses()
     else:
         course_push_task()
     return JsonResponse({'success': True})
