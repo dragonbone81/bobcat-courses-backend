@@ -921,13 +921,15 @@
         }
 
         $('[data-toggle="tooltip"]').tooltip();
-        var jcourses = $("#courses");
-        for (var imp_course = 0; imp_course < imported_courses.length; imp_course++) {
-            var option = new Option(imported_courses[imp_course], imported_courses[imp_course]);
-            option.selected = true;
-            jcourses.append(option);
+        if (imported_courses && imported_term) {
+            var jcourses = $("#courses");
+            for (var imp_course = 0; imp_course < imported_courses.length; imp_course++) {
+                var option = new Option(imported_courses[imp_course], imported_courses[imp_course]);
+                option.selected = true;
+                jcourses.append(option);
+            }
+            $("#term").val(imported_term);
+            jcourses.trigger("change");
         }
-        $("#term").val(imported_term);
-        jcourses.trigger("change");
     </script>
 {% endblock %}
