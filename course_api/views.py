@@ -447,7 +447,7 @@ class SaveSchedule(ViewSet):
         crns = request.data.get('crns')
         if isinstance(crns, str):
             crns = crns.split(',')
-        if term and crns:
+        if term and crns and len(crns) > 0:
             if Schedule.objects.filter(user=request.user).count() > 20:
                 return Response({'error': 'Max saved schedules reached'})
             schedule = Schedule(
