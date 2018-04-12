@@ -394,14 +394,14 @@
                 </div>
 
             </div>
-        <div onclick="about()" style="text-align: left">
-                    <small>Have any suggestions? Let us know here. <i class="fas fa-external-link-alt"></i></small>
-                    <script>
-                        function about() {
-                            window.location.href = "/app/bobcat-courses/about";
-                        }
-                    </script>
-                </div>
+            <div onclick="about()" style="text-align: left">
+                <small>Have any suggestions? Let us know here. <i class="fas fa-external-link-alt"></i></small>
+                <script>
+                    function about() {
+                        window.location.href = "/app/bobcat-courses/about";
+                    }
+                </script>
+            </div>
             <div class="input-group input-group-sm mb-3 btn-block" id="navigate_buttons" hidden>
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="schedule_span">Schedule 1</span>
@@ -455,6 +455,14 @@
         var schedules = {};
         var colors = ['#ff7575', '#ffe575', '#bdff91', '#91ffec', '#91b5ff', '#ebaaff', '#f993b9'];
         var courses_done = [];
+        var imported_courses = [];
+        var imported_term = '';
+        {% if courses and term %}
+            imported_term = "{{ term }}";
+            {% for course in courses %}
+                imported_courses.push("{{ course }}");
+            {% endfor %}
+        {% endif %}
 
         function makeIterator(array) {
             var nextIndex = 0;
@@ -913,5 +921,13 @@
         }
 
         $('[data-toggle="tooltip"]').tooltip();
+        var jcourses = $("#courses");
+        for (var imp_course = 0; imp_course < imported_courses.length; imp_course++) {
+            var option = new Option(imported_courses[imp_course], imported_courses[imp_course]);
+            option.selected = true;
+            jcourses.append(option);
+        }
+        $("#term").val(imported_term);
+        jcourses.trigger("change");
     </script>
 {% endblock %}

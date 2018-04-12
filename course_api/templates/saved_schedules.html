@@ -99,10 +99,15 @@
 
         .starred_unclick {
             color: lightgrey;
+            stroke: black;
+            stroke-width: 20px;
+
         }
 
         .starred_click {
             color: #ffee49;
+            stroke: black;
+            stroke-width: 20px;
         }
     </style>
 {% endblock %}
@@ -122,15 +127,16 @@
 
                         <div class="form-row align-items-center">
                             <div class="col-auto" style="padding: 5px;">
-                            <span class="d-inline-block" tabindex="0"
-                                  {% if not request.user.is_authenticated %}data-toggle="tooltip"
-                                  title="Login to save schedule"{% endif %}>
-                              <button class="btn btn-info input_buttons" id="delete_sched" type="button"
-                                      {% if not request.user.is_authenticated %}style="pointer-events: none;"
-                                      disabled{% endif %} onclick="delete_schedule_submit(this.form)" hidden>
-                                  Delete Schedule
-                              </button>
-                            </span>
+                                <button class="btn btn-info input_buttons" id="delete_sched" type="button"
+                                        onclick="delete_schedule_submit(this.form)" hidden>
+                                    Delete Schedule
+                                </button>
+                            </div>
+                            <div class="col-auto" style="padding: 5px;">
+                                <button class="btn btn-info input_buttons" id="edit_sched" type="button"
+                                        onclick="edit_schedule_submit()" hidden>
+                                    Edit Schedule
+                                </button>
                             </div>
                             <div class="col-auto" style="padding: 5px;">
                                 <button class="btn btn-warning input_buttons" type="button" id="register"
@@ -357,6 +363,7 @@
                     $("#starred").attr('hidden', true);
                     $("#save_sched").attr('hidden', true);
                     $("#delete_sched").attr('hidden', true);
+                    $("#edit_sched").attr('hidden', true);
                     axios.get('/api/users/schedule-dump/', {}, {
                         headers: {Authorization: 'Bearer {{ access_token }}'}
                     })
@@ -369,6 +376,7 @@
                                 $("#starred").removeAttr('hidden');
                                 $("#save_sched").removeAttr('hidden');
                                 $("#delete_sched").removeAttr('hidden');
+                                $("#edit_sched").removeAttr('hidden');
                             }
                             else {
                                 var body = '<div class="alert alert-danger" role="alert" style="margin: auto"> <strong>No saved Schedules!</strong></div>';
@@ -789,6 +797,11 @@
                                 });
                             }
                         });
+                    }
+
+                    function edit_schedule_submit() {
+                        location.href = '/app/bobcat-courses/schedules?term=' + course_list_info[current_id][0].term +
+                            '&courses=' + Object.keys(schedules[current_id].schedule);
                     }
 
                     function starred() {

@@ -344,6 +344,10 @@ class CasRegistration(ViewSet):
 
 
 def django_schedules_view(request):
+    if request.GET and request.GET.get('term') and request.GET.getlist('courses'):
+        term = request.GET.get('term')
+        courses = request.GET.get('courses').split(',')
+        return render(request, 'plan_schedule.html', {'courses': courses, 'term': term})
     return render(request, 'plan_schedule.html')
 
 
