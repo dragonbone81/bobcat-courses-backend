@@ -453,6 +453,46 @@ class SaveSchedule(ViewSet):
         return Response(None)
 
 
+class StarSchedule(ViewSet):
+    """
+    star schedule
+    Needs user authentication and saves schedule to that user
+    post term, crns:['34454', '45556',...], star
+    if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        import json
+        term = request.data.get('term')
+        crns = request.data.get('crns')
+        if isinstance(request.data.get('star'), str):
+            star = True if request.POST.get("star") == "true" else False
+        else:
+            star = request.data.get('star')
+        if isinstance(crns, str):
+            crns = crns.split(',')
+        if term and crns:
+            for schedule in Schedule.objects.filter(user=request.user, term=term):
+                if set(json.loads(schedule.courses)) == set(crns):
+                    schedule.important = star
+                    schedule.save()
+                    if star:
+                        return Response({'success': 'Schedule favorited.'})
+                    else:
+                        return Response({'success': 'Schedule un-favorited.'})
+            return Response({'error': 'Ummmm...please contact us by clicking on the footer :*('})
+        return Response(None)
+
+
 class DeleteSchedule(ViewSet):
     """
     saves schedule
@@ -498,20 +538,23 @@ class UserLoadSchedules(ViewSet):
 
     def list(self, request, format=None):
         import json
-        schedules = Schedule.objects.filter(user=request.user).order_by('-created')
+        schedules = Schedule.objects.filter(user=request.user).order_by('-important', '-created')
         gen_schedules = []
         for schedule in schedules:
             courses = json.loads(schedule.courses)
-            schedule = {'schedule': {}, 'info': {}}
+            schedule_dict = {'schedule': {}, 'info': {}}
             for course in courses:
                 course_obj = Course.objects.get(crn=course)
-                if course_obj.simple_name in schedule['schedule']:
-                    schedule['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(course_obj).data
+                if course_obj.simple_name in schedule_dict['schedule']:
+                    schedule_dict['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(
+                        course_obj).data
                 else:
-                    schedule['schedule'][course_obj.simple_name] = {}
-                    schedule['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(course_obj).data
-            schedule['info'] = getInfoForSchedule(schedule['schedule'])
-            gen_schedules.append(schedule)
+                    schedule_dict['schedule'][course_obj.simple_name] = {}
+                    schedule_dict['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(
+                        course_obj).data
+            schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
+            schedule_dict['important'] = schedule.important
+            gen_schedules.append(schedule_dict)
         return Response(gen_schedules)
 
     def post(self, request):

@@ -96,6 +96,14 @@
                 box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
             }
         }
+
+        .starred_unclick {
+            color: lightgrey;
+        }
+
+        .starred_click {
+            color: #ffee49;
+        }
     </style>
 {% endblock %}
 
@@ -130,6 +138,7 @@
                                         data-toggle="modal" data-target="#register_modal" hidden>Register
                                 </button>
                             </div>
+                            <div id="star" onclick="starred()"></div>
                         </div>
                     </form>
 
@@ -327,10 +336,10 @@
 
                         return {
                             next: function () {
-                                if (nextIndex < array.length){
+                                if (nextIndex < array.length) {
                                     return {value: array[nextIndex++], done: false}
                                 }
-                                else{
+                                else {
                                     nextIndex = 0;
                                     return {value: array[nextIndex++], done: false}
                                 }
@@ -345,6 +354,7 @@
                     var schedules = {};
                     $("#navigate_buttons").attr('hidden', true);
                     $("#register").attr('hidden', true);
+                    $("#starred").attr('hidden', true);
                     $("#save_sched").attr('hidden', true);
                     $("#delete_sched").attr('hidden', true);
                     axios.get('/api/users/schedule-dump/', {}, {
@@ -356,6 +366,7 @@
                                 generate_schedules(schedules, create_data(schedules));
                                 $("#navigate_buttons").removeAttr('hidden');
                                 $("#register").removeAttr('hidden');
+                                $("#starred").removeAttr('hidden');
                                 $("#save_sched").removeAttr('hidden');
                                 $("#delete_sched").removeAttr('hidden');
                             }
@@ -654,6 +665,11 @@
                         $("#main_div").html(body);
                         $("#0").fadeIn(0, function () {
                         });
+                        var important = 'starred_unclick';
+                        if (schedules[0].important) {
+                            important = 'starred_click';
+                        }
+                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 46px;padding: 5px;"></i>');
                         $("#schedule_span_append").html("Total: " + schedules.length);
                         make_list_info();
                         if (full_courses[current_id].length > 0) {
@@ -730,6 +746,11 @@
                         else {
                             $("#register").prop("disabled", false);
                         }
+                        var important = 'starred_unclick';
+                        if (schedules[current_id].important) {
+                            important = 'starred_click';
+                        }
+                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 46px;padding: 5px;"></i>');
 
                     }
 
@@ -770,7 +791,64 @@
                         });
                     }
 
+                    function starred() {
+                        {#console.log($('#class_form').serialize());#}
+                        var starred = $('#starred');
+                        starred.toggleClass('starred_click');
+                        if (starred.hasClass("starred_click")) {
+                            console.log('is selecrted');
+                            star_schedule(true);
+                        }
+                        else {
+                            star_schedule(false);
+                        }
+                    }
 
+                    function star_schedule(star) {
+                        var data = $('#class_form').serializeArray();
+                        data.push(
+                            {name: "crns", value: all_crns[current_id]},
+                            {
+                                name: "term",
+                                value: course_list_info[current_id][0].term
+                            },
+                            {
+                                name: 'star',
+                                value: star
+                            }
+                        );
+                        var url = "/api/users/star-schedule/"; // the script where you handle the form input.
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: data, // serializes the form's elements.
+                            success: function (data) {
+                                schedules[current_id].important = star;
+                                var message = {};
+                                if (data.error) {
+                                    message.error = true;
+                                    message.title = data.error;
+                                    message.message = "";
+                                    message.type = 'warning';
+                                }
+                                if (data.success) {
+                                    message.success = true;
+                                    message.title = data.success;
+                                    message.type = 'info';
+                                }
+                                $(function () {
+                                    $.notify({
+                                        // options
+                                        title: message.title + '<br>',
+                                        message: ''
+                                    }, {
+                                        // settings
+                                        type: message.type
+                                    });
+                                });
+                            }
+                        });
+                    }
                 </script>
             {% else %}
                 <div class="jumbotron jumbotron-fluid">
