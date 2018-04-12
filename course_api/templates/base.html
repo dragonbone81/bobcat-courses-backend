@@ -139,10 +139,6 @@
                                             {{ request.user.username }}{% endif %}
                                         &nbsp;</span>
                             <img class="user-pic" src="
-
-
-
-
                                     {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
                                  style="padding-right: 10px; max-height: 30px">
                             <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
@@ -173,7 +169,8 @@
 {% endblock %}
 <footer onclick="about()" class="footer">
     <div class="container">
-        <span class="text-muted">&#169;BobcatCourses 2018</span>
+        <span class="text-muted float-right">About/Suggestions</span>
+        <span class="text-muted float-left">&#169;BobcatCourses 2018</span>
     </div>
     <script>
         function about() {
