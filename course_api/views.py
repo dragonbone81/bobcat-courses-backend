@@ -218,7 +218,7 @@ class GetTerms(ViewSet):
 def course_view(request):
     if request.GET and request.GET.get('pull'):
         term = request.GET.get('term')
-        UCMercedCoursePush(terms=list(term)).push_courses()
+        UCMercedCoursePush(terms=[str(term)]).push_courses()
     elif request.GET and request.GET.get('simple'):
         SubjectClassUpdate().update_lectures()
     else:
