@@ -128,7 +128,7 @@ class CourseListView(ViewSet):
         """
         Return a list of all courses.
         """
-        courses_to_search = request.data.get('course_list', [])
+        courses_to_search = request.data.get('course_list', []) or request.data.getlist('course_list[]', [])
         term = request.data.get('term')
         if not term:
             return Response({"Error": "No Term"})
@@ -306,7 +306,7 @@ class SchedulesListView(ViewSet):
                                     search_full=search_full, filters=filters)
         courses = generator.get_valid_schedules(courses_to_search)
 
-        return Response(courses[:65])
+        return Response(courses[:80])
 
 
 class CasRegistration(ViewSet):
@@ -447,7 +447,7 @@ class SaveSchedule(ViewSet):
         crns = request.data.get('crns')
         if isinstance(crns, str):
             crns = crns.split(',')
-        if term and crns and len(crns) > 0:
+        if term and crns and len(crns) > 0 and crns[0] != '':
             if Schedule.objects.filter(user=request.user).count() > 20:
                 return Response({'error': 'Max saved schedules reached'})
             schedule = Schedule(
