@@ -470,14 +470,15 @@
             </div>
             <div id="main_div" class="row">
             </div>
-            <div id="section_div" class="row" style="display: none;">
-                lol
+            <div id="section_div" style="display: none;">
+
             </div>
         </div>
     </div>
 
     <script>
         var full_courses = [];
+        var raw_data = [];
         var course_list_info = [];
         var all_crns = [];
         var current_id = 0;
@@ -486,6 +487,9 @@
         var courses_done = [];
         var imported_courses = [];
         var imported_term = '';
+        var removed_crns = [];
+        var section_data = [];
+        var current_scheds_length = 0;
         {% if courses and term %}
             imported_term = "{{ term }}";
             {% for course in courses %}
@@ -505,6 +509,9 @@
                         nextIndex = 0;
                         return {value: array[nextIndex++], done: false}
                     }
+                },
+                last: function () {
+                    nextIndex = 0;
                 }
             };
         }
@@ -592,6 +599,7 @@
                     R: {},
                     F: {}
                 };
+
                 $.each(schedules[sched_number].schedule, function (simple_name, course_sections) {
                     $.each(course_sections, function (section_type, section_data) {
                         if (section_data === null)
@@ -647,6 +655,7 @@
 
                     });
                 });
+                it.last();
                 schedules_times_table.push(times_table);
             }
             return schedules_times_table;
@@ -674,135 +683,164 @@
             };
         }
 
-        function generate_schedules(schedules, schedules_times_tables) {
-            var body = "";
-            var times_list = [
-                '700',
-                '730',
-                '800',
-                '830',
-                '900',
-                '930',
-                '1000',
-                '1030',
-                '1100',
-                '1130',
-                '1200',
-                '1230',
-                '1300',
-                '1330',
-                '1400',
-                '1430',
-                '1500',
-                '1530',
-                '1600',
-                '1630',
-                '1700',
-                '1730',
-                '1800',
-                '1830',
-                '1900',
-                '1930',
-                '2000',
-                '2030',
-                '2100',
-                '2130',
-                '2200',
-                '2230',
-                '2300',
-                '2330'];
-            var times = {
-                '700': '7:00am', '730': '7:30am',
-                '800': '8:00am',
-                '830': '8:30am', '900': '9:00am',
-                '930': '9:30am',
-                '1000': '10:00am', '1030': '10:30am',
-                '1100': '11:00am', '1130': '11:30am',
-                '1200': '12:00pm', '1230': '12:30pm',
-                '1300': '1:00pm', '1330': '1:30pm',
-                '1400': '2:00pm',
-                '1430': '2:30pm',
-                '1500': '3:00pm', '1530': '3:30pm',
-                '1600': '4:00pm', '1630': '4:30pm',
-                '1700': '5:00pm', '1730': '5:30pm',
-                '1800': '6:00pm', '1830': '6:30pm',
-                '1900': '7:00pm',
-                '1930': '7:30pm',
-                '2000': '8:00pm', '2030': '8:30pm',
-                '2100': '9:00pm', '2130': '9:30pm',
-                '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'
-            };
-            var days_list = [
-                'M',
-                'T',
-                'W',
-                'R',
-                'F'
-            ];
-            for (var sched = 0; sched < schedules.length; sched++) {
-                body += '<div id="' + sched + '" class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12" style="display: none;">';
-                body += '<table class="table table-bordered table-responsive table-sm" style="font-size: smaller;">';
-                body += '<thead> <tr class="text-center"> <th>Time</th> <th>Mon</th> <th>Tue</th> <th>Wed</th> <th>Thu</th> <th>Fri</th> </tr> </thead>';
-                body += '<tbody id="table_body">';
-                var start_index = times_list.indexOf((schedules[sched].info.earliest).toString());
-                var end_time_str = (schedules[sched].info.latest).toString();
-                if (parseInt(end_time_str[end_time_str.length - 1]) === 5) {
-                    end_time_str = end_time_str.replaceAt(end_time_str.length - 1, '0');
-                }
-                if (parseInt(end_time_str[end_time_str.length - 2]) < 3) {
-                    end_time_str = end_time_str.replaceAt(end_time_str.length - 2, '3');
-                }
-                if (parseInt(end_time_str[end_time_str.length - 2]) > 3) {
-                    end_time_str = end_time_str.replaceAt(end_time_str.length - 2, '0');
-                    end_time_str = (parseInt(end_time_str) + 100).toString();
-                }
-                var end_index = times_list.indexOf(end_time_str);
-                for (var time = start_index; time < end_index + 1; time++) {
-                    body += '<tr>';
-                    for (var i = 0; i < 6; i++) {
-                        if (i === 0) {
-                            body += '<td id="time_id_td" class="time_td">' + times[times_list[time]] + '</td>';
-                        }
-                        else {
-                            var course = schedules_times_tables[sched][days_list[i - 1]][times_list[time]];
-                            if (!course) {
-                                body += '<td></td>';
-                            }
-                            else if (course.data && course.first) {
-                                body += '<td tabindex="0" bgcolor="' + courses_done[sched][course.data.simple_name]
-                                    + '" class="td-course" rowspan="' + course.data.length + '"' +
-                                    ' data-toggle="popover" data-trigger="focus" title="' +
-                                    course.data.type + '" data-placement="top" data-html="true" ' +
-                                    'data-content="' + course.data.course_name + '<br/>CRN: ' +
-                                    course.data.crn + '<br/>Hours: ' + course.data.hours +
-                                    '<br/>Prof: ' + course.data.instructor + '<br/>Enrolled: ' +
-                                    course.data.enrolled + '/' + course.data.capacity + '">'
-                                    + '<div id="course_id_div"><u style="color: black">'
-                                    + course.data.course_id + '</u></div>' + '</td>';
-                            }
-                            else {
-                            }
-
-
+        function generate_schedules(schedules) {
+            for (var i = schedules.length - 1; i >= 0; i--) {
+                var remove = false;
+                for (var course in schedules[i].schedule) {
+                    for (var section in schedules[i].schedule[course]) {
+                        if (schedules[i].schedule[course][section] != null && removed_crns.includes(schedules[i].schedule[course][section].crn)) {
+                            remove = true;
+                            break;
                         }
                     }
-                    body += '</tr>';
                 }
-                body += '</tbody> </table> </div>';
-            }
-            body += '<div class="col-lg-4 col-sm-12 col-md-12 col-xs-12"> ' +
-                '<div class="card" style="width: 18rem;"> <div class="card-header"> <h6>My Classes:</h6> ' +
-                '</div> <ul id="course_list_info" class="list-group list-group-flush" style="font-size: medium">' +
-                ' </ul> </div> </div>';
-            $("#main_div").html(body);
-            $("#0").fadeIn(0, function () {
-            });
-            $("#schedule_span_append").html("Total: " + schedules.length);
-            make_list_info();
+                if (remove) {
+                    schedules.splice(i, 1);
 
-            $(function () {
-                $('[data-toggle="popover"]').popover({trigger: 'focus'})
-            });
+                }
+            }
+            current_scheds_length = schedules.length;
+            if (schedules.length > 0) {
+                $("#navigate_buttons").removeAttr('hidden');
+                $("#register").removeAttr('hidden');
+                $("#save_sched").removeAttr('hidden');
+                var schedules_times_tables = create_data(schedules);
+                var body = "";
+                var times_list = [
+                    '700',
+                    '730',
+                    '800',
+                    '830',
+                    '900',
+                    '930',
+                    '1000',
+                    '1030',
+                    '1100',
+                    '1130',
+                    '1200',
+                    '1230',
+                    '1300',
+                    '1330',
+                    '1400',
+                    '1430',
+                    '1500',
+                    '1530',
+                    '1600',
+                    '1630',
+                    '1700',
+                    '1730',
+                    '1800',
+                    '1830',
+                    '1900',
+                    '1930',
+                    '2000',
+                    '2030',
+                    '2100',
+                    '2130',
+                    '2200',
+                    '2230',
+                    '2300',
+                    '2330'];
+                var times = {
+                    '700': '7:00am', '730': '7:30am',
+                    '800': '8:00am',
+                    '830': '8:30am', '900': '9:00am',
+                    '930': '9:30am',
+                    '1000': '10:00am', '1030': '10:30am',
+                    '1100': '11:00am', '1130': '11:30am',
+                    '1200': '12:00pm', '1230': '12:30pm',
+                    '1300': '1:00pm', '1330': '1:30pm',
+                    '1400': '2:00pm',
+                    '1430': '2:30pm',
+                    '1500': '3:00pm', '1530': '3:30pm',
+                    '1600': '4:00pm', '1630': '4:30pm',
+                    '1700': '5:00pm', '1730': '5:30pm',
+                    '1800': '6:00pm', '1830': '6:30pm',
+                    '1900': '7:00pm',
+                    '1930': '7:30pm',
+                    '2000': '8:00pm', '2030': '8:30pm',
+                    '2100': '9:00pm', '2130': '9:30pm',
+                    '2200': '10:00pm', '2230': '10:30pm', '2300': '11:00pm'
+                };
+                var days_list = [
+                    'M',
+                    'T',
+                    'W',
+                    'R',
+                    'F'
+                ];
+                for (var sched = 0; sched < schedules.length; sched++) {
+                    body += '<div id="' + sched + '" class="table-responsive col-md-12 col-lg-8 col-sm-12 col-xs-12" style="display: none;">';
+                    body += '<table class="table table-bordered table-responsive table-sm" style="font-size: smaller;">';
+                    body += '<thead> <tr class="text-center"> <th>Time</th> <th>Mon</th> <th>Tue</th> <th>Wed</th> <th>Thu</th> <th>Fri</th> </tr> </thead>';
+                    body += '<tbody id="table_body">';
+                    var start_index = times_list.indexOf((schedules[sched].info.earliest).toString());
+                    var end_time_str = (schedules[sched].info.latest).toString();
+                    if (parseInt(end_time_str[end_time_str.length - 1]) === 5) {
+                        end_time_str = end_time_str.replaceAt(end_time_str.length - 1, '0');
+                    }
+                    if (parseInt(end_time_str[end_time_str.length - 2]) < 3) {
+                        end_time_str = end_time_str.replaceAt(end_time_str.length - 2, '3');
+                    }
+                    if (parseInt(end_time_str[end_time_str.length - 2]) > 3) {
+                        end_time_str = end_time_str.replaceAt(end_time_str.length - 2, '0');
+                        end_time_str = (parseInt(end_time_str) + 100).toString();
+                    }
+                    var end_index = times_list.indexOf(end_time_str);
+                    for (var time = start_index; time < end_index + 1; time++) {
+                        body += '<tr>';
+                        for (var i = 0; i < 6; i++) {
+                            if (i === 0) {
+                                body += '<td id="time_id_td" class="time_td">' + times[times_list[time]] + '</td>';
+                            }
+                            else {
+                                var course = schedules_times_tables[sched][days_list[i - 1]][times_list[time]];
+                                if (!course) {
+                                    body += '<td></td>';
+                                }
+                                else if (course.data && course.first) {
+                                    body += '<td tabindex="0" bgcolor="' + courses_done[sched][course.data.simple_name]
+                                        + '" class="td-course" rowspan="' + course.data.length + '"' +
+                                        ' data-toggle="popover" data-trigger="focus" title="' +
+                                        course.data.type + '" data-placement="top" data-html="true" ' +
+                                        'data-content="' + course.data.course_name + '<br/>CRN: ' +
+                                        course.data.crn + '<br/>Hours: ' + course.data.hours +
+                                        '<br/>Prof: ' + course.data.instructor + '<br/>Enrolled: ' +
+                                        course.data.enrolled + '/' + course.data.capacity + '">'
+                                        + '<div id="course_id_div"><u style="color: black">'
+                                        + course.data.course_id + '</u></div>' + '</td>';
+                                }
+                                else {
+                                }
+
+
+                            }
+                        }
+                        body += '</tr>';
+                    }
+                    body += '</tbody> </table> </div>';
+                }
+                body += '<div class="col-lg-4 col-sm-12 col-md-12 col-xs-12"> ' +
+                    '<div class="card" style="width: 18rem;"> <div class="card-header"> <h6>My Classes:</h6> ' +
+                    '</div> <ul id="course_list_info" class="list-group list-group-flush" style="font-size: medium">' +
+                    ' </ul> </div> </div>';
+                $("#main_div").html(body);
+                $("#0").fadeIn(0, function () {
+                });
+                $("#schedule_span_append").html("Total: " + schedules.length);
+                make_list_info();
+
+                $(function () {
+                    $('[data-toggle="popover"]').popover({trigger: 'focus'})
+                });
+            }
+            else {
+                $("#navigate_buttons").attr('hidden', true);
+                $("#register").attr('hidden', true);
+                $("#save_sched").attr('hidden', true);
+                var body = '<div class="alert alert-danger" role="alert" style="margin: auto"> <strong>No available Schedules!</strong> There are conflicts :*(</div>';
+                $("#main_div").html(body);
+            }
         }
 
         String.prototype.replaceAt = function (index, replacement) {
@@ -840,7 +878,7 @@
             $(table_id).fadeOut(0, function () {
             });
             if (way === 'forward') {
-                if (current_id + num > (schedules.length - 1)) {
+                if (current_id + num > (current_scheds_length - 1)) {
                     current_id = 0;
                 }
                 else {
@@ -849,7 +887,7 @@
             }
             if (way === 'back') {
                 if (current_id - num < 0) {
-                    current_id = schedules.length - 1;
+                    current_id = current_scheds_length - 1;
                 }
                 else {
                     current_id -= num;
@@ -893,6 +931,7 @@
                 success: function (data) {
                     $("#main_div").html('');
                     schedules = data;
+                    raw_data = JSON.parse(JSON.stringify(schedules));
                     if (schedules.length > 0) {
                         course_list_info = [];
                         all_crns = [];
@@ -901,10 +940,9 @@
                         $("#register").removeAttr('hidden');
                         $("#sections_info_button_div").removeAttr('hidden');
                         $("#save_sched").removeAttr('hidden');
-                        generate_schedules(schedules, create_data(schedules));
+                        generate_schedules(schedules);
                         current_id = 0;
                         $('#schedule_span').text("Schedule " + (current_id + 1));
-                        make_list_info();
 
 
                         url = "/api/courses/course-match/";
@@ -917,7 +955,7 @@
                                 csrfmiddlewaretoken: '{{ csrf_token }}'
                             },
                             success: function (data) {
-                                console.log(data);
+                                section_data = data;
                                 generate_sections(data);
                             }
                         });
@@ -934,10 +972,120 @@
 
         function generate_sections(data) {
             var sections_html = '';
+            var ul_sections = '<ul class="nav nav-tabs" id="myTab" role="tablist">';
+            var div_content = '<div class="tab-content" id="myTabContent">';
+            var selected = true;
             $.each(data, function (section_name, section_data) {
-                sections_html += section_name + section_data;
+                var table = '<table class="table table-responsive table-hover table-sm"><thead> <tr> ' +
+                    '<th></th> <th>Section</th> <th>CRN</th> <th>Time</th> ' +
+                    '<th>Day(s)</th> <th>Location</th> <th>Instructor</th> <th>Units</th>' +
+                    ' <th>Enrolled</th> </tr> </thead> <tbody>';
+                $.each(section_data, function (index, info) {
+                    table += '<tr><td><input type="checkbox" onclick="check_clicked(this)" checked="checked" id="' + info.crn +
+                        '" tabindex="0" value="' + info.crn + '-' + info.simple_name + '-' + info.type + '"><label for="' + info.course_id + '"></label></td>';
+                    table += '<td>' + get_section(info.course_id, info.type) + '</td> <td>' + info.crn + '</td> ' +
+                        '<td>' + info.hours + '</td> <td>' + info.days + '</td> ' +
+                        '<td>' + info.room + '</td> <td>' + info.instructor + '</td> ' +
+                        '<td>' + info.units + '</td> <td>' + info.enrolled + '/' + info.capacity + '</td></tr>';
+                });
+                table += '</tbody></table>';
+                div_content += '<div class="tab-pane fade';
+                if (selected) {
+                    div_content += ' show active';
+                }
+                div_content += '" id="' + section_name + '" role="tabpanel" ' +
+                    'aria-labelledby="' + section_name + '-tab">' + table + '</div>';
+                ul_sections += '<li class="nav-item">';
+                ul_sections += '<a class="nav-link ';
+                if (selected) {
+                    ul_sections += 'active" '
+                }
+                else {
+                    ul_sections += '" ';
+                }
+                ul_sections += 'id="' + section_name + '-tab" data-toggle="tab" ' +
+                    'href="#' + section_name + '" role="tab" aria-controls="' + section_name +
+                    '" aria-selected="' + selected + '">' + section_name + '</a>';
+                ul_sections += '</li>';
+                selected = false;
             });
+            div_content += '</div>';
+            ul_sections += '</ul>';
+            sections_html += ul_sections;
+            sections_html += div_content;
             $("#section_div").html(sections_html);
+
+        }
+
+        function check_clicked(mark) {
+            var course_id = mark.value.split('-');
+            var simple_name = course_id[1] + '-' + course_id[2];
+            var all_subsects = '';
+            if (~mark.value.indexOf('LECT')) {
+                for (var course_ind in section_data[simple_name]) {
+                    if (section_data[simple_name][course_ind].lecture_crn === course_id[0]) {
+                        all_subsects = $('[id^="' + section_data[simple_name][course_ind].crn + '"]');
+                        if (!mark.checked) {
+                            all_subsects.prop('checked', false);
+                            for (var i = 0; i < all_subsects.length; i++) {
+                                removed_crns.push(all_subsects[i].value.split('-')[0]);
+                            }
+                        }
+                        if (mark.checked) {
+                            all_subsects.prop('checked', true);
+                            for (var i = 0; i < all_subsects.length; i++) {
+                                removed_crns.splice(removed_crns.indexOf(all_subsects[i].value.split('-')[0]), 1);
+                            }
+
+                        }
+                    }
+                }
+                if (!mark.checked) {
+                    removed_crns.push(course_id[0]);
+                }
+                else {
+                    removed_crns.splice(removed_crns.indexOf(course_id[0]), 1);
+                }
+
+            }
+            if (~mark.value.indexOf('LAB') || ~mark.value.indexOf('DISC') || ~mark.value.indexOf('SEM') || ~mark.value.indexOf('FLDW')) {
+                for (var course_ind in section_data[simple_name]) {
+                    if (section_data[simple_name][course_ind].attached_crn === course_id[0]) {
+                        all_subsects = $('[id^="' + section_data[simple_name][course_ind].crn + '"]');
+                        if (!mark.checked) {
+                            all_subsects.prop('checked', false);
+                            for (var i = 0; i < all_subsects.length; i++) {
+                                removed_crns.push(all_subsects[i].value.split('-')[0]);
+                            }
+                        }
+                        if (mark.checked) {
+                            all_subsects.prop('checked', true);
+                            for (var i = 0; i < all_subsects.length; i++) {
+                                removed_crns.splice(removed_crns.indexOf(all_subsects[i].value.split('-')[0]), 1);
+                            }
+                        }
+                    }
+                }
+                if (!mark.checked) {
+                    removed_crns.push(course_id[0]);
+                }
+                else {
+                    removed_crns.splice(removed_crns.indexOf(course_id[0]), 1);
+                }
+
+            }
+            course_list_info = [];
+            all_crns = [];
+            current_id = 0;
+            generate_schedules(JSON.parse(JSON.stringify(raw_data)));
+            current_id = 0;
+            $('#schedule_span').text("Schedule " + (current_id + 1));
+        }
+
+        function get_section(course_id, course_type) {
+            course_id = course_id.split("-");
+            course_id = course_id[course_id.length - 1] + ' ' + course_type;
+            return course_id;
         }
 
         function class_form_submit(form) {

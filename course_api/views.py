@@ -306,7 +306,7 @@ class SchedulesListView(ViewSet):
                                     search_full=search_full, filters=filters)
         courses = generator.get_valid_schedules(courses_to_search)
 
-        return Response(courses[:65])
+        return Response(courses[:80])
 
 
 class CasRegistration(ViewSet):
