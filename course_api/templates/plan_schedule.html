@@ -975,6 +975,11 @@
             var ul_sections = '<ul class="nav nav-tabs" id="myTab" role="tablist">';
             var div_content = '<div class="tab-content" id="myTabContent">';
             var selected = true;
+            for (var section in section_data) {
+                section_data[section].sort(function (a, b) {
+                    return parseInt(a.course_id.split('-')[2]) - parseInt(b.course_id.split('-')[2]);
+                })
+            }
             $.each(data, function (section_name, section_data) {
                 var table = '<table class="table table-responsive table-hover table-sm"><thead> <tr> ' +
                     '<th></th> <th>Section</th> <th>CRN</th> <th>Time</th> ' +
