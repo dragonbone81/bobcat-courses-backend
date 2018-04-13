@@ -478,6 +478,7 @@
     <script>
         var imported_courses = [];
         var imported_term = "{{ term }}";
+        var csrf_token = '{{ csrf_token }}';
         {% if courses and term %}
             {% for course in courses %}
                 imported_courses.push("{{ course }}");
