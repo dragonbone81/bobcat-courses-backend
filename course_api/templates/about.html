@@ -2,8 +2,22 @@
 {% block preview_title %}About Us{% endblock %}
 
 {% block title %}About Us{% endblock %}
+{% block imports %}
+    <style>
+        #about_div {
+            margin: 0 auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            background-color: rgba(250, 250, 250, 0.7);
+            padding: 10px 40px 40px 40px;
+            border-radius: 4px;
+            color: #2a3644;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
 {% block content %}
-    <div class="container" style="text-align: center">
+    <div id="about_div" class="container" style="text-align: center">
 
         <!-- Introduction Row -->
         <h1 class="my-4">About Us

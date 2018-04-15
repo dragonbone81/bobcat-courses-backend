@@ -69,6 +69,17 @@
             background: #f1f7fc;
         }
 
+        #background_div {
+            background: no-repeat center center url('https://s3-us-west-1.amazonaws.com/bobcat-courses-static/images/uc_merced_72.jpg');
+            filter: blur(5px) brightness(80%);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-size: cover; /* <------ */
+            z-index: -1;
+            transform: scale(1.1)
+        }
+
         @media (min-width: 890px) {
             .navbar-expand-custom {
                 flex-direction: row;
@@ -139,6 +150,11 @@
                                             {{ request.user.username }}{% endif %}
                                         &nbsp;</span>
                             <img class="user-pic" src="
+
+
+
+
+
                                     {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
                                  style="padding-right: 10px; max-height: 30px">
                             <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
@@ -157,6 +173,7 @@
         </div>
     </nav>
 {% endblock %}
+<div id="background_div"></div>
 {% if error.message %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>{{ error.message }}</strong>
@@ -167,10 +184,11 @@
 {% endif %}
 {% block content %}
 {% endblock %}
+
 <footer onclick="about()" class="footer">
     <div class="container">
-        <span class="text-muted float-right">About/Suggestions</span>
-        <span class="text-muted float-left">&#169;BobcatCourses 2018</span>
+        <span style="color: black" class="float-right">About/Suggestions</span>
+        <span style="color: black" class="float-left">&#169;BobcatCourses 2018</span>
     </div>
     <script>
         function about() {
