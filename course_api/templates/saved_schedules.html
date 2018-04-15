@@ -16,6 +16,7 @@
 
         th {
             width: 150px;
+            min-width: 40px;
         }
 
         #top_div {
@@ -108,6 +109,13 @@
             stroke: #555555;
             stroke-width: 10px;
         }
+
+        @-moz-document url-prefix() {
+            #course_id_div {
+                word-break: break-all;
+            }
+        }
+
     </style>
 {% endblock %}
 
@@ -126,13 +134,15 @@
 
                         <div class="form-row align-items-center">
                             <div class="col-auto" style="padding: 5px;">
-                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="delete_sched" type="button"
+                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="delete_sched"
+                                        type="button"
                                         onclick="delete_schedule_submit(this.form)" hidden>
                                     <i style="font-size: 25px" class="far fa-trash-alt"></i>
                                 </button>
                             </div>
                             <div class="col-auto" style="padding: 5px;">
-                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="edit_sched" type="button"
+                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="edit_sched"
+                                        type="button"
                                         onclick="edit_schedule_submit()" hidden>
                                     <i style="font-size: 25px" class="fas fa-pencil-alt"></i>
                                 </button>
@@ -140,7 +150,8 @@
                             <div class="col-auto" style="padding: 5px;">
                                 <button class="btn btn-warning input_buttons" type="button" id="register"
                                         name="register"
-                                        data-toggle="modal" data-target="#register_modal" hidden style="font-size: 18px">Register
+                                        data-toggle="modal" data-target="#register_modal" hidden
+                                        style="font-size: 18px">Register
                                 </button>
                             </div>
                             <div id="star" onclick="starred()"></div>
@@ -191,7 +202,6 @@
                 <div id="main_div" class="row">
                     <i style="font-size: 15em;padding: 30px;margin: auto" class="fas fa-sync fa-spin"></i>
                 </div>
-
                 <div class="modal fade"
                      id="register_modal"
                      tabindex="-1"
@@ -861,10 +871,10 @@
                     }
                 </script>
             {% else %}
-                    <div class="container">
-                        <h1 class="display-4">Not Logged In</h1>
-                        <p class="lead">Login to Save and view Saved schedules</p>
-                    </div>
+                <div class="container">
+                    <h1 class="display-4">Not Logged In</h1>
+                    <p class="lead">Login to Save and view Saved schedules</p>
+                </div>
             {% endif %}
         </div>
     </div>

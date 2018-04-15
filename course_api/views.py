@@ -545,7 +545,11 @@ class UserLoadSchedules(ViewSet):
 
     def list(self, request, format=None):
         import json
-        schedules = Schedule.objects.filter(user=request.user).order_by('-important', '-created')
+        if request.GET.get('term'):
+            schedules = Schedule.objects.filter(user=request.user, term=request.GET.get('term')).order_by('-important',
+                                                                                                          '-created')
+        else:
+            schedules = Schedule.objects.filter(user=request.user).order_by('-important', '-created')
         gen_schedules = []
         for schedule in schedules:
             courses = json.loads(schedule.courses)
