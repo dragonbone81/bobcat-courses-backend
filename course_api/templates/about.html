@@ -14,6 +14,19 @@
             color: #2a3644;
             box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         }
+
+        .rounded-circle {
+            max-width: 200px;
+        }
+
+        .team-member {
+            transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+        }
+
+        .team-member:hover {
+            -webkit-transform: scale(1.15);
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -62,36 +75,35 @@
             <div class="col-lg-12">
                 <h2 style="text-align: center" class="my-4">Our Team</h2>
             </div>
-            <div class="col-lg-6 col-sm-6 text-center mb-4">
+            <div class="col-lg-6 col-sm-6 text-center mb-4 team-member">
                 <img class="rounded-circle img-fluid d-block mx-auto"
                      src="https://4qr7k2a2xza2vctux33bisalkw-wpengine.netdna-ssl.com/wp-content/uploads/2015/07/Full-time-hiring-8.2015-07-700x699.png"
-                     alt="" style="max-width: 200px">
+                     alt="">
                 <h3>Maxime
                     <small>(iOS)</small>
                 </h3>
                 {#                <p>What does this team member to? Keep it short! This is also a great spot for social links!</p>#}
             </div>
-            <div class="col-lg-6 col-sm-6 text-center mb-4">
+            <div class="col-lg-6 col-sm-6 text-center mb-4 team-member">
                 <img class="rounded-circle img-fluid d-block mx-auto"
-                     src="https://i.imgur.com/6hnAn2a.png" alt=""
-                     style="max-width: 200px">
+                     src="https://i.imgur.com/6hnAn2a.png" alt="">
                 <h3>Christian
                     <small>(Django)</small>
                 </h3>
                 {#                <p>What does this team member to? Keep it short! This is also a great spot for social links!</p>#}
             </div>
-            <div class="col-lg-6 col-sm-6 text-center mb-4">
+            <div class="col-lg-6 col-sm-6 text-center mb-4 team-member">
                 <img class="rounded-circle img-fluid d-block mx-auto" src="http://chenglou.github.io/react/img/logo.svg"
-                     alt="" style="max-width: 200px">
+                     alt="">
                 <h3>Miguel
                     <small>(React)</small>
                 </h3>
                 {#                <p>What does this team member to? Keep it short! This is also a great spot for social links!</p>#}
             </div>
-            <div class="col-lg-6 col-sm-6 text-center mb-4">
+            <div class="col-lg-6 col-sm-6 text-center mb-4 team-member">
                 <img class="rounded-circle img-fluid d-block mx-auto"
                      src="https://blog.siliconstraits.vn/wp-content/uploads/2015/07/Full-time-hiring-8.2015-08-e1440676569839.png"
-                     alt="" style="max-width: 200px">
+                     alt="">
                 <h3>Fisher
                     <small>(Android)</small>
                 </h3>
