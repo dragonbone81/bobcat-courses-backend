@@ -72,12 +72,15 @@
         #background_div {
             background: no-repeat center center url('https://s3-us-west-1.amazonaws.com/bobcat-courses-static/images/uc_merced_72.jpg');
             filter: blur(5px) brightness(80%);
+            -webkit-filter: blur(5px) brightness(80%);
             position: fixed;
             width: 100%;
             height: 100%;
             background-size: cover; /* <------ */
+            -webkit-background-size: cover; /* <------ */
             z-index: -1;
-            transform: scale(1.1)
+            transform: scale(1.1);
+            -webkit-transform: scale(1.1);
         }
 
         @media (min-width: 890px) {
