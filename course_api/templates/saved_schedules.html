@@ -85,7 +85,7 @@
             }
         }
 
-        @media (max-width: 620px) {
+        @media (max-width: 600px) {
             #top_div {
                 margin: 5px -10px 5px -10px;
                 background-color: #ffffff;
@@ -128,19 +128,19 @@
                             <div class="col-auto" style="padding: 5px;">
                                 <button style="min-width: 80px" class="btn btn-info input_buttons" id="delete_sched" type="button"
                                         onclick="delete_schedule_submit(this.form)" hidden>
-                                    Delete
+                                    <i style="font-size: 25px" class="far fa-trash-alt"></i>
                                 </button>
                             </div>
                             <div class="col-auto" style="padding: 5px;">
                                 <button style="min-width: 80px" class="btn btn-info input_buttons" id="edit_sched" type="button"
                                         onclick="edit_schedule_submit()" hidden>
-                                    Edit
+                                    <i style="font-size: 25px" class="fas fa-pencil-alt"></i>
                                 </button>
                             </div>
                             <div class="col-auto" style="padding: 5px;">
                                 <button class="btn btn-warning input_buttons" type="button" id="register"
                                         name="register"
-                                        data-toggle="modal" data-target="#register_modal" hidden>Register
+                                        data-toggle="modal" data-target="#register_modal" hidden style="font-size: 18px">Register
                                 </button>
                             </div>
                             <div id="star" onclick="starred()"></div>
@@ -676,7 +676,7 @@
                         if (schedules[0].important) {
                             important = 'starred_click';
                         }
-                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 46px;padding: 5px;"></i>');
+                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 50px;padding: 5px;"></i>');
                         $("#schedule_span_append").html("Total: " + schedules.length);
                         make_list_info();
                         if (full_courses[current_id].length > 0) {
@@ -757,7 +757,7 @@
                         if (schedules[current_id].important) {
                             important = 'starred_click';
                         }
-                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 46px;padding: 5px;"></i>');
+                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 50px;padding: 5px;"></i>');
 
                     }
 
