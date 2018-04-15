@@ -1,8 +1,10 @@
 {% load static from staticfiles %}
 <!doctype html>
-<html lang="en">
+<html amp lang="en">
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
+<meta charset="utf-8">
+<script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -14,6 +16,22 @@
         gtag('js', new Date());
         var user_id = "{{ user.scheduleuser.unique_id }}";
         gtag('config', 'UA-116671933-1', {'user_id': user_id});
+    </script>
+
+    <link rel="canonical" href="{{ request.build_absolute_uri }}{{ object.get_absolute_url }}">
+    <script type="application/ld+json">
+        {
+      "@context": "https://cse120-course-planner.herokuapp.com",
+      "@type": "Application",
+      "headline": "Build your class schedule for UC Merced",
+      "url": "{{ request.build_absolute_uri }}{{ object.get_absolute_url }}",
+      "logo": "{% static "favicon.png" %}"
+      "image": [
+          "{% static "favicon.png" %}"
+        ]
+    }
+
+
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
@@ -32,7 +50,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <!-- Required meta tags -->
-    <meta charset="utf-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
@@ -154,6 +172,9 @@
                                             {{ request.user.username }}{% endif %}
                                         &nbsp;</span>
                             <img class="user-pic" src="
+
+
+
 
 
 
