@@ -142,9 +142,9 @@
 {% block header %}
     <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
         <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px">
-            <noscript><img
+            <img
                     src="{% static "favicon.png" %}"
-                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px"></noscript>
+                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">
             Bobcat
             Courses</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -174,9 +174,9 @@
                                             {{ request.user.first_name }}{% else %}
                                             {{ request.user.username }}{% endif %}
                                         &nbsp;</span>
-                            <noscript><img class="user-pic" src="
+                            <img class="user-pic" src="
                                     {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                                           style="padding-right: 10px; max-height: 30px"></noscript>
+                                           style="padding-right: 10px; max-height: 30px">
                             <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
                                 Logout
                             </button>
