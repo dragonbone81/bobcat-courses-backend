@@ -3,8 +3,8 @@
 <html amp lang="en">
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-<meta charset="utf-8">
-<script async src="https://cdn.ampproject.org/v0.js"></script>
+    <meta charset="utf-8">
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -30,6 +30,8 @@
           "{% static "favicon.png" %}"
         ]
     }
+
+
 
 
     </script>
@@ -140,9 +142,11 @@
 
 {% block header %}
     <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
-        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px"><img
-                src="{% static "favicon.png" %}"
-                class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">Bobcat
+        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px">
+            <noscript><img
+                    src="{% static "favicon.png" %}"
+                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px"></noscript>
+            Bobcat
             Courses</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -171,17 +175,9 @@
                                             {{ request.user.first_name }}{% else %}
                                             {{ request.user.username }}{% endif %}
                                         &nbsp;</span>
-                            <img class="user-pic" src="
-
-
-
-
-
-
-
-
+                            <noscript><img class="user-pic" src="
                                     {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                                 style="padding-right: 10px; max-height: 30px">
+                                           style="padding-right: 10px; max-height: 30px"></noscript>
                             <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
                                 Logout
                             </button>
