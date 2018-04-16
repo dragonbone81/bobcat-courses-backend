@@ -16,11 +16,12 @@
 
         th {
             width: 150px;
+            min-width: 40px;
         }
 
         #top_div {
             margin: 10px auto;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.94);
             padding: 10px 40px 40px 40px;
             border-radius: 4px;
             color: #505e6c;
@@ -85,7 +86,7 @@
             }
         }
 
-        @media (max-width: 620px) {
+        @media (max-width: 600px) {
             #top_div {
                 margin: 5px -10px 5px -10px;
                 background-color: #ffffff;
@@ -108,6 +109,13 @@
             stroke: #555555;
             stroke-width: 10px;
         }
+
+        @-moz-document url-prefix() {
+            #course_id_div {
+                word-break: break-all;
+            }
+        }
+
     </style>
 {% endblock %}
 
@@ -126,21 +134,24 @@
 
                         <div class="form-row align-items-center">
                             <div class="col-auto" style="padding: 5px;">
-                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="delete_sched" type="button"
+                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="delete_sched"
+                                        type="button"
                                         onclick="delete_schedule_submit(this.form)" hidden>
-                                    Delete
+                                    <i style="font-size: 25px" class="far fa-trash-alt"></i>
                                 </button>
                             </div>
                             <div class="col-auto" style="padding: 5px;">
-                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="edit_sched" type="button"
+                                <button style="min-width: 80px" class="btn btn-info input_buttons" id="edit_sched"
+                                        type="button"
                                         onclick="edit_schedule_submit()" hidden>
-                                    Edit
+                                    <i style="font-size: 25px" class="fas fa-pencil-alt"></i>
                                 </button>
                             </div>
                             <div class="col-auto" style="padding: 5px;">
                                 <button class="btn btn-warning input_buttons" type="button" id="register"
                                         name="register"
-                                        data-toggle="modal" data-target="#register_modal" hidden>Register
+                                        data-toggle="modal" data-target="#register_modal" hidden
+                                        style="font-size: 18px">Register
                                 </button>
                             </div>
                             <div id="star" onclick="starred()"></div>
@@ -191,7 +202,6 @@
                 <div id="main_div" class="row">
                     <i style="font-size: 15em;padding: 30px;margin: auto" class="fas fa-sync fa-spin"></i>
                 </div>
-
                 <div class="modal fade"
                      id="register_modal"
                      tabindex="-1"
@@ -676,7 +686,7 @@
                         if (schedules[0].important) {
                             important = 'starred_click';
                         }
-                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 46px;padding: 5px;"></i>');
+                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 50px;padding: 5px;"></i>');
                         $("#schedule_span_append").html("Total: " + schedules.length);
                         make_list_info();
                         if (full_courses[current_id].length > 0) {
@@ -757,7 +767,7 @@
                         if (schedules[current_id].important) {
                             important = 'starred_click';
                         }
-                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 46px;padding: 5px;"></i>');
+                        $("#star").html('<i id="starred" class="fas fa-star starred_unclick ' + important + '" style="font-size: 50px;padding: 5px;"></i>');
 
                     }
 
@@ -861,11 +871,9 @@
                     }
                 </script>
             {% else %}
-                <div class="jumbotron jumbotron-fluid">
-                    <div class="container">
-                        <h1 class="display-4">Not Logged In</h1>
-                        <p class="lead">Login to Save and view Saved schedules</p>
-                    </div>
+                <div class="container">
+                    <h1 class="display-4">Not Logged In</h1>
+                    <p class="lead">Login to Save and view Saved schedules</p>
                 </div>
             {% endif %}
         </div>

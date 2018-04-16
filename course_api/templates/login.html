@@ -5,7 +5,7 @@
             max-width: 320px;
             width: 90%;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.90);
             padding: 0 40px 40px 40px;
             border-radius: 4px;
             color: #505e6c;
@@ -93,19 +93,24 @@
                     </div>
                     <button id="login_button" type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
-{#                <p style="text-align: center; padding-top: 5px; margin-bottom: 5px"><strong>-- OR --</strong></p>#}
-{#                <div class="btn-group" role="group" style="text-align: center">#}
-{#                    <a href="{% url 'social:begin' 'google-oauth2' %}"#}
-{#                       class="social-login-btn btn disabled" role="button" style="margin: 0;background-color: #DB4437"><i#}
-{#                            class="fab fa-google social-icon disabled" style="color: white;"></i></a>#}
-{#                    <button href="{% url 'social:begin' 'facebook' %}" class="social-login-btn disabled btn"#}
-{#                            style="margin: 0;background-color: #3B5998"><i#}
-{#                            class="fab fa-facebook-f social-icon" style="color: white"></i></button>#}
-{#                    <button href="{% url 'social:begin' 'github' %}" class="social-login-btn btn disabled"#}
-{#                            style="margin: 0;background-color: #b52bc4"><i#}
-{#                            class="fab fa-github social-icon disabled" style="color: black"></i></button>#}
-{#                </div>#}
-                <a id="register" href="/app/bobcat-courses/register">Not a member? Sign up.</a>
+                {#                <p style="text-align: center; padding-top: 5px; margin-bottom: 5px"><strong>-- OR --</strong></p>#}
+                {#                <div class="btn-group" role="group" style="text-align: center">#}
+                {#                    <a href="{% url 'social:begin' 'google-oauth2' %}"#}
+                {#                       class="social-login-btn btn disabled" role="button" style="margin: 0;background-color: #DB4437"><i#}
+                {#                            class="fab fa-google social-icon disabled" style="color: white;"></i></a>#}
+                {#                    <button href="{% url 'social:begin' 'facebook' %}" class="social-login-btn disabled btn"#}
+                {#                            style="margin: 0;background-color: #3B5998"><i#}
+                {#                            class="fab fa-facebook-f social-icon" style="color: white"></i></button>#}
+                {#                    <button href="{% url 'social:begin' 'github' %}" class="social-login-btn btn disabled"#}
+                {#                            style="margin: 0;background-color: #b52bc4"><i#}
+                {#                            class="fab fa-github social-icon disabled" style="color: black"></i></button>#}
+                {#                </div>#}
+                <div style="text-align: center">
+                    <a style="display: inline;" id="register"
+                       href="/app/bobcat-courses/register">Not
+                        a member? Sign up.</a> | <a style="display: inline;" id="register"
+                                                  href="/app/bobcat-courses/forgot-password">Forgot Password?</a>
+                </div>
             </div>
         </div>
     {% else %}

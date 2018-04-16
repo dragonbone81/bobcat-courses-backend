@@ -22,6 +22,7 @@
 
         th {
             width: 150px;
+            min-width: 40px;
         }
 
         @media (max-width: 600px) {
@@ -84,7 +85,7 @@
 
         #top_div {
             margin: 10px auto;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.95);
             padding: 10px 40px 40px 40px;
             border-radius: 4px;
             color: #505e6c;
@@ -104,6 +105,12 @@
 
         .dropdown.bootstrap-select.show-tick.input-group-btn.form-control {
             border: solid #b6b6b6 0.1em;
+        }
+
+        @-moz-document url-prefix() {
+            #course_id_div {
+                word-break: break-all;
+            }
         }
     </style>
 {% endblock %}
@@ -149,7 +156,7 @@
                                             term: $('#term').val()
                                         };
                                     },
-                                    delay: 350,
+                                    delay: 0,
                                     processResults: function (data) {
                                         var results = [];
                                         if (data) {

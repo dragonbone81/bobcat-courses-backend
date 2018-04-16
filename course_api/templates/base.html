@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
+    <meta charset="utf-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -14,6 +15,55 @@
         gtag('js', new Date());
         var user_id = "{{ user.scheduleuser.unique_id }}";
         gtag('config', 'UA-116671933-1', {'user_id': user_id});
+    </script>
+
+    <link rel="canonical" href="{{ request.build_absolute_uri }}{{ object.get_absolute_url }}">
+    <script type="application/ld+json">
+        {
+      "@context": "https://cse120-course-planner.herokuapp",
+      "@type": "Application",
+      "headline": "Build your class schedule for UC Merced",
+      "url": "{{ request.build_absolute_uri }}{{ object.get_absolute_url }}",
+      "logo": "{% static "favicon.png" %}",
+      "image": [
+          "{% static "favicon.png" %}"
+        ]
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
@@ -32,7 +82,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <!-- Required meta tags -->
-    <meta charset="utf-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
@@ -69,11 +119,36 @@
             background: #f1f7fc;
         }
 
+        #background_div {
+            background: no-repeat center center url('https://s3-us-west-1.amazonaws.com/bobcat-courses-static/images/uc_merced_72.jpg');
+            filter: blur(5px) brightness(80%);
+            -webkit-filter: blur(5px) brightness(80%);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            background-size: cover; /* <------ */
+            -webkit-background-size: cover; /* <------ */
+            z-index: -1;
+            transform: scale(1.1);
+            -webkit-transform: scale(1.1);
+        }
+
+        @media (max-width: 890px) {
+            .hidden-custom {
+                display: none;
+            }
+        }
+
         @media (min-width: 890px) {
             .navbar-expand-custom {
                 flex-direction: row;
                 flex-wrap: nowrap;
                 justify-content: flex-start;
+            }
+
+            .hidden-custom-li {
+                display: none;
             }
 
             .navbar-expand-custom .navbar-nav {
@@ -101,15 +176,28 @@
             text-align: center;
         }
 
+        .fa-cog:hover {
+            color: #e8e217;
+        }
+
+        .fa-cog {
+            color: #ccc617;
+            font-size: 35px;
+            margin: -10px;
+            padding-bottom: 8px
+        }
+
     </style>
 </head>
 <body class="body" id="body">
 
 {% block header %}
     <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
-        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px"><img
-                src="{% static "favicon.png" %}"
-                class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">Bobcat
+        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px">
+            <img
+                    src="{% static "favicon.png" %}"
+                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">
+            Bobcat
             Courses</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,26 +214,44 @@
                 <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
                     <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
                 </li>
+                <li class="nav-item hidden-custom-li">
+                    <a class="nav-link" href="/app/bobcat-courses/about">About Us</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item hidden-custom-li">
+                        <a class="nav-link" href="/app/bobcat-courses/reset-password">Password Reset</a>
+                    </li>
+                    <li class="nav-item hidden-custom-li">
+                        <a class="nav-link" href="/app/bobcat-courses/logout">Logout <i class="fas fa-sign-out-alt"></i></a>
+                    </li>
+                {% endif %}
             </ul>
             <ul style="margin-left: -40px;margin-bottom: 0">
                 {% if request.user.is_authenticated %}
-
-                    <form class="form-inline" action="/app/bobcat-courses/logout">
-                        <div class="form-group">
-                                    <span class="navbar-text">
-                                                Welcome
-                                        {% if request.user.first_name and request.user.first_name != "Anonymous" %}
-                                            {{ request.user.first_name }}{% else %}
-                                            {{ request.user.username }}{% endif %}
-                                        &nbsp;</span>
-                            <img class="user-pic" src="
-                                    {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                                 style="padding-right: 10px; max-height: 30px">
-                            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
-                                Logout
-                            </button>
-                        </div>
-                    </form>
+                    <div class="form-inline">
+                            <span class="navbar-text">
+                                        Welcome
+                                {% if request.user.first_name and request.user.first_name != "Anonymous" %}
+                                    {{ request.user.first_name }}{% else %}
+                                    {{ request.user.username }}{% endif %}
+                                &nbsp;</span>
+                        <img class="user-pic" src="
+ {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
+                             style="padding-right: 10px; max-height: 50px">
+                        <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">
+                            <a class="nav-link" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                            <div style="left: -100px; top: 50px;" class="dropdown-menu"
+                                 aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/app/bobcat-courses/about">About Us</a>
+                                <a class="dropdown-item" href="/app/bobcat-courses/reset-password">Password Reset</a>
+                                <a class="dropdown-item" href="/app/bobcat-courses/logout">Logout <i
+                                        class="fas fa-sign-out-alt"></i></a>
+                            </div>
+                        </li>
+                    </div>
                 {% else %}
                     <form action="/app/bobcat-courses/login">
                         <button type="submit"
@@ -157,6 +263,7 @@
         </div>
     </nav>
 {% endblock %}
+<div id="background_div"></div>
 {% if error.message %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>{{ error.message }}</strong>
@@ -165,12 +272,21 @@
         </button>
     </div>
 {% endif %}
+{% if success.message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>{{ success.message }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
 {% block content %}
 {% endblock %}
+
 <footer onclick="about()" class="footer">
     <div class="container">
-        <span class="text-muted float-right">About/Suggestions</span>
-        <span class="text-muted float-left">&#169;BobcatCourses 2018</span>
+        <span style="color: black" class="float-right">About/Suggestions</span>
+        <span style="color: black" class="float-left">&#169;BobcatCourses 2018</span>
     </div>
     <script>
         function about() {
