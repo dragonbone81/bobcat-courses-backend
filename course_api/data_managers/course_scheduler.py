@@ -158,7 +158,7 @@ class CourseScheduler(object):
         schedules = list()
         
         classes = {}
-        course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
+        course_data = get_courses(courses, self.term, search_full=self.search_full)
         
         for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
