@@ -4,10 +4,14 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from course_api.serializers import CourseSerializer, ScheduleSerializer, SubjectCourseSerializer
 from django.core.mail import send_mail
+from course_planner.settings import DEBUG
 import re
 from course_api.utils.simplified_course_name import get_simple
 from course_api.tasks import course_push_task
-
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.template import loader
 from django.contrib.auth import authenticate, login
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
@@ -432,8 +436,8 @@ def app_reset_password(request):
             login(request, request.user)
             return redirect('/app/bobcat-courses/schedules')
         else:
-            return render(request, 'reset_password.html', {'error': {'message': 'Old password was incorrect'}})
-    return render(request, 'reset_password.html')
+            return render(request, 'change_password.html', {'error': {'message': 'Old password was incorrect'}})
+    return render(request, 'change_password.html')
 
 
 class SaveSchedule(ViewSet):
@@ -619,3 +623,70 @@ class PasswordChange(ViewSet):
                 return Response({'fail': 'password_incorrect'})
         else:
             return Response({'fail': 'incorrect_data'})
+
+
+def forgot_password_process(request):
+    associated_user = User.objects.filter(username=request.data.get('username'))
+    if associated_user.exists() and associated_user[0] and associated_user[0].email:
+        user = associated_user[0]
+        subject = 'Your Password Reset Link for BobcatCourses'
+        url = ('https://' if not DEBUG else 'http://') + request.get_host() \
+              + '/app/bobcat-courses/reset_password_confirm/' + urlsafe_base64_encode(
+            force_bytes(user.pk)).decode("utf-8") + '-' + default_token_generator.make_token(user)
+        email = loader.render_to_string('forgot_password/reset_password_email.html',
+                                        {'username': user.username,
+                                         'link': url})
+        send_mail(subject, email, 'support@bobcat-courses.com', [user.email], html_message=email,
+                  fail_silently=False)
+        return Response({'success': True})
+    return Response({'success': False})
+
+
+class ForgotPassword(ViewSet):
+    """
+    {"username":"cvernikoff"}
+    """
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        return forgot_password_process(request)
+
+
+def password_forgot_start(request):
+    if request.POST:
+        request.data = request.POST
+        response = forgot_password_process(request)
+        if not response.data.get('success'):
+            return render(request, 'forgot_password/forgot_password_start.html',
+                          {'error': {'message': 'Your account does not have a registered email'}})
+        return render(request, 'forgot_password/forgot_password_start.html',
+                      {'success': {'message': 'Check your email'}})
+    else:
+        return render(request, 'forgot_password/forgot_password_start.html')
+
+
+def password_reset_confirm(request, uidb64=None, token=None):
+    try:
+        uid = urlsafe_base64_decode(uidb64)
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.POST:
+            new_password = request.POST.get('new_password')
+            user.set_password(new_password)
+            user.save()
+            return redirect('/app/bobcat-courses/login')
+        else:
+            return render(request, 'forgot_password/password-forgot-reset.html')
+    else:
+        return render(request, 'forgot_password/password-forgot-reset.html',
+                      {'error': {'message': 'Are you sure this link is valid? Check your email again.'}})

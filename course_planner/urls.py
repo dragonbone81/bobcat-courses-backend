@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
     CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
     django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
-    PasswordChange, app_reset_password
+    PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -40,6 +40,7 @@ router.register(r'users/schedule-dump', UserLoadSchedules, base_name='UserLoadSc
 router.register(r'users/user-info', UserInfo, base_name='user-info')
 router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
 router.register(r'users/change-password', PasswordChange, base_name='PasswordChange')
+router.register(r'users/forgot-password', ForgotPassword, base_name='ForgotPassword')
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
@@ -64,6 +65,10 @@ urlpatterns = [
     path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
     path('app/bobcat-courses/about', app_about_view),
     path('app/bobcat-courses/reset-password', app_reset_password),
+    path('app/bobcat-courses/forgot-password', password_forgot_start),
+    re_path('app/bobcat-courses/reset_password_confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+            password_reset_confirm,
+            name='reset_password_confirm'),
 
     # ping url
     path('api/ping', ping),
