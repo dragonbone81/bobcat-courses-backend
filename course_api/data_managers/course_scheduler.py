@@ -52,12 +52,23 @@ class CourseScheduler(object):
                 sections[classid] = {"LECT": c}
         return sections  # return the sections
 
+    def getNthPermutation(self, classes, i):
+        permutation = {}
+        n = 1
+        for class_id, data in classes.items():  # Go through all classes and add the relevant section
+            section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
+            permutation[class_id] = classes[class_id][section[0]]
+            n *= len(classes[class_id])
+        return permutation
+
     def generateSchedules(self, courseIDs):
         classes = {}
-        course_data = get_courses(courseIDs, self.term, search_full=self.search_full)  #
+        course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
+        
         for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #
+        
         n = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             n *= len(data)
@@ -145,8 +156,22 @@ class CourseScheduler(object):
 
     def get_valid_schedules(self, courses):
         schedules = list()
-        permutations = self.generateSchedules(courses)
-        for permutation in permutations:
+        
+        classes = {}
+        course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
+        
+        for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
+            subCourses = course_data[id]  #
+            classes[id] = self.getSections(subCourses)  #
+        
+        numberOfPerms = 1
+        for class_id, data in classes.items():  # Calculate number of possible permutations
+            numberOfPerms *= len(data)
+        
+        del course_data
+        
+        for i in range(numberOfPerms):
+            permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
                 if self.filters:
