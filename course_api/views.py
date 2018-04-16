@@ -645,6 +645,7 @@ def forgot_password_process(request):
 class ForgotPassword(ViewSet):
     """
     {"username":"cvernikoff"}
+    returns {'success': True}, {'success': False}
     """
     # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = ()
