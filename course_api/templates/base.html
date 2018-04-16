@@ -2,6 +2,24 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <!-- I want this to load first so theres no blinking -->
+    <div id="background_div"></div>
+    <style>
+        #background_div {
+            background: no-repeat center center url('https://s3-us-west-1.amazonaws.com/bobcat-courses-static/images/uc_merced_72.jpg');
+            filter: blur(5px) brightness(80%);
+            -webkit-filter: blur(5px) brightness(80%);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            background-size: cover; /* <------ */
+            -webkit-background-size: cover; /* <------ */
+            z-index: -1;
+            transform: scale(1.1);
+            -webkit-transform: scale(1.1);
+        }
+    </style>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <meta charset="utf-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>
@@ -28,7 +46,12 @@
       "image": [
           "{% static "favicon.png" %}"
         ]
-    } </script>
+    }
+
+
+
+
+    </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
     <meta property="og:title" content="{% block preview_title %}{% endblock %}"/>
@@ -81,21 +104,6 @@
     <style>
         #body {
             background: #f1f7fc;
-        }
-
-        #background_div {
-            background: no-repeat center center url('https://s3-us-west-1.amazonaws.com/bobcat-courses-static/images/uc_merced_72.jpg');
-            filter: blur(5px) brightness(80%);
-            -webkit-filter: blur(5px) brightness(80%);
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            background-size: cover; /* <------ */
-            -webkit-background-size: cover; /* <------ */
-            z-index: -1;
-            transform: scale(1.1);
-            -webkit-transform: scale(1.1);
         }
 
         @media (max-width: 890px) {
@@ -154,6 +162,7 @@
     </style>
 </head>
 <body class="body" id="body">
+
 
 {% block header %}
     <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
@@ -227,7 +236,6 @@
         </div>
     </nav>
 {% endblock %}
-<div id="background_div"></div>
 {% if error.message %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>{{ error.message }}</strong>
