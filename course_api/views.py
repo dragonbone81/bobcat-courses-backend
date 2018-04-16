@@ -691,3 +691,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
     else:
         return render(request, 'forgot_password/password-forgot-reset.html',
                       {'error': {'message': 'Are you sure this link is valid? Check your email again.'}})
+
+
+def custom404(request):
+    return render(request, 'errors/404.html')
