@@ -19,7 +19,8 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
     django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
-    PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, custom404
+    PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
+    error_500
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -42,7 +43,8 @@ router.register(r'users/user-info', UserInfo, base_name='user-info')
 router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
 router.register(r'users/change-password', PasswordChange, base_name='PasswordChange')
 router.register(r'users/forgot-password', ForgotPassword, base_name='ForgotPassword')
-handler404 = custom404
+handler404 = page_not_found
+handler500 = error_500
 urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
@@ -75,4 +77,3 @@ urlpatterns = [
     # ping url
     path('api/ping', ping),
 ]
-

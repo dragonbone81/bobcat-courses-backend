@@ -1,5 +1,8 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+    <div id="loadOverlay"
+         style="background-color:#333; position:absolute; top:0px; left:0px; width:100%; height:100%; z-index:2000;"></div>
     <style>
         @import url(https://fonts.googleapis.com/css?family=opensans:500);
 
@@ -251,6 +254,10 @@
                 margin-left: -1000px;
             }
         }
+
+        #loadOverlay {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -264,10 +271,10 @@
 </div>
 <div class='c'>
     <div class='_404'>404</div>
-    <hr>
-    <div class='_1'>THE PAGE</div>
-    <div class='_2'>WAS NOT FOUND</div>
-    <a class='btn' href='#'>BACK TO MARS</a>
+        <hr>
+        <div class='_1'>THE PAGE</div>
+        <div class='_2'>WAS NOT FOUND</div>
+        <a class='btn' href='/app/bobcat-courses/schedules'>BACK TO APP</a>
 </div>
 </body>
 </html>

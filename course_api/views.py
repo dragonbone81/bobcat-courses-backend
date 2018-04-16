@@ -693,5 +693,9 @@ def password_reset_confirm(request, uidb64=None, token=None):
                       {'error': {'message': 'Are you sure this link is valid? Check your email again.'}})
 
 
-def custom404(request):
+def page_not_found(request, exception):
     return render(request, 'errors/404.html')
+
+
+def error_500(request):
+    return render(request, 'errors/500.html')
