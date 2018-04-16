@@ -42,11 +42,9 @@
             padding: 11px;
             box-shadow: none;
             margin-top: 26px;
-            margin-left: 80px;
             text-shadow: none;
             outline: none !important;
             color: #575655;
-            width: 70%;
         }
 
         #login {
@@ -99,8 +97,10 @@
                            placeholder="Last Name">
                 </div>
             </div>
-            <button id="register_button" type="submit" class="btn btn-primary btn-block">Sign Up</button>
-            <a id="login" href="/app/bobcat-courses/login">Already registered? Login.</a>
+            <div style="margin: auto; width: 70%">
+                <button id="register_button" type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                <a id="login" href="/app/bobcat-courses/login">Already registered? Login.</a>
+            </div>
         </form>
     </div>
 {% endblock %}
