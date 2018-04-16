@@ -64,11 +64,11 @@ class CourseScheduler(object):
     def generateSchedules(self, courseIDs):
         classes = {}
         course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
-        
+
         for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #
-        
+
         n = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             n *= len(data)
@@ -156,20 +156,21 @@ class CourseScheduler(object):
 
     def get_valid_schedules(self, courses):
         schedules = list()
-        
+
         classes = {}
         course_data = get_courses(courses, self.term, search_full=self.search_full)
-        
+
         for id in courses:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #
-        
+
         numberOfPerms = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             numberOfPerms *= len(data)
-        
+        if numberOfPerms > 50000:
+            numberOfPerms = 50000
         del course_data
-        
+
         for i in range(numberOfPerms):
             permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
