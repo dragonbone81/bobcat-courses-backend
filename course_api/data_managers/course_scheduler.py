@@ -167,8 +167,8 @@ class CourseScheduler(object):
         numberOfPerms = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             numberOfPerms *= len(data)
-        if numberOfPerms > 50000:
-            numberOfPerms = 50000
+        if numberOfPerms > 1000:
+            numberOfPerms = 1000
         del course_data
 
         for i in range(numberOfPerms):
