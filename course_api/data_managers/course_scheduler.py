@@ -160,7 +160,7 @@ class CourseScheduler(object):
         classes = {}
         course_data = get_courses(courses, self.term, search_full=self.search_full)
         
-        for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
+        for id in courses:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #
         
