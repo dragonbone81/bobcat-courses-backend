@@ -424,6 +424,18 @@ def app_login(request):
         return render(request, 'login.html')
 
 
+def app_reset_password(request):
+    if request.user and request.POST.get('old_password') and request.POST.get('new_password'):
+        if request.user.check_password(request.POST.get('old_password')):
+            request.user.set_password(request.POST.get('new_password'))
+            request.user.save()
+            login(request, request.user)
+            return redirect('/app/bobcat-courses/schedules')
+        else:
+            return render(request, 'reset_password.html', {'error': {'message': 'Old password was incorrect'}})
+    return render(request, 'reset_password.html')
+
+
 class SaveSchedule(ViewSet):
     """
     saves schedule
@@ -576,3 +588,34 @@ def user_update_script_once(request):
     for user in User.objects.all():
         user.save()
     return JsonResponse({'success': True})
+
+
+class PasswordChange(ViewSet):
+    """
+    changes the users password requires current sign in and auth
+    also requires {"old_password":"abc123", "new_password":"xyz789"}
+
+    returns {'success': True}, {'fail': 'password_incorrect'}, {'fail': 'incorrect_data'}
+
+
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        if request.user and request.data.get('old_password') and request.data.get('new_password'):
+            if request.user.check_password(request.data.get('old_password')):
+                request.user.set_password(request.data.get('new_password'))
+                request.user.save()
+                return Response({'success': True})
+            else:
+                return Response({'fail': 'password_incorrect'})
+        else:
+            return Response({'fail': 'incorrect_data'})

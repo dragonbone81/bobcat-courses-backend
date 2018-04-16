@@ -33,6 +33,37 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
@@ -103,11 +134,21 @@
             -webkit-transform: scale(1.1);
         }
 
+        @media (max-width: 890px) {
+            .hidden-custom {
+                display: none;
+            }
+        }
+
         @media (min-width: 890px) {
             .navbar-expand-custom {
                 flex-direction: row;
                 flex-wrap: nowrap;
                 justify-content: flex-start;
+            }
+
+            .hidden-custom-li {
+                display: none;
             }
 
             .navbar-expand-custom .navbar-nav {
@@ -133,6 +174,17 @@
             height: 35px;
             padding-bottom: 10px;
             text-align: center;
+        }
+
+        .fa-cog:hover {
+            color: #e8e217;
+        }
+
+        .fa-cog {
+            color: #ccc617;
+            font-size: 35px;
+            margin: -10px;
+            padding-bottom: 8px
         }
 
     </style>
@@ -162,26 +214,44 @@
                 <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
                     <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
                 </li>
+                <li class="nav-item hidden-custom-li">
+                    <a class="nav-link" href="/app/bobcat-courses/about">About Us</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item hidden-custom-li">
+                        <a class="nav-link" href="/app/bobcat-courses/reset-password">Password Reset</a>
+                    </li>
+                    <li class="nav-item hidden-custom-li">
+                        <a class="nav-link" href="/app/bobcat-courses/logout">Logout <i class="fas fa-sign-out-alt"></i></a>
+                    </li>
+                {% endif %}
             </ul>
             <ul style="margin-left: -40px;margin-bottom: 0">
                 {% if request.user.is_authenticated %}
-
-                    <form class="form-inline" action="/app/bobcat-courses/logout">
-                        <div class="form-group">
-                                    <span class="navbar-text">
-                                                Welcome
-                                        {% if request.user.first_name and request.user.first_name != "Anonymous" %}
-                                            {{ request.user.first_name }}{% else %}
-                                            {{ request.user.username }}{% endif %}
-                                        &nbsp;</span>
-                            <img class="user-pic" src="
-                                    {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                                           style="padding-right: 10px; max-height: 30px">
-                            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="logout_button">
-                                Logout
-                            </button>
-                        </div>
-                    </form>
+                    <div class="form-inline">
+                            <span class="navbar-text">
+                                        Welcome
+                                {% if request.user.first_name and request.user.first_name != "Anonymous" %}
+                                    {{ request.user.first_name }}{% else %}
+                                    {{ request.user.username }}{% endif %}
+                                &nbsp;</span>
+                        <img class="user-pic" src="
+ {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
+                             style="padding-right: 10px; max-height: 30px">
+                        <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">
+                            <a class="nav-link" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                            <div style="left: -100px; top: 50px;" class="dropdown-menu"
+                                 aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/app/bobcat-courses/about">About Us</a>
+                                <a class="dropdown-item" href="/app/bobcat-courses/reset-password">Password Reset</a>
+                                <a class="dropdown-item" href="/app/bobcat-courses/logout">Logout <i
+                                        class="fas fa-sign-out-alt"></i></a>
+                            </div>
+                        </li>
+                    </div>
                 {% else %}
                     <form action="/app/bobcat-courses/login">
                         <button type="submit"
