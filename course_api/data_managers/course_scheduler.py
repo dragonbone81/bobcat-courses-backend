@@ -169,9 +169,10 @@ class CourseScheduler(object):
         for class_id, data in classes.items():  # Calculate number of possible permutations
             maxNumberOfPerms *= len(data)
         
-        numberOfPerms = 80
+        numberOfValidSchedules = 80
+        i = 0
         
-        for i in range(numberOfPerms):
+        while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
             permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
@@ -190,9 +191,7 @@ class CourseScheduler(object):
                     schedule['latest'] = info['latest']
                     schedule['gaps'] = info['gaps']
                 schedules.append(schedule)
-            else:
-                if (numberOfPerms < maxNumberOfPerms):
-                    numberOfPerms = numberOfPerms + 1
+            i = i+1
         if self.filters:
             if self.days == 'desc' and self.gaps == 'desc':
                 schedules = sorted(schedules, key=itemgetter('number_of_days', 'gaps'), reverse=True)
