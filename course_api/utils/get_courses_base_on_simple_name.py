@@ -4,11 +4,29 @@ from course_api.serializers import CourseSerializer
 
 def get_courses(courses_to_search, term, search_full=False):
     courses = dict()
-    for course in courses_to_search:
-        if not search_full:
-            courses[course] = [CourseSerializer(course).data for course in
-                               Course.objects.filter(simple_name__iexact=course, term=term, available__gt=0)]
-        else:
-            courses[course] = [CourseSerializer(course).data for course in
-                               Course.objects.filter(simple_name__iexact=course, term=term)]
+    if not search_full:
+        total_courses = Course.objects.filter(simple_name__in=courses_to_search, term=term, available__gt=0)
+    else:
+        total_courses = Course.objects.filter(simple_name__in=courses_to_search, term=term)
+    for course in total_courses:
+        if not courses.get(course.simple_name):
+            courses[course.simple_name] = []
+        courses[course.simple_name].append({
+            'crn': course.crn,
+            'type': course.type,
+            'course_id': course.course_id,
+            'lecture_crn': course.lecture_crn,
+            'hours': course.hours,
+            'days': course.days,
+            'final_days': course.final_days,
+            'final_hours': course.final_hours,
+            'simple_name': course.simple_name,
+            'subject': course.subject,
+            'course_name': course.course_name,
+            'term': course.term,
+            'capacity': course.capacity,
+            'enrolled': course.enrolled,
+            'available': course.available,
+            'instructor': course.instructor,
+        })
     return courses
