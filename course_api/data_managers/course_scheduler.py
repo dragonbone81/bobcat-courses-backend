@@ -4,7 +4,7 @@ from operator import itemgetter
 
 class CourseScheduler(object):
     def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc', search_full=False,
-                 filters=False):
+                 filters=False, bad_crns=None):
         self.term = term
         self.earliest_time = earliest_time
         self.latest_time = latest_time
@@ -12,6 +12,7 @@ class CourseScheduler(object):
         self.days = days
         self.search_full = search_full
         self.filters = filters
+        self.bad_crns = bad_crns
 
     def convertTime(self, s):
         t = s.split("-")  # separate start and end times
@@ -61,27 +62,27 @@ class CourseScheduler(object):
             n *= len(classes[class_id])
         return permutation
 
-    def generateSchedules(self, courseIDs):
-        classes = {}
-        course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
-
-        for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
-            subCourses = course_data[id]  #
-            classes[id] = self.getSections(subCourses)  #
-
-        n = 1
-        for class_id, data in classes.items():  # Calculate number of possible permutations
-            n *= len(data)
-
-        permutations = [{} for i in range(n)]  # Create an array to contain all possible schedules
-
-        for i in range(len(permutations)):  # This is what makes all possible combinations
-            n = 1
-            for class_id, data in classes.items():  # Go through all classes and add the relevant section
-                section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
-                permutations[i][class_id] = classes[class_id][section[0]]
-                n *= len(classes[class_id])
-        return permutations
+    # def generateSchedules(self, courseIDs):
+    #     classes = {}
+    #     course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
+    #
+    #     for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
+    #         subCourses = course_data[id]  #
+    #         classes[id] = self.getSections(subCourses)  #
+    #
+    #     n = 1
+    #     for class_id, data in classes.items():  # Calculate number of possible permutations
+    #         n *= len(data)
+    #
+    #     permutations = [{} for i in range(n)]  # Create an array to contain all possible schedules
+    #
+    #     for i in range(len(permutations)):  # This is what makes all possible combinations
+    #         n = 1
+    #         for class_id, data in classes.items():  # Go through all classes and add the relevant section
+    #             section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
+    #             permutations[i][class_id] = classes[class_id][section[0]]
+    #             n *= len(classes[class_id])
+    #     return permutations
 
     def dayConflicts(self, time, day):
         for t in day:  # Go though all the times that are already in the day
@@ -158,20 +159,19 @@ class CourseScheduler(object):
         schedules = list()
 
         classes = {}
-        course_data = get_courses(courses, self.term, search_full=self.search_full)
-
+        course_data = get_courses(courses, self.term, search_full=self.search_full, bad_crns=self.bad_crns)
         for id in courses:  # Create a dictionary that contains all classes (each contains all their sections)
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #
         del course_data
-        
+
         maxNumberOfPerms = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             maxNumberOfPerms *= len(data)
-        
+
         numberOfValidSchedules = 80
         i = 0
-        
+
         while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
             permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
@@ -191,7 +191,7 @@ class CourseScheduler(object):
                     schedule['latest'] = info['latest']
                     schedule['gaps'] = info['gaps']
                 schedules.append(schedule)
-            i = i+1
+            i = i + 1
         if self.filters:
             if self.days == 'desc' and self.gaps == 'desc':
                 schedules = sorted(schedules, key=itemgetter('number_of_days', 'gaps'), reverse=True)

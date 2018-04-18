@@ -269,8 +269,10 @@ class SchedulesListView(ViewSet):
         Return a list of all courses.
         """
         courses_to_search = request.data.get('course_list', [])
+        bad_crns = request.data.get('bad_crns', [])
         if courses_to_search and isinstance(courses_to_search, str):
             courses_to_search = request.data.getlist('course_list', [])
+            bad_crns = request.data.getlist('bad_crns', [])
             earliest_time = request.data.get('earliest_time', None)
             if earliest_time and earliest_time != 'any':
                 earliest_time = int(earliest_time)
@@ -307,7 +309,7 @@ class SchedulesListView(ViewSet):
         if not term:
             return Response({"Error": "No Term"})
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
-                                    search_full=search_full, filters=filters)
+                                    search_full=search_full, filters=filters, bad_crns=bad_crns)
         courses = generator.get_valid_schedules(courses_to_search)
 
         return Response(courses[:80])

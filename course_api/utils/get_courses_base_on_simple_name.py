@@ -1,13 +1,14 @@
 from course_api.models import Course
-from course_api.serializers import CourseSerializer
+from django.db.models import Q
 
 
-def get_courses(courses_to_search, term, search_full=False):
+def get_courses(courses_to_search, term, search_full=False, bad_crns=False):
     courses = dict()
     if not search_full:
-        total_courses = Course.objects.filter(simple_name__in=courses_to_search, term=term, available__gt=0)
+        total_courses = Course.objects.filter(~Q(crn__in=bad_crns), simple_name__in=courses_to_search, term=term,
+                                              available__gt=0)
     else:
-        total_courses = Course.objects.filter(simple_name__in=courses_to_search, term=term)
+        total_courses = Course.objects.filter(~Q(crn__in=bad_crns), simple_name__in=courses_to_search, term=term)
     for course in total_courses:
         if not courses.get(course.simple_name):
             courses[course.simple_name] = []
@@ -28,5 +29,6 @@ def get_courses(courses_to_search, term, search_full=False):
             'enrolled': course.enrolled,
             'available': course.available,
             'instructor': course.instructor,
+            'units': course.units,
         })
     return courses
