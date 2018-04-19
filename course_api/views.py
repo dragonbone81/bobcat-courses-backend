@@ -6,7 +6,7 @@ from course_api.serializers import CourseSerializer, ScheduleSerializer, Subject
 from django.core.mail import send_mail
 from course_planner.settings import DEBUG
 import re
-from course_api.utils.simplified_course_name import get_simple
+from course_api.utils.get_courses_base_on_simple_name import get_courses
 from course_api.tasks import course_push_task
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
@@ -15,7 +15,6 @@ from django.template import loader
 from django.contrib.auth import authenticate, login
 from course_api.data_managers.course_scheduler import CourseScheduler
 from course_api.data_managers.my_registration import CourseRegistration
-
 from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectCourse, Schedule
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -136,14 +135,7 @@ class CourseListView(ViewSet):
         term = request.data.get('term')
         if not term:
             return Response({"Error": "No Term"})
-        courses = dict()
-        for course in courses_to_search:
-            if isinstance(course, str):
-                courses[course] = [CourseSerializer(course).data for course in
-                                   Course.objects.filter(simple_name__iexact=course, term=term)]
-            if isinstance(course, dict):
-                courses[course.get('id')] = [CourseSerializer(course).data for course in
-                                             Course.objects.filter(simple_name__icontains=course.get('id'), term=term)]
+        courses = get_courses(courses_to_search, term, search_full=True)
         return Response(courses)
 
 
@@ -272,7 +264,7 @@ class SchedulesListView(ViewSet):
         bad_crns = request.data.get('bad_crns', [])
         if courses_to_search and isinstance(courses_to_search, str):
             courses_to_search = request.data.getlist('course_list', [])
-            bad_crns = request.data.getlist('bad_crns', [])
+            bad_crns = request.data.get('bad_crns', '').split(',')
             earliest_time = request.data.get('earliest_time', None)
             if earliest_time and earliest_time != 'any':
                 earliest_time = int(earliest_time)
@@ -311,7 +303,6 @@ class SchedulesListView(ViewSet):
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
                                     search_full=search_full, filters=filters, bad_crns=bad_crns)
         courses = generator.get_valid_schedules(courses_to_search)
-
         return Response(courses[:80])
 
 

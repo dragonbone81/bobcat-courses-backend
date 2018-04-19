@@ -311,5 +311,29 @@ class Course(models.Model):
         db_index=True,
     )
 
+    def to_dict(self):
+        return {
+            'crn': self.crn,
+            'subject': self.subject,
+            'course_id': self.course_id,
+            'course_name': self.course_name,
+            'units': self.units,
+            'type': self.type,
+            'days': self.days,
+            'hours': self.hours,
+            'room': self.room,
+            'dates': self.dates,
+            'instructor': self.instructor,
+            'lecture_crn': self.lecture_crn,
+            'attached_crn': self.attached_crn,
+            'term': self.term,
+            'capacity': self.capacity,
+            'enrolled': self.enrolled,
+            'available': self.available,
+            'simple_name': self.simple_name,
+            'final_days': self.final_days,
+            'final_hours': self.final_hours,
+        }
+
     def __str__(self):
         return self.course_id or self.crn
