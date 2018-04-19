@@ -563,15 +563,13 @@ class UserLoadSchedules(ViewSet):
         for schedule in schedules:
             courses = json.loads(schedule.courses)
             schedule_dict = {'schedule': {}, 'info': {}}
+            courses = Course.objects.filter(crn__in=courses)
             for course in courses:
-                course_obj = Course.objects.get(crn=course)
-                if course_obj.simple_name in schedule_dict['schedule']:
-                    schedule_dict['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(
-                        course_obj).data
+                if course.simple_name in schedule_dict['schedule']:
+                    schedule_dict['schedule'][course.simple_name][course.type] = course.to_dict()
                 else:
-                    schedule_dict['schedule'][course_obj.simple_name] = {}
-                    schedule_dict['schedule'][course_obj.simple_name][course_obj.type] = CourseSerializer(
-                        course_obj).data
+                    schedule_dict['schedule'][course.simple_name] = {}
+                    schedule_dict['schedule'][course.simple_name][course.type] = course.to_dict()
             schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
             schedule_dict['important'] = schedule.important
             gen_schedules.append(schedule_dict)
