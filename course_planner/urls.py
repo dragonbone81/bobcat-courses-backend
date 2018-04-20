@@ -20,7 +20,7 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
-    error_500
+    error_500, ProfileImageUpload
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -43,6 +43,7 @@ router.register(r'users/user-info', UserInfo, base_name='user-info')
 router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
 router.register(r'users/change-password', PasswordChange, base_name='PasswordChange')
 router.register(r'users/forgot-password', ForgotPassword, base_name='ForgotPassword')
+router.register(r'users/profile-upload', ProfileImageUpload, base_name='ProfileImageUpload')
 handler404 = page_not_found
 handler500 = error_500
 urlpatterns = [

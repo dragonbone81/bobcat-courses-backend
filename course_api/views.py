@@ -65,7 +65,8 @@ class UserInfo(ViewSet):
     def list(self, request, format=None):
         user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name(),
                 'first_name': request.user.first_name, 'last_name': request.user.last_name,
-                'unique_id': request.user.scheduleuser.unique_id}
+                'unique_id': request.user.scheduleuser.unique_id,
+                'profile_image_url': request.user.scheduleuser.get_profile_image_url()}
         return Response(user)
 
 
@@ -244,7 +245,7 @@ class SubjectCourseViewSet(viewsets.ModelViewSet):
 
 class SchedulesListView(ViewSet):
     """
-    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc", "search_full":false}
+    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc", "search_full":false, "bad_crns":[1235,345345]}
     """
     # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = ()
@@ -538,6 +539,29 @@ class DeleteSchedule(ViewSet):
                     schedule.delete()
                     return Response({'success': 'Schedule Deleted!'})
             return Response({'error': 'Schedule DNE (Already Deleted Probably)'})
+        return Response(None)
+
+
+class ProfileImageUpload(ViewSet):
+    """
+    Auth required
+    post with image as a field (profile_image)
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        if request.data.get('profile_image'):
+            request.user.scheduleuser.profile_image = request.data.get('profile_image')
+            request.user.scheduleuser.save()
+            return Response({'success': True, 'image_url': request.user.scheduleuser.get_profile_image_url()})
         return Response(None)
 
 

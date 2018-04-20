@@ -7,6 +7,12 @@ class ScheduleUser(models.Model):
     unique_id = models.CharField(max_length=100)
     profile_image = models.ImageField(upload_to='profiles/images', blank=True, null=True)
 
+    def get_profile_image_url(self):
+        url = None
+        if self.profile_image:
+            url = self.profile_image.url
+        return url
+
     def __str__(self):
         return self.user.username
 
