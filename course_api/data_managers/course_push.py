@@ -68,13 +68,18 @@ class UCMercedCoursePush(object):
         self.add_linked_crns_to_lect()
 
     def add_linked_crns_to_lect(self):
-        need_updated = list()
+        need_updated = dict()
         for course in Course.objects.filter(~Q(type='LECT'), lecture_crn__isnull=False):
-            lecture = Course.objects.get(crn=course.lecture_crn)
+            if course.lecture_crn not in need_updated:
+                lecture = Course.objects.get(crn=course.lecture_crn)
+            else:
+                lecture = need_updated[course.lecture_crn]
             linked_courses = json.loads(lecture.linked_courses)
-            linked_courses.append(course.crn)
+            if course.crn not in linked_courses:
+                linked_courses.append(course.crn)
             lecture.linked_courses = json.dumps(linked_courses)
-            need_updated.append(lecture)
+            need_updated[course.lecture_crn] = lecture
+        need_updated = [course for crn, course in need_updated.items()]
         if DEBUG:
             # in debug sqlite doesnt like big batches
             bulk_update(need_updated, batch_size=10)
