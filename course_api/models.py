@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from json import dumps as json_dumps
+from json import loads as json_loads
 
 
 class ScheduleUser(models.Model):
@@ -344,7 +344,7 @@ class Course(models.Model):
             'simple_name': self.simple_name,
             'final_days': self.final_days,
             'final_hours': self.final_hours,
-            'linked_courses': json_dumps(self.linked_courses),
+            'linked_courses': json_loads(self.linked_courses),
         }
 
     def __str__(self):
