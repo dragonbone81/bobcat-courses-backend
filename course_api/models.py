@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from json import dumps as json_dumps
 
 
 class ScheduleUser(models.Model):
@@ -316,6 +317,10 @@ class Course(models.Model):
         blank=True,
         db_index=True,
     )
+    linked_courses = models.TextField(
+        verbose_name="Linked Courses",
+        default='[]',
+    )
 
     def to_dict(self):
         return {
@@ -339,6 +344,7 @@ class Course(models.Model):
             'simple_name': self.simple_name,
             'final_days': self.final_days,
             'final_hours': self.final_hours,
+            'linked_courses': json_dumps(self.linked_courses),
         }
 
     def __str__(self):

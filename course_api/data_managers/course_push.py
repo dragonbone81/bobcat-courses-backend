@@ -4,6 +4,7 @@ from course_api.models import Course, SubjectCourse
 from course_planner.settings import DEBUG
 from course_api.utils.simplified_course_name import get_simple
 from django.db.models import Q
+import json
 
 
 class UCMercedCoursePush(object):
@@ -64,6 +65,21 @@ class UCMercedCoursePush(object):
         else:
             bulk_update(updated_others, batch_size=1000)
         self.link_labs()
+        self.add_linked_crns_to_lect()
+
+    def add_linked_crns_to_lect(self):
+        need_updated = list()
+        for course in Course.objects.filter(~Q(type='LECT'), lecture_crn__isnull=False):
+            lecture = Course.objects.get(crn=course.lecture_crn)
+            linked_courses = json.loads(lecture.linked_courses)
+            linked_courses.append(course.crn)
+            lecture.linked_courses = json.dumps(linked_courses)
+            need_updated.append(lecture)
+        if DEBUG:
+            # in debug sqlite doesnt like big batches
+            bulk_update(need_updated, batch_size=10)
+        else:
+            bulk_update(need_updated, batch_size=1000)
 
     def link_labs(self):
         for course in Course.objects.filter(type='LAB'):
