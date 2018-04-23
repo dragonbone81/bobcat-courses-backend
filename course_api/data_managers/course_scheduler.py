@@ -178,8 +178,10 @@ class CourseScheduler(object):
                 info = self.getInfoForSchedule(permutation)
                 if self.filters:
                     if self.earliest_time and info.get('earliest') < self.earliest_time:
+                        i += 1
                         continue
                     if self.latest_time and info.get('latest') > self.latest_time:
+                        i += 1
                         continue
                 schedule = dict()
                 schedule["schedule"] = permutation
