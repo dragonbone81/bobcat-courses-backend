@@ -1,6 +1,6 @@
-from course_api.data_managers.course_pull import UCMercedClassParser
+from course_api.data_managers.uc_merced.course_pull import UCMercedClassParser
 from django_bulk_update.helper import bulk_update
-from course_api.models import Course, SubjectCourse
+from course_api.models import Course, SubjectCourse, Terms
 from course_planner.settings import DEBUG
 from course_api.utils.simplified_course_name import get_simple
 from django.db.models import Q
@@ -10,7 +10,7 @@ import json
 class UCMercedCoursePush(object):
     def __init__(self, terms=None):
         if not terms:
-            terms = ["201830", "201810"]
+            terms = json.loads(Terms.objects.get(school='uc_merced').terms)
         self.data = UCMercedClassParser(terms=terms).parse_terms()
 
     def delete_courses(self):

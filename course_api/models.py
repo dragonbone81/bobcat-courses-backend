@@ -18,27 +18,6 @@ class ScheduleUser(models.Model):
         return self.user.username
 
 
-class SubjectClass(models.Model):
-    class Meta:
-        verbose_name = "Subject Class"
-        verbose_name_plural = "Subject Classes"
-
-    course_name = models.CharField(
-        verbose_name="Course Name",
-        max_length=256,
-        primary_key=True,
-        db_index=True,
-    )
-    term = models.CharField(
-        null=False,
-        blank=False,
-        db_index=True,
-        max_length=32,
-        verbose_name="Term",
-        default="201810",
-    )
-
-
 class SubjectCourse(models.Model):
     class Meta:
         verbose_name = "Subject Class"
@@ -349,3 +328,31 @@ class Course(models.Model):
 
     def __str__(self):
         return self.course_id or self.crn
+
+
+class Terms(models.Model):
+    class Meta:
+        verbose_name = "Term"
+        verbose_name_plural = "Terms"
+
+    terms = models.TextField(
+        verbose_name="Terms",
+        default='[]',
+    )
+    school = models.CharField(
+        verbose_name="School",
+        max_length=64,
+        primary_key=True,
+    )
+
+
+class School(models.Model):
+    class Meta:
+        verbose_name = "School"
+        verbose_name_plural = "Schools"
+
+    school_id = models.CharField(
+        verbose_name="School",
+        max_length=64,
+        primary_key=True,
+    )

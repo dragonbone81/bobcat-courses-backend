@@ -50,12 +50,10 @@ urlpatterns = [
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
     path('api/courses/jwt-example', ExampleJWT.as_view()),
-    path('course_pull/', course_view),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
-    path('sync_users', user_update_script_once),
     path('api/oauth/', include('social_django.urls', namespace='social')),
 
     # local schedule urls
@@ -77,4 +75,9 @@ urlpatterns = [
 
     # ping url
     path('api/ping', ping),
+
+    # sync urls
+    path('course_pull/', course_view),
+    path('sync_users', user_update_script_once),
+
 ]

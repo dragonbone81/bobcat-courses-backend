@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from course_api.data_managers.course_push import SubjectClassUpdate, UCMercedCoursePush
+from course_api.data_managers.uc_merced.course_push import SubjectClassUpdate, UCMercedCoursePush
 
 
 @shared_task

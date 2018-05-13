@@ -2,10 +2,9 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from course_api.serializers import CourseSerializer, ScheduleSerializer, SubjectCourseSerializer
+from course_api.serializers import CourseSerializer, SubjectCourseSerializer
 from django.core.mail import send_mail
 from course_planner.settings import DEBUG
-import re
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 from course_api.tasks import course_push_task
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -13,16 +12,17 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.template import loader
 from django.contrib.auth import authenticate, login
-from course_api.data_managers.course_scheduler import CourseScheduler
-from course_api.data_managers.my_registration import CourseRegistration
-from course_api.data_managers.course_push import UCMercedCoursePush, SubjectClassUpdate
+from course_api.data_managers.uc_merced.course_scheduler import CourseScheduler
+from course_api.data_managers.uc_merced.my_registration import CourseRegistration
+from course_api.data_managers.uc_merced.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectCourse, Schedule
+from course_api.data_managers.uc_merced.get_update_terms import update_terms as update_uc_merced_terms
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -220,6 +220,8 @@ def course_view(request):
         SubjectClassUpdate().update_lectures()
     elif request.GET and request.GET.get('delete'):
         UCMercedCoursePush().delete_courses()
+    elif request.GET and request.GET.get('terms'):
+        update_uc_merced_terms()
     else:
         course_push_task()
     return JsonResponse({'success': True})
