@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+import json
 from django.db.models import Q
 from django.contrib.auth.models import User
 from rest_framework import viewsets
@@ -15,7 +16,7 @@ from django.contrib.auth import authenticate, login
 from course_api.data_managers.uc_merced.course_scheduler import CourseScheduler
 from course_api.data_managers.uc_merced.my_registration import CourseRegistration
 from course_api.data_managers.uc_merced.course_push import UCMercedCoursePush, SubjectClassUpdate
-from course_api.models import Course, SubjectCourse, Schedule
+from course_api.models import Course, SubjectCourse, Schedule, Terms
 from course_api.data_managers.uc_merced.get_update_terms import update_terms as update_uc_merced_terms
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
@@ -203,12 +204,12 @@ class GetTerms(ViewSet):
 
     def list(self, request, format=None):
         # this just matches simple name
-        simple_courses = SubjectCourse.objects.all()
-        terms = list()
-        for course in simple_courses:
-            if course.term not in terms:
-                terms.append(course.term)
-        return Response(terms)
+        school = request.GET.get('school', 'uc_merced')
+        terms = Terms.objects.filter(school=school)
+        if terms:
+            return Response(json.loads(terms[0].terms))
+        else:
+            return Response({'error': 'School not found'})
 
 
 # Create your views here.
@@ -454,7 +455,6 @@ class SaveSchedule(ViewSet):
         return Response(None)
 
     def post(self, request):
-        import json
         term = request.data.get('term')
         crns = request.data.get('crns')
         if isinstance(crns, str):
@@ -490,7 +490,6 @@ class StarSchedule(ViewSet):
         return Response(None)
 
     def post(self, request):
-        import json
         term = request.data.get('term')
         crns = request.data.get('crns')
         if isinstance(request.data.get('star'), str):
@@ -530,7 +529,6 @@ class DeleteSchedule(ViewSet):
         return Response(None)
 
     def post(self, request):
-        import json
         term = request.data.get('term')
         crns = request.data.get('crns')
         if isinstance(crns, str):
@@ -579,7 +577,6 @@ class UserLoadSchedules(ViewSet):
         return Response(None)
 
     def list(self, request, format=None):
-        import json
         if request.GET.get('term'):
             schedules = Schedule.objects.filter(user=request.user, term=request.GET.get('term')).order_by('-important',
                                                                                                           '-created')
