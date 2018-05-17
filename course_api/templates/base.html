@@ -51,6 +51,9 @@
 
 
 
+
+
+
     </script>
 
     <meta property="og:site_name" content="Bobcat Courses"/>
@@ -211,6 +214,12 @@
                         <img class="user-pic" src="
  {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
                              style="padding-right: 10px; max-height: 40px">
+                        <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">
+                            <a href="#notifications-panel" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                                {#                        <i data-count="2" class="oi oi-bell notification-icon" aria-label="Nofitication centre"></i>#}
+                                <i class="fas fa-bell"></i><span class="badge badge-light">4</span>
+                            </a>
+                        </li>
                         <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">
                             <a class="nav-link" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

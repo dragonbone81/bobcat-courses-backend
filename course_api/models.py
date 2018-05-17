@@ -356,3 +356,27 @@ class School(models.Model):
         max_length=64,
         primary_key=True,
     )
+
+
+class Notifications(models.Model):
+    # max of 20, will overwrite when new is made?
+    class Meta:
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+
+    user = models.OneToOneField(
+        User,
+        verbose_name="User",
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE,
+    )
+    notifications = models.TextField(
+        verbose_name="Notifications",
+        default='[]',
+        # {'seen': False, 'type': 'some_type', 'id': 0, 'data': {'message': 'whatevs' or 'crn': '12345'}}
+    )
+    email_alerts = models.BooleanField(
+        verbose_name="Email Alerts",
+        default=True,
+    )

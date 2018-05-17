@@ -1,5 +1,5 @@
 from django.contrib import admin
-from course_api.models import Course, Schedule, SubjectCourse, Terms, School
+from course_api.models import Course, Schedule, SubjectCourse, Terms, School, Notifications
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
@@ -15,9 +15,16 @@ class ScheduleUserInline(admin.StackedInline):
     verbose_name = 'Schedule User'
 
 
+class NotificationsInline(admin.StackedInline):
+    model = Notifications
+    can_delete = False
+    verbose_name_plural = 'Notifications'
+    verbose_name = 'Notification'
+
+
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    inlines = (ScheduleUserInline,)
+    inlines = (ScheduleUserInline, NotificationsInline,)
 
 
 # Re-register UserAdmin
