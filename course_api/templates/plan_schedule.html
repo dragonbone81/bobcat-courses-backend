@@ -261,12 +261,14 @@
                                         onclick="switch_to_sections()">Sections
                                 </button>
                             </div>
-                            <div class="col-auto" style="padding: 5px; padding-left: 2px;padding-right: 2px" hidden
-                                 id="register">
-                                <button class="btn btn-warning input_buttons" type="button" id="register"
-                                        name="register"
-                                        data-toggle="modal" data-target="#register_modal" disabled>Register
-                                </button>
+                            <div hidden>
+                                <div class="col-auto" style="padding: 5px; padding-left: 2px;padding-right: 2px" hidden
+                                     id="register">
+                                    <button class="btn btn-warning input_buttons" type="button" id="register"
+                                            name="register"
+                                            data-toggle="modal" data-target="#register_modal" disabled>Register
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         {#                    <div class="btn-group">#}
@@ -430,14 +432,14 @@
                 </div>
 
             </div>
-            <div onclick="about()" style="text-align: left; max-width: 300px">
-                <small>Have any suggestions? Let us know here. <i class="fas fa-external-link-alt"></i></small>
-                <script>
-                    function about() {
-                        window.location.href = "/app/bobcat-courses/about";
-                    }
-                </script>
-            </div>
+            {#            <div onclick="about()" style="text-align: left; max-width: 300px">#}
+            {#                <small>Have any suggestions? Let us know here. <i class="fas fa-external-link-alt"></i></small>#}
+            {#                <script>#}
+            {#                    function about() {#}
+            {#                        window.location.href = "/app/bobcat-courses/about";#}
+            {#                    }#}
+            {#                </script>#}
+            {#            </div>#}
             <div class="input-group input-group-sm mb-3 btn-block" id="navigate_buttons" hidden>
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="schedule_span">Schedule 1</span>
