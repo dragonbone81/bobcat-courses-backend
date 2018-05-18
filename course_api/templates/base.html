@@ -307,7 +307,10 @@
 <script async>
     {% if request.user.is_authenticated %}
         let notifications = [];
-        let notifications_ws = new ReconnectingWebSocket("ws://" + window.location.host + "/api/ws/notifications");
+        let ws = 'wss://';
+        if (location.protocol !== 'https:')
+            ws = 'ws://';
+        let notifications_ws = new ReconnectingWebSocket(ws + window.location.host + "/api/ws/notifications");
         let handle_seen = (notif_id) => {
             notifications_ws.send(JSON.stringify({command: 'delete', id: notif_id}))
         };
