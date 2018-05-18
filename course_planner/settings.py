@@ -212,7 +212,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_LOCATION = 'static'
 DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- here is where we reference it
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
