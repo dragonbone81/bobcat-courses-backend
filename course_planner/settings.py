@@ -35,11 +35,10 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-    # Extra places for collectstatic to find static files.
+
+    PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
-    STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, 'static/'),
-    )
+    STATICFILES_DIRS = ()
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY, SENDGRID_API_KEY
 
@@ -212,7 +211,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_LOCATION = 'static'
 DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- here is where we reference it
-# STATIC_URL = '/static/'
+STATIC_URL = '/static/'
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
