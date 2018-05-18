@@ -35,6 +35,12 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+    # Extra places for collectstatic to find static files.
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, 'static'),
+    )
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY, SENDGRID_API_KEY
 
