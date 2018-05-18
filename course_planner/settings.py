@@ -45,7 +45,7 @@ else:
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
     SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
     # CELERY_BROKER_URL = AMPQ_CELERY.get('CELERY_BROKER_URL')
-    DEBUG = True
+    DEBUG = False
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/bobcat-courses'
 BROKER_POOL_LIMIT = 1  # Will decrease connection usage
@@ -56,12 +56,12 @@ CELERY_EVENT_QUEUE_EXPIRES = 1  # Will delete all celeryev. queues without consu
 CELERYD_PREFETCH_MULTIPLIER = 1  # Disable prefetching, it's causes problems and doesn't help performance
 CELERYD_CONCURRENCY = 1  # If you tasks are CPU bound, then limit to the number of cores, otherwise increase substainally
 CELERYD_TASK_TIME_LIMIT = 60
-ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
+ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me', '127.0.0.1']
 
 # Application definition
 
 INSTALLED_APPS = [
-    # 'channels',
+    'channels',
     'jet',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -78,8 +78,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -167,7 +167,7 @@ REST_FRAMEWORK = {
     )
 }
 
-# CHANNEL_LAYERS = {
+CHANNEL_LAYERS = {}
 #     "default": {
 #         "BACKEND": "channels_redis.core.RedisChannelLayer",
 #         "CONFIG": {
@@ -211,4 +211,4 @@ STATIC_URL = '/static/'
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
