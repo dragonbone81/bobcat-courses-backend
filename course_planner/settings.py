@@ -61,7 +61,7 @@ ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    # 'channels',
     'jet',
     'django.contrib.admin',
     'django.contrib.auth',
