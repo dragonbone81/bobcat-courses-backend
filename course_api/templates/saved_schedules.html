@@ -509,7 +509,7 @@
                                     }
                                     else {
                                         var hours = convert_24(section_data.hours);
-                                        section_data.length = Math.ceil((hours.end_time - hours.start_time) / 50);
+                                        section_data.length = Math.ceil((hours.end_time - hours.start_time) / 49);
 
                                         $.each(section_data.days.split(""), function (index, day) {
                                             var start_index = times_list.indexOf((hours.start_time).toString());

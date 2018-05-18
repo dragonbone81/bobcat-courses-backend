@@ -61,6 +61,7 @@ ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'jet',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -117,7 +118,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 WSGI_APPLICATION = 'course_planner.wsgi.application'
-
+ASGI_APPLICATION = 'course_planner.routing.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -165,6 +166,17 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     )
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get('REDIS_URL',
+#                                      '')],
+#         },
+#     },
+# }
+
 from datetime import timedelta
 
 SIMPLE_JWT = {
