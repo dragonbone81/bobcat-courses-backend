@@ -36,9 +36,9 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 
-    PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
-    STATICFILES_DIRS = ()
+    # PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+    # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+    # STATICFILES_DIRS = ()
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY, SENDGRID_API_KEY
 
@@ -49,6 +49,9 @@ else:
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
     SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
     # CELERY_BROKER_URL = AMPQ_CELERY.get('CELERY_BROKER_URL')
+    # PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+    # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+    # STATICFILES_DIRS = ()
     DEBUG = False
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/bobcat-courses'
@@ -132,9 +135,9 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-import dj_database_url
-
-DATABASES['default'] = dj_database_url.config(ssl_require=True)
+# import dj_database_url
+#
+# DATABASES['default'] = dj_database_url.config(ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
