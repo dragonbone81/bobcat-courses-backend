@@ -380,3 +380,35 @@ class Notifications(models.Model):
         verbose_name="Email Alerts",
         default=True,
     )
+
+
+class Waitlist(models.Model):
+    class Meta:
+        verbose_name = "Waitlist"
+        verbose_name_plural = "Waitlists"
+        unique_together = ('school', 'course')
+
+    school = models.CharField(
+        max_length=64,
+        verbose_name='School',
+        null=False,
+        blank=False,
+    )
+    course = models.OneToOneField(
+        'Course',
+        verbose_name='Course',
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE,
+    )
+    users = models.ManyToManyField(
+        User,
+        verbose_name='Subscribed Users',
+    )
+    expired = models.BooleanField(  # alerted when waitlist is finished
+        default=False,
+        verbose_name='Expired',
+    )
+
+    def __str__(self):
+        return f"{self.school}:{self.course.crn}"

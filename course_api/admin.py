@@ -1,5 +1,5 @@
 from django.contrib import admin
-from course_api.models import Course, Schedule, SubjectCourse, Terms, School, Notifications
+from course_api.models import Course, Schedule, SubjectCourse, Terms, School, Notifications, Waitlist
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
@@ -43,6 +43,11 @@ class ScheduleAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'user__first_name', 'user__last_name', ]
 
 
+class WaitlistAdmin(admin.ModelAdmin):
+    list_display = ('school', 'course')
+    search_fields = ['school', 'course', 'users__username', ]
+
+
 class SubjectClassAdmin(admin.ModelAdmin):
     list_display = ('course_name', 'term')
     search_fields = ('course_name', 'term')
@@ -63,3 +68,4 @@ admin.site.register(Schedule, ScheduleAdmin)
 admin.site.register(SubjectCourse, SubjectClassAdmin)
 admin.site.register(Terms, TermsAdmin)
 admin.site.register(School, SchoolAdmin)
+admin.site.register(Waitlist, WaitlistAdmin)
