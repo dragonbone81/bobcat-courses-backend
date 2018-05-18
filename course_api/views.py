@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login
 from course_api.data_managers.uc_merced.course_scheduler import CourseScheduler
 from course_api.data_managers.uc_merced.my_registration import CourseRegistration
 from course_api.data_managers.uc_merced.course_push import UCMercedCoursePush, SubjectClassUpdate
-from course_api.models import Course, SubjectCourse, Schedule, Terms
+from course_api.models import Course, SubjectCourse, Schedule, Terms, Waitlist, Notifications
 from course_api.data_managers.uc_merced.get_update_terms import update_terms as update_uc_merced_terms
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
@@ -705,6 +705,38 @@ def password_reset_confirm(request, uidb64=None, token=None):
     else:
         return render(request, 'forgot_password/password-forgot-reset.html',
                       {'error': {'message': 'Are you sure this link is valid? Check your email again.'}})
+
+
+def waitlist_check(request):
+    waitlists = Waitlist.objects.all().prefetch_related('users').select_related('course')
+    for waitlist in waitlists:
+        if not waitlist.expired and waitlist.course.available > 0 or waitlist.expired and waitlist.course.available <= 0:
+            if not waitlist.expired and waitlist.course.available > 0:
+                message = 'open_course'
+                waitlist.expired = True
+            elif waitlist.expired and waitlist.course.available <= 0:
+                message = 'closed_course'
+                waitlist.expired = False
+            else:
+                # this should not happen but just to satisfy the logic checker
+                message = 'none'
+            for user in waitlist.users.all():
+                notifications = json.loads(user.notifications.notifications)
+                notif_id = 0
+                if notifications:
+                    notif_id = notifications[-1].get('id') + 1
+                new_notification = {
+                    'seen': False,
+                    'type': 'waitlist',
+                    'id': notif_id,
+                    'data': {'message': message, 'course': waitlist.course.to_dict()}
+                }
+                notifications.append(new_notification)
+                user.notifications.notifications = json.dumps(notifications)
+                user.notifications.save()
+            waitlist.save()
+
+    return JsonResponse({})
 
 
 def page_not_found(request, exception):
