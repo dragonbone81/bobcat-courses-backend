@@ -216,3 +216,20 @@ SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
 # django_heroku.settings(locals())
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        }
+    },
+}
