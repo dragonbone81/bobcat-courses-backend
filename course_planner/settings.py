@@ -35,10 +35,6 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-
-    PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
-    STATICFILES_DIRS = ()
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY, SENDGRID_API_KEY
 
@@ -49,10 +45,7 @@ else:
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_AUTH.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
     SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
     # CELERY_BROKER_URL = AMPQ_CELERY.get('CELERY_BROKER_URL')
-    PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
-    STATICFILES_DIRS = ()
-    DEBUG = False
+    DEBUG = True
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/app/bobcat-courses'
 BROKER_POOL_LIMIT = 1  # Will decrease connection usage
@@ -63,12 +56,12 @@ CELERY_EVENT_QUEUE_EXPIRES = 1  # Will delete all celeryev. queues without consu
 CELERYD_PREFETCH_MULTIPLIER = 1  # Disable prefetching, it's causes problems and doesn't help performance
 CELERYD_CONCURRENCY = 1  # If you tasks are CPU bound, then limit to the number of cores, otherwise increase substainally
 CELERYD_TASK_TIME_LIMIT = 60
-ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me', '127.0.0.1']
+ALLOWED_HOSTS = ['cse120-course-planner.herokuapp.com', '.bobcat-courses.me']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    # 'channels',
     'jet',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -94,7 +87,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
+    # 'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'course_planner.urls'
@@ -135,10 +128,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-if not DEBUG:
-    import dj_database_url
-
-    DATABASES['default'] = dj_database_url.config(ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -222,21 +211,4 @@ STATIC_URL = '/static/'
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
-# django_heroku.settings(locals())
-
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level': 'DEBUG',
-        }
-    },
-}
+django_heroku.settings(locals())
