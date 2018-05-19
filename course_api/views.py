@@ -771,7 +771,23 @@ class NotificationsViewSet(ViewSet):
         return Response(json.loads(request.user.notifications.notifications))
 
     def post(self, request):
-        return Response(None)
+        if request.data.get('crn'):
+            waitlist, created = Waitlist.objects.get_or_create(school='uc_merced',
+                                                               course=Course.objects.get(crn=request.data.get('crn')))
+            waitlist.users.add(request.user)
+            waitlist.save()
+            notifications = json.loads(request.user.notifications.notifications)
+            notif_id = 0
+            if notifications:
+                notif_id = notifications[-1].get('id') + 1
+            notifications.append({'seen': False, 'type': 'message', 'id': notif_id,
+                                  'data': {
+                                      'message': 'You will be notified when course {} is open'.format(
+                                          request.data.get('crn'))}})
+            request.user.notifications.notifications = json.dumps(notifications)
+            request.user.notifications.save()
+            return Response({'success': True})
+        return Response({'error': 'crn not provided'})
 
 
 def page_not_found(request, exception):
