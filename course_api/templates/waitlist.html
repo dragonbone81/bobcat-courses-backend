@@ -123,6 +123,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div style="padding-top: 10px" id="sections_div_details" hidden>
+                            <div class="card mx-auto border-primary"
+                                 style="max-width: 300px;">
+                                <div class="card-header">
+                                    Details
+                                </div>
+                                <div class="card-body" id="section_details_card" style="text-align: left">
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-3" style="padding-top: 10px">
                         <div class="card mx-auto border-primary"
@@ -169,8 +180,12 @@
         let waitlist = {};
         let old_selected;
         let selected_sections = [];
+        let selected_sections_dict = {};
         let details = document.getElementById('details_card');
         let section_details = document.getElementById('card_list_sections');
+        let sections_div = document.getElementById('sections_div');
+        let sections_div_details = document.getElementById('sections_div_details');
+        let section_details_card = document.getElementById('section_details_card');
         let autocomplete = $('#auto_complete');
         autocomplete.typeahead({
                 hint: true,
@@ -209,7 +224,7 @@
                 });
                 populate_sections();
             })
-        })
+        });
         let handle_remove = (crn) => {
             let url = '/api/users/waitlist/';
             fetch(url, {
@@ -334,7 +349,25 @@
                 }
                 document.getElementById(crn + '-section').remove();
                 get_waitlist();
+                back_to_searching();
             })
+        };
+        let back_to_searching = () => {
+            sections_div_details.setAttribute("hidden", true);
+            sections_div.removeAttribute("hidden");
+        };
+        let switch_to_section_details = (crn) => {
+            let course = selected_sections_dict[crn];
+            section_details_card.innerHTML = '<b>Course Name: </b>' + course.course_name + '--' + course.type + '<br>';
+            section_details_card.innerHTML += '<b>Course ID: </b>' + course.course_id + '<br>';
+            section_details_card.innerHTML += '<b>CRN: </b>' + crn + '<br>';
+            section_details_card.innerHTML += '<b>Available Seats: </b>' + course.available + '<br>';
+            section_details_card.innerHTML += '<b>Total Seats: </b>' + course.capacity + '<br><br>';
+            section_details_card.innerHTML += '<button style="float:left;" onclick=back_to_searching(' + crn + ') class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back</button>';
+            section_details_card.innerHTML += '<button style="float:right;" onclick=add_to_waitlist(' + crn + ') class="btn btn-primary">Add <i class="fas fa-arrow-right"></i></button>';
+            sections_div.setAttribute("hidden", true);
+            sections_div_details.removeAttribute("hidden");
+
         };
         let populate_sections = () => {
             section_details.innerHTML = '';
@@ -342,11 +375,12 @@
                 let node = document.createElement("li");
                 node.id = section.crn + '-section';
                 node.className = 'list-group-item notification-title';
-                node.onclick = () => add_to_waitlist(section.crn);
+                node.onclick = () => switch_to_section_details(section.crn);
                 node.innerHTML = section.course_id + ': ' + section.crn;
                 section_details.appendChild(node);
+                selected_sections_dict[section.crn] = section;
             }
-            document.getElementById('sections_div').removeAttribute('hidden')
+            sections_div.removeAttribute('hidden')
         };
     </script>
 {% endblock %}
