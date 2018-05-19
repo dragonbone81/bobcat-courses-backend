@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static from staticfiles %}
+{% block imports %}
+    <style>
+        #top_div {
+            margin: 10px auto;
+            background-color: rgba(255, 255, 255, 0.94);
+            padding: 10px 40px 40px 40px;
+            border-radius: 4px;
+            color: #505e6c;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .scrollable-card::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .scrollable-card::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .scrollable-card::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+
+        .scrollable-card::-webkit-scrollbar-thumb:hover {
+            background: #555;
+            border-radius: 5px;
+        }
+
+        .notification-title:hover {
+            background-color: lightgrey;
+        }
+
+        .notification-title-selected {
+            background-color: lightblue;
+        }
+
+        .notification-title-selected:hover {
+            background-color: #a2c4d0;
+        }
+    </style>
+{% endblock %}
+
+{% block preview_title %}Waitlist{% endblock %}
+
+{% block title %}Waitlist{% endblock %}
+{% block content %}
+    <div class="container"
+         style="max-width: 1200px; text-align: center">
+        <div id="top_div">
+            {% if request.user.is_authenticated %}
+                <div class="row">
+                    <div class="col-md-4" style="padding-top: 10px">
+                        <div class="card mx-auto border-primary"
+                             style="max-width: 300px;">
+                            <div class="card-header">
+                                Your Waitlists
+                            </div>
+                            <div class="scrollable-card" style="overflow-y: auto;max-height:300px;">
+                                <div class="card-body" id="list_card_loading">
+                                    <i style="font-size: 5em;padding: 10px" class="fas fa-sync fa-spin"></i>
+                                </div>
+                                <ul class="list-group list-group-flush" id="card_list" style="cursor: pointer;">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding-top: 10px">
+                        <div class="card mx-auto border-primary"
+                             style="max-width: 600px;">
+                            <div class="card-header">
+                                Details
+                            </div>
+                            <div class="card-body" id="details_card" style="text-align: left">
+                                <div style="text-align: center">
+                                    <i style="font-size: 5em;padding: 10px"
+                                       class="fas fa-sync fa-spin"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            {% else %}
+                <div class="container">
+                    <h1 class="display-4">Not Logged In</h1>
+                    <p class="lead">Login to View Waitlist</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script async>
+        let waitlist = {};
+        let old_selected;
+        let details = document.getElementById('details_card');
+        let handle_remove = (crn) => {
+            let url = '/api/users/waitlist/';
+            fetch(url, {
+                method: 'post', credentials: "same-origin", body: JSON.stringify({crn: crn}),
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Accept":
+                        "application/json",
+                    "Content-Type":
+                        "application/json"
+                },
+            }).then((response) => {
+                return response.json();
+            }).then((response) => {
+                if (response.success) {
+                    $.notify({
+                        // options
+                        title: '<b>Waitlist Updated' + '</b><br>',
+                        message: 'Course ' + crn + ' has been removed from your Waitlist!'
+                    }, {
+                        // settings
+                        type: 'success'
+                    });
+                }
+                delete waitlist[crn];
+                document.getElementById(crn).remove();
+                if (Object.keys(waitlist).length === 0) {
+                    document.getElementById("list_card_loading").removeAttribute("hidden");
+                    document.getElementById("list_card_loading").innerText = 'No courses, waitlist a course to view.';
+                }
+                on_selected(Object.keys(waitlist)[0], false);
+            })
+        };
+        let load_details = (crn) => {
+            details.innerHTML = '<b>Course Name: </b>' + waitlist[crn].course.course_name + '--' + waitlist[crn].course.type + '<br>';
+            details.innerHTML += '<b>Course ID: </b>' + waitlist[crn].course.course_id + '<br>';
+            details.innerHTML += '<b>Available Seats: </b>' + waitlist[crn].course.available + '<br>';
+            details.innerHTML += '<b>Total Seats: </b>' + waitlist[crn].course.capacity + '<br>';
+            details.innerHTML += '<b>People in Waitlist: </b>' + waitlist[crn].users + '<br><br>';
+            details.innerHTML += '<button onclick=handle_remove(' + crn + ') class="btn btn-primary">Remove</button>'
+        };
+        let on_selected = (crn, old = true) => {
+            if (old_selected !== crn && Object.keys(waitlist).length > 0) {
+                document.getElementById(crn).classList.add("notification-title-selected");
+                if (old)
+                    document.getElementById(old_selected).classList.remove('notification-title-selected');
+                old_selected = crn;
+                load_details(crn);
+            } else if (Object.keys(waitlist).length === 0) {
+                details.innerHTML = '<b>No Course Selected</b>';
+            }
+        };
+        let get_waitlist = (command = null, data = null, identifier = null) => {
+            let url = '/api/users/waitlist/';
+            if (command)
+                url += '?command=' + command;
+            if (data || data === 0)
+                url += '&' + identifier + '=' + data;
+            fetch(url, {
+                method: 'get', credentials: "same-origin",
+                headers: {
+                    "X-CSRFToken": "{% csrf_token %}",
+                    "Accept":
+                        "application/json",
+                    "Content-Type":
+                        "application/json"
+                },
+            }).then((response) => {
+                return response.json();
+            }).then((response) => {
+                if (response.length > 0) {
+                    response.sort(function (a, b) {
+                        return parseInt(a.course.course_id.split('-')[2]) - parseInt(b.course.course_id.split('-')[2]);
+                    });
+                    let notifs_windows = document.getElementById("card_list");
+                    document.getElementById("list_card_loading").setAttribute("hidden", true);
+                    notifs_windows.innerHTML = '';
+                    for (let i = 0; i < response.length; i++) {
+                        let node = document.createElement("li");
+                        node.id = response[i].course.crn;
+                        node.className = 'list-group-item notification-title';
+                        if (i === 0) {
+                            node.className += ' notification-title-selected';
+                            old_selected = response[i].course.crn;
+                        }
+                        node.onclick = () => on_selected(response[i].course.crn);
+                        node.innerHTML = response[i].course.course_id + ': ' + response[i].course.crn;
+                        notifs_windows.appendChild(node);
+                        waitlist[response[i].course.crn] = response[i];
+                    }
+                    load_details(old_selected);
+                } else {
+                    document.getElementById("list_card_loading").innerText = 'No courses, waitlist a course to view.';
+                    details.innerHTML = '<b>No Course Selected</b>';
+                }
+            })
+        };
+        get_waitlist();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+{% endblock %}

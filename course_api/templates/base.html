@@ -214,6 +214,9 @@
                 <li class="nav-item hidden-custom-li">
                     <a class="nav-link" href="/app/bobcat-courses/about">About Us</a>
                 </li>
+                <li class="nav-item hidden-custom-li">
+                    <a class="nav-link" href="/app/bobcat-courses/waitlist">Waitlist</a>
+                </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item hidden-custom-li">
                         <a class="nav-link" href="/app/bobcat-courses/reset-password">Password Reset</a>
@@ -243,7 +246,7 @@
                                 <span class="p1" data-count="0" id="notifications_count" hidden></span>
                             </a>
                             <div style="left: -300px; top: 50px;"
-                                 class="dropdown-menu  dropdown-menu-form scrollable-menu"
+                                 class="dropdown-menu dropdown-menu-form scrollable-menu"
                                  aria-labelledby="navbarDropdown" id="notifications_window">
                             </div>
                         </li>
@@ -254,6 +257,7 @@
                             </a>
                             <div style="left: -100px; top: 50px;" class="dropdown-menu"
                                  aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/app/bobcat-courses/waitlist">Waitlist</a>
                                 <a class="dropdown-item" href="/app/bobcat-courses/about">About Us</a>
                                 <a class="dropdown-item" href="/app/bobcat-courses/reset-password">Password Reset</a>
                                 <a class="dropdown-item" href="/app/bobcat-courses/logout">Logout <i
@@ -334,7 +338,7 @@
                             node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#FF9792;padding-left:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
                     }
                     if (notification.type === 'message') {
-                        node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#c8ffa8;padding-left:5px" class="dropdown-item">' + notification.data.message + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                        node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;" class="dropdown-item">' + notification.data.message + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
                     }
                     // Create a text node
                     notifs_windows.appendChild(node);

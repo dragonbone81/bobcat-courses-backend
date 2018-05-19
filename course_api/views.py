@@ -359,6 +359,10 @@ def django_saved_schedules_view(request):
                   {'access_token': str(RefreshToken.for_user(request.user).access_token)})
 
 
+def django_waitlist_view(request):
+    return render(request, 'waitlist.html', {})
+
+
 def django_profile_view(request):
     if request.POST:
         if request.user.is_authenticated and request.FILES and request.FILES.get('profile_picture'):
@@ -742,6 +746,11 @@ def waitlist_check(request):
 class NotificationsViewSet(ViewSet):
     """
     RequiresAuth
+    get:
+        command: delete, id: (notification_id) --> deleted notification from user
+        command: seen_notifs, notifs: [0,5,3] --> marks notifications with ids as seen
+    post:
+        crn: 123464 --> add user to a waitlist with that crn and generate notif
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -786,6 +795,35 @@ class NotificationsViewSet(ViewSet):
                                           request.data.get('crn'))}})
             request.user.notifications.notifications = json.dumps(notifications)
             request.user.notifications.save()
+            return Response({'success': True})
+        return Response({'error': 'crn not provided'})
+
+
+class WaitlistViewSet(ViewSet):
+    """
+    RequiresAuth
+    post: crn - removes user from waitlist
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        waitlists = Waitlist.objects.filter(users__in=[request.user]).select_related('course').prefetch_related('users')
+        response = [{
+            'course': waitlist.course.to_dict(),
+            'users': waitlist.users.count(),
+        } for waitlist in waitlists]
+        return Response(response)
+
+    def post(self, request):
+        if request.data.get('crn'):
+            waitlist = Waitlist.objects.get(course=request.data.get('crn'))
+            waitlist.users.remove(request.user)
+            waitlist.save()
             return Response({'success': True})
         return Response({'error': 'crn not provided'})
 

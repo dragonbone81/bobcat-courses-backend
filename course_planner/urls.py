@@ -20,7 +20,7 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
-    error_500, ProfileImageUpload, waitlist_check, NotificationsViewSet
+    error_500, ProfileImageUpload, waitlist_check, NotificationsViewSet, django_waitlist_view, WaitlistViewSet
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth.views import logout
@@ -46,6 +46,7 @@ router.register(r'users/forgot-password', ForgotPassword, base_name='ForgotPassw
 router.register(r'users/profile-upload', ProfileImageUpload, base_name='ProfileImageUpload')
 router.register(r'users/profile-upload', ProfileImageUpload, base_name='ProfileImageUpload')
 router.register(r'users/notifications', NotificationsViewSet, base_name='NotificationsViewSet')
+router.register(r'users/waitlist', WaitlistViewSet, base_name='WaitlistViewSet')
 handler404 = page_not_found
 handler500 = error_500
 urlpatterns = [
@@ -69,6 +70,7 @@ urlpatterns = [
     path('app/bobcat-courses/login', app_login),
     path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
     path('app/bobcat-courses/about', app_about_view),
+    path('app/bobcat-courses/waitlist', django_waitlist_view),
     path('app/bobcat-courses/reset-password', app_reset_password),
     path('app/bobcat-courses/forgot-password', password_forgot_start),
     re_path('app/bobcat-courses/reset_password_confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
