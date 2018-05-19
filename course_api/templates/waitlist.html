@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static from staticfiles %}
 {% block imports %}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery-typeahead/2.10.4/jquery.typeahead.min.css">
+
+
     <style>
         #top_div {
             margin: 10px auto;
@@ -41,6 +45,55 @@
         .notification-title-selected:hover {
             background-color: #a2c4d0;
         }
+
+        .tt-input, /* UPDATE: newer versions use tt-input instead of tt-query */
+        .tt-hint {
+            width: 230px;
+            height: 50px;
+            padding: 8px 12px;
+            font-size: 24px;
+            line-height: 30px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            margin-left: -20px;
+        }
+
+        .tt-input { /* UPDATE: newer versions use tt-input instead of tt-query */
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        }
+
+        .tt-hint {
+            color: #999;
+        }
+
+        .tt-menu { /* UPDATE: newer versions use tt-menu instead of tt-dropdown-menu */
+            width: 230px;
+            margin-left: -20px;
+            margin-top: 12px;
+            padding: 8px 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+        }
+
+        .tt-suggestion {
+            padding: 3px 5px;
+            font-size: 25px;
+            line-height: 35px;
+        }
+
+        .tt-suggestion.tt-cursor { /* UPDATE: newer versions use .tt-suggestion.tt-cursor */
+            color: #fff;
+            background-color: #0097cf;
+
+        }
+
+        .tt-suggestion p {
+            margin: 0;
+        }
     </style>
 {% endblock %}
 
@@ -54,6 +107,24 @@
             {% if request.user.is_authenticated %}
                 <div class="row">
                     <div class="col-md-4" style="padding-top: 10px">
+                        <div id="the-basics">
+                            <input id="auto_complete" class="typeahead" type="text" placeholder="Search for Courses">
+                        </div>
+                        <div style="padding-top: 10px" id="sections_div" hidden>
+                            <div class="card mx-auto border-primary"
+                                 style="max-width: 300px;">
+                                <div class="card-header">
+                                    Sections
+                                </div>
+                                <div class="scrollable-card" style="overflow-y: auto;max-height:300px;">
+                                    <ul class="list-group list-group-flush" id="card_list_sections"
+                                        style="cursor: pointer;">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="padding-top: 10px">
                         <div class="card mx-auto border-primary"
                              style="max-width: 300px;">
                             <div class="card-header">
@@ -68,7 +139,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8" style="padding-top: 10px">
+                    <div class="col-md-5" style="padding-top: 10px">
                         <div class="card mx-auto border-primary"
                              style="max-width: 600px;">
                             <div class="card-header">
@@ -92,10 +163,53 @@
             {% endif %}
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.min.js"></script>
     <script async>
         let waitlist = {};
         let old_selected;
+        let selected_sections = [];
         let details = document.getElementById('details_card');
+        let section_details = document.getElementById('card_list_sections');
+        let autocomplete = $('#auto_complete');
+        autocomplete.typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 2
+            },
+            {
+                name: 'name',
+                display: 'name',
+                source: function (query, syncResults, asyncResults) {
+                    $.get('/api/courses/course-search/?course=' + query + '&term=201830', function (data) {
+                        asyncResults(data);
+                    });
+                }
+            },
+        );
+        autocomplete.on('typeahead:selected', function (evt, item) {
+            let url = '/api/courses/course-match/';
+            fetch(url, {
+                method: 'post',
+                credentials: "same-origin",
+                body: JSON.stringify({course_list: [item.name], term: 201830}),
+                headers: {
+                    "X-CSRFToken": "{{csrf_token }}",
+                    "Accept":
+                        "application/json",
+                    "Content-Type":
+                        "application/json"
+                },
+            }).then((response) => {
+                return response.json();
+            }).then((response) => {
+                selected_sections = response[item.name].filter((elem) => {
+                    if (!(elem.crn in waitlist))
+                        return elem;
+                });
+                populate_sections();
+            })
+        })
         let handle_remove = (crn) => {
             let url = '/api/users/waitlist/';
             fetch(url, {
@@ -194,6 +308,45 @@
             })
         };
         get_waitlist();
+        let add_to_waitlist = (crn) => {
+            let url = '/api/users/notifications/';
+            fetch(url, {
+                method: 'post', credentials: "same-origin", body: JSON.stringify({crn: crn}),
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Accept":
+                        "application/json",
+                    "Content-Type":
+                        "application/json"
+                },
+            }).then((response) => {
+                return response.json();
+            }).then((response) => {
+                if (response.success) {
+                    $.notify({
+                        // options
+                        title: '<b>Waitlist Updated' + '</b><br>',
+                        message: 'Course ' + crn + ' has been added to your Waitlist!'
+                    }, {
+                        // settings
+                        type: 'success'
+                    });
+                }
+                document.getElementById(crn + '-section').remove();
+                get_waitlist();
+            })
+        };
+        let populate_sections = () => {
+            section_details.innerHTML = '';
+            for (let section of selected_sections) {
+                let node = document.createElement("li");
+                node.id = section.crn + '-section';
+                node.className = 'list-group-item notification-title';
+                node.onclick = () => add_to_waitlist(section.crn);
+                node.innerHTML = section.course_id + ': ' + section.crn;
+                section_details.appendChild(node);
+            }
+            document.getElementById('sections_div').removeAttribute('hidden')
+        };
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
 {% endblock %}
