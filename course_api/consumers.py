@@ -83,14 +83,14 @@ class NotificationsConsumer(AsyncWebsocketConsumer):
 
     def delete_notification(self, notif_id):
         users = User.objects.get(username=self.scope['user'].username)
-        notifications = json.loads(User.objects.get(username=self.scope['user'].username).notifications.notifications)
+        notifications = json.loads(users.notifications.notifications)
         del notifications[next((index for (index, d) in enumerate(notifications) if d["id"] == notif_id), None)]
         users.notifications.notifications = json.dumps(notifications)
         users.notifications.save()
 
     def seen_notifications(self, notifs_ids):
         users = User.objects.get(username=self.scope['user'].username)
-        notifications = json.loads(User.objects.get(username=self.scope['user'].username).notifications.notifications)
+        notifications = json.loads(users.notifications.notifications)
         for notification in notifications:
             if notification.get('id') in notifs_ids:
                 notification['seen'] = True

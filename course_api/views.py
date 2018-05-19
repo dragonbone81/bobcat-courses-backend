@@ -739,6 +739,41 @@ def waitlist_check(request):
     return JsonResponse({})
 
 
+class NotificationsViewSet(ViewSet):
+    """
+    RequiresAuth
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        if request.GET.get('command'):
+            command = request.GET.get('command')
+            if command == 'delete':
+                notif_id = request.GET.get('id')
+                notifications = json.loads(request.user.notifications.notifications)
+                del notifications[
+                    next((index for (index, d) in enumerate(notifications) if d["id"] == int(notif_id)), None)]
+                request.user.notifications.notifications = json.dumps(notifications)
+                request.user.notifications.save()
+            elif command == 'seen_notifs':
+                notifs_ids = json.loads(request.GET.get('notifs'))
+                notifications = json.loads(request.user.notifications.notifications)
+                for notification in notifications:
+                    if notification.get('id') in notifs_ids:
+                        notification['seen'] = True
+                request.user.notifications.notifications = json.dumps(notifications)
+                request.user.notifications.save()
+        return Response(json.loads(request.user.notifications.notifications))
+
+    def post(self, request):
+        return Response(None)
+
+
 def page_not_found(request, exception):
     return render(request, 'errors/404.html')
 
