@@ -15,21 +15,21 @@
             box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .scrollable-card::-webkit-scrollbar {
+        .scrollable-card::-webkit-scrollbar, .tt-menu::-webkit-scrollbar {
             width: 5px;
         }
 
-        .scrollable-card::-webkit-scrollbar-track {
+        .scrollable-card::-webkit-scrollbar-track, .tt-menu::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 5px;
         }
 
-        .scrollable-card::-webkit-scrollbar-thumb {
+        .scrollable-card::-webkit-scrollbar-thumb, .tt-menu::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 5px;
         }
 
-        .scrollable-card::-webkit-scrollbar-thumb:hover {
+        .scrollable-card::-webkit-scrollbar-thumb:hover, .tt-menu::-webkit-scrollbar-thumb:hover {
             background: #555;
             border-radius: 5px;
         }
@@ -77,6 +77,8 @@
             border: 1px solid rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+            max-height: 150px;
+            overflow-y: auto;
         }
 
         .tt-suggestion {
@@ -94,6 +96,43 @@
         .tt-suggestion p {
             margin: 0;
         }
+
+        /* entire container, keeps perspective */
+
+        /* flip the pane when hovered */
+        .flip-container.is-flipped .flipper {
+            transform: rotateY(180deg);
+        }
+
+        .flip-container, .front, .back {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* flip speed goes here */
+        .flipper {
+            transition: 0.7s;
+            transform-style: preserve-3d;
+        }
+
+        /* hide back of pane during swap */
+        .front, .back {
+            backface-visibility: hidden;
+            position: absolute;
+        }
+
+        /* front pane, placed above back */
+        .front {
+            z-index: 2;
+            /* for firefox 31 */
+            transform: rotateY(0deg);
+        }
+
+        /* back, initially hidden pane */
+        .back {
+            transform: rotateY(180deg);
+        }
+
     </style>
 {% endblock %}
 
@@ -110,27 +149,34 @@
                         <div id="the-basics">
                             <input id="auto_complete" class="typeahead" type="text" placeholder="Search for Courses">
                         </div>
-                        <div style="padding-top: 10px" id="sections_div" hidden>
-                            <div class="card mx-auto border-primary"
-                                 style="max-width: 300px;">
-                                <div class="card-header">
-                                    Sections
+                        <div class="flip-container"
+                             id="flipper_container" hidden>
+                            <div class="flipper">
+                                <div class="front" style="padding-top: 10px" id="sections_div"
+                                >
+                                    <div class="card mx-auto border-primary"
+                                         style="max-width: 300px;">
+                                        <div class="card-header">
+                                            Sections
+                                        </div>
+                                        <div class="scrollable-card" style="overflow-y: auto;max-height:300px;">
+                                            <ul class="list-group list-group-flush" id="card_list_sections"
+                                                style="cursor: pointer;">
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="scrollable-card" style="overflow-y: auto;max-height:300px;">
-                                    <ul class="list-group list-group-flush" id="card_list_sections"
-                                        style="cursor: pointer;">
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="padding-top: 10px" id="sections_div_details" hidden>
-                            <div class="card mx-auto border-primary"
-                                 style="max-width: 300px;">
-                                <div class="card-header">
-                                    Details
-                                </div>
-                                <div class="card-body" id="section_details_card" style="text-align: left">
+                                <div class="back" style="padding-top: 10px"
+                                     id="sections_div_details">
+                                    <div class="card mx-auto border-primary"
+                                         style="max-width: 300px;">
+                                        <div class="card-header">
+                                            Details
+                                        </div>
+                                        <div class="card-body" id="section_details_card" style="text-align: left">
 
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -195,6 +241,7 @@
             {
                 name: 'name',
                 display: 'name',
+                limit: 300,
                 source: function (query, syncResults, asyncResults) {
                     $.get('/api/courses/course-search/?course=' + query + '&term=201830', function (data) {
                         asyncResults(data);
@@ -353,8 +400,9 @@
             })
         };
         let back_to_searching = () => {
-            sections_div_details.setAttribute("hidden", true);
-            sections_div.removeAttribute("hidden");
+            //sections_div_details.setAttribute("hidden", true);
+            //sections_div.removeAttribute("hidden");
+            document.getElementById('flipper_container').classList.toggle('is-flipped');
         };
         let switch_to_section_details = (crn) => {
             let course = selected_sections_dict[crn];
@@ -365,8 +413,9 @@
             section_details_card.innerHTML += '<b>Total Seats: </b>' + course.capacity + '<br><br>';
             section_details_card.innerHTML += '<button style="float:left;" onclick=back_to_searching(' + crn + ') class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back</button>';
             section_details_card.innerHTML += '<button style="float:right;" onclick=add_to_waitlist(' + crn + ') class="btn btn-primary">Add <i class="fas fa-arrow-right"></i></button>';
-            sections_div.setAttribute("hidden", true);
-            sections_div_details.removeAttribute("hidden");
+            document.getElementById('flipper_container').classList.toggle('is-flipped');
+            //sections_div.setAttribute("hidden", true);
+            //sections_div_details.removeAttribute("hidden");
 
         };
         let populate_sections = () => {
@@ -380,7 +429,13 @@
                 section_details.appendChild(node);
                 selected_sections_dict[section.crn] = section;
             }
-            sections_div.removeAttribute('hidden')
+            document.getElementById('flipper_container').removeAttribute('hidden');
         };
+        $(document).on('keydown', function (e) {
+            switch (e.which) {
+                case 73: //73 is i key
+                    document.getElementById('flipper_container').classList.toggle('is-flipped');
+            }
+        });
     </script>
 {% endblock %}
