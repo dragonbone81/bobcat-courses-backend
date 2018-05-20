@@ -34,8 +34,28 @@
             border-radius: 5px;
         }
 
-        .notification-title:hover {
-            background-color: lightgrey;
+        .full {
+            background-color: #ffd1ca;
+        }
+
+        .not-full {
+            background-color: #c2ffd0;
+        }
+
+        .notification-title.full:hover:not(.notification-title-selected) {
+            background-color: #ffb9af;
+        }
+
+        .notification-title.not-full:hover:not(.notification-title-selected) {
+            background-color: #adffb4;
+        }
+
+        .notification-title-sections.full:hover {
+            background-color: #ffb9af;
+        }
+
+        .notification-title-sections.not-full:hover {
+            background-color: #adffb4;
         }
 
         .notification-title-selected {
@@ -43,7 +63,7 @@
         }
 
         .notification-title-selected:hover {
-            background-color: #a2c4d0;
+            background-color: #94b6e6;
         }
 
         .tt-input, /* UPDATE: newer versions use tt-input instead of tt-query */
@@ -133,6 +153,7 @@
             transform: rotateY(180deg);
         }
 
+
     </style>
 {% endblock %}
 
@@ -159,7 +180,7 @@
                                         <div class="card-header">
                                             Sections
                                         </div>
-                                        <div class="scrollable-card" style="overflow-y: auto;max-height:300px;">
+                                        <div class="scrollable-card" style="overflow-y: auto;max-height:250px;">
                                             <ul class="list-group list-group-flush" id="card_list_sections"
                                                 style="cursor: pointer;">
                                             </ul>
@@ -357,6 +378,10 @@
                             node.className += ' notification-title-selected';
                             old_selected = response[i].course.crn;
                         }
+                        if (response[i].course.available > 0)
+                            node.className += ' not-full';
+                        else
+                            node.className += ' full';
                         node.onclick = () => on_selected(response[i].course.crn);
                         node.innerHTML = response[i].course.course_id + ': ' + response[i].course.crn;
                         notifs_windows.appendChild(node);
@@ -400,8 +425,6 @@
             })
         };
         let back_to_searching = () => {
-            //sections_div_details.setAttribute("hidden", true);
-            //sections_div.removeAttribute("hidden");
             document.getElementById('flipper_container').classList.toggle('is-flipped');
         };
         let switch_to_section_details = (crn) => {
@@ -410,12 +433,17 @@
             section_details_card.innerHTML += '<b>Course ID: </b>' + course.course_id + '<br>';
             section_details_card.innerHTML += '<b>CRN: </b>' + crn + '<br>';
             section_details_card.innerHTML += '<b>Available Seats: </b>' + course.available + '<br>';
-            section_details_card.innerHTML += '<b>Total Seats: </b>' + course.capacity + '<br><br>';
+            section_details_card.innerHTML += '<b>Total Seats: </b>' + course.capacity + '<br>';
+            if (course.available > 0) {
+                section_details_card.style.backgroundColor = "#c2ffd0";
+                section_details_card.innerHTML += '<b>Course is NOT full.</b><br>\'<br>';
+            } else {
+                section_details_card.style.backgroundColor = "#ffd1ca";
+                section_details_card.innerHTML += '<b>Course IS full.</b><br>\'<br>';
+            }
             section_details_card.innerHTML += '<button style="float:left;" onclick=back_to_searching(' + crn + ') class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back</button>';
             section_details_card.innerHTML += '<button style="float:right;" onclick=add_to_waitlist(' + crn + ') class="btn btn-primary">Add <i class="fas fa-arrow-right"></i></button>';
             document.getElementById('flipper_container').classList.toggle('is-flipped');
-            //sections_div.setAttribute("hidden", true);
-            //sections_div_details.removeAttribute("hidden");
 
         };
         let populate_sections = () => {
@@ -423,7 +451,11 @@
             for (let section of selected_sections) {
                 let node = document.createElement("li");
                 node.id = section.crn + '-section';
-                node.className = 'list-group-item notification-title';
+                node.className = 'list-group-item notification-title-sections';
+                if (section.available > 0)
+                    node.className += ' not-full';
+                else
+                    node.className += ' full';
                 node.onclick = () => switch_to_section_details(section.crn);
                 node.innerHTML = section.course_id + ': ' + section.crn;
                 section_details.appendChild(node);
@@ -431,11 +463,5 @@
             }
             document.getElementById('flipper_container').removeAttribute('hidden');
         };
-        $(document).on('keydown', function (e) {
-            switch (e.which) {
-                case 73: //73 is i key
-                    document.getElementById('flipper_container').classList.toggle('is-flipped');
-            }
-        });
     </script>
 {% endblock %}
