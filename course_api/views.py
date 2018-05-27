@@ -7,6 +7,7 @@ from course_api.serializers import CourseSerializer, SubjectCourseSerializer
 from django.core.mail import send_mail
 from course_planner.settings import DEBUG
 from course_api.utils.get_courses_base_on_simple_name import get_courses
+from course_api.utils.create_notification import create_notification
 from course_api.tasks import course_push_task
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
@@ -608,6 +609,16 @@ class UserLoadSchedules(ViewSet):
 
 def user_update_script_once(request):
     for user in User.objects.all():
+        notifications = json.loads(user.notifications.notifications)
+        for notification in notifications:
+            if not notification.get('email_sent'):
+                notification['email_sent'] = False
+            if not notification.get('time'):
+                import datetime
+                from django.utils import dateformat
+                notification['time'] = dateformat.format(datetime.datetime.now(), 'F j, Y, P')
+        user.notifications.notifications = json.dumps(notifications)
+        user.notifications.save()
         user.save()
     return JsonResponse({'success': True})
 
@@ -729,17 +740,41 @@ def waitlist_check(request):
                 notif_id = 0
                 if notifications:
                     notif_id = notifications[-1].get('id') + 1
-                new_notification = {
-                    'seen': False,
-                    'type': 'waitlist',
-                    'id': notif_id,
-                    'data': {'message': message, 'course': waitlist.course.to_dict()}
-                }
+                new_notification = create_notification(notif_type='waitlist', notif_id=notif_id,
+                                                       data={'message': message, 'course': waitlist.course.to_dict()})
                 notifications.append(new_notification)
                 user.notifications.notifications = json.dumps(notifications)
                 user.notifications.save()
             waitlist.save()
+    return JsonResponse({})
 
+
+def notification_check(request):
+    for notification in Notifications.objects.all().select_related('user'):
+        if notification.user.email:
+            notifications = json.loads(notification.notifications)
+            for notification_dict in notifications:
+                if not notification_dict.get('email_sent', False):
+                    email = loader.render_to_string('notifications/notification_email.html',
+                                                    {'type': notification_dict.get('type'),
+                                                     'message': notification_dict.get('data', {}).get('message'),
+                                                     'course': notification_dict.get('data', {}).get('course'),
+                                                     'link': ('https://' if not DEBUG else 'http://') +
+                                                             request.get_host() + '/app/bobcat-courses/profile'
+                                                     })
+                    if notification_dict.get('type') == 'waitlist':
+                        subject = 'BobcatCourses Waitlist Alert'
+                    else:
+                        subject = 'BobcatCourses Message'
+                    send_mail(subject,
+                              email,
+                              'notifications@bobcat-courses.com',
+                              [notification.user.email],
+                              html_message=email,
+                              fail_silently=True)
+                    notification_dict['email_sent'] = True
+            notification.notifications = json.dumps(notifications)
+            notification.save()
     return JsonResponse({})
 
 
@@ -789,10 +824,10 @@ class NotificationsViewSet(ViewSet):
             notif_id = 0
             if notifications:
                 notif_id = notifications[-1].get('id') + 1
-            notifications.append({'seen': False, 'type': 'message', 'id': notif_id,
-                                  'data': {
-                                      'message': 'You will be notified when course {} is open'.format(
-                                          request.data.get('crn'))}})
+
+            notifications.append(
+                create_notification(notif_type='message', notif_id=notif_id, data={
+                    'message': 'You will be notified when course {} is open'.format(request.data.get('crn'))}))
             request.user.notifications.notifications = json.dumps(notifications)
             request.user.notifications.save()
             return Response({'success': True})

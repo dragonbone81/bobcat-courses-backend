@@ -359,7 +359,6 @@ class School(models.Model):
 
 
 class Notifications(models.Model):
-    # max of 20, will overwrite when new is made?
     class Meta:
         verbose_name = "Notification"
         verbose_name_plural = "Notifications"
@@ -371,10 +370,12 @@ class Notifications(models.Model):
         blank=False,
         on_delete=models.CASCADE,
     )
+    # max of 20, will overwrite when new is made?
     notifications = models.TextField(
         verbose_name="Notifications",
         default='[]',
-        # {'seen': False, 'type': 'some_type', 'id': 0, 'data': {'message': 'whatevs' or 'crn': '12345'}}
+        # {'seen': False,'email_sent':False, 'type': 'some_type'
+        # , 'id': 0, 'time': 'now()', 'data': {'message': 'whatevs' or 'crn': '12345'}}
     )
     email_alerts = models.BooleanField(
         verbose_name="Email Alerts",

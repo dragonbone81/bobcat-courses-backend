@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 80px;
+        }
+    </style>
+</head>
+<body>
+<div style="margin: auto;"><img style="max-width: 60px" src="https://i.imgur.com/sjbgPGc.png">
+    <h1>BobcatCourses</h1></div>
+{% if type == 'message' %}
+    <h2>{{ message }}</h2>
+{% elif type == 'waitlist' %}
+    <h2>{% if course.available == 0 %}Sorry, there{% else %}There{% endif %} are now {{ course.available }} spots
+        in {{ course.course_id }}.</h2>
+    {% if course.available == 0 %}
+        <h3>You will be notified again when spots open up.</h3>
+    {% else %}
+        <h3>Please register soon.</h3>
+    {% endif %}
+{% endif %}
+<footer>If you would like to stop receiving these emails please go <a href="{{ link }}">here</a></footer>
+</body>
+</html>

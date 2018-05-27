@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save
 from course_api.models import ScheduleUser, Notifications
+from course_api.utils.create_notification import create_notification
 from random import choices
 from string import ascii_uppercase, digits
 from django.dispatch import receiver
@@ -17,7 +18,8 @@ def save_profile(sender, instance, raw, using, update_fields, **kwargs):
         instance.notifications = Notifications.objects.create(
             user=instance,
             notifications=json_dumps([
-                {'seen': False, 'type': 'message', 'id': 0, 'data': {'message': 'Welcome to BobcatCourses'}}
+                create_notification(notif_type='message', notif_id=0,
+                                    data={'message': 'Welcome to BobcatCourses'})
             ])
         )
 
