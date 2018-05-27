@@ -365,12 +365,31 @@ def django_waitlist_view(request):
 
 
 def django_profile_view(request):
+    message = {}
     if request.POST:
         if request.user.is_authenticated and request.FILES and request.FILES.get('profile_picture'):
             profile_picture = request.FILES.get('profile_picture')
             request.user.scheduleuser.profile_image = profile_picture
             request.user.scheduleuser.save()
-    return render(request, 'profile.html')
+            message = {'success': {'message': 'Profile image updated.'}}
+        elif request.user.is_authenticated:
+            if 'unsubscribe' in request.POST:
+                request.user.notifications.email_alerts = False
+                request.user.notifications.save()
+                message = {'success': {'message': 'You are now unsubscribed and will not get anymore emails.'}}
+            if 'subscribe' in request.POST:
+                if request.POST.get('email', ''):
+                    request.user.email = request.POST.get('email', '')
+                    request.user.save()
+                request.user.notifications.email_alerts = True
+                request.user.notifications.save()
+                message = {'success': {
+                    'message': 'You are now subscribed and will receive emails and waitlist notifications.'}}
+            elif 'update_email' in request.POST:
+                request.user.email = request.POST.get('email', '')
+                request.user.save()
+                message = {'success': {'message': 'Your email has been updated, {}.'.format(request.user.email)}}
+    return render(request, 'profile.html', message)
 
 
 def app_register_view(request):

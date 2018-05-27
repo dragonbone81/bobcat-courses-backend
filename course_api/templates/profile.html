@@ -5,7 +5,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.4.5/js/fileinput.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.4.5/themes/fa/theme.min.js"></script>
     <style>
-        #login-form {
+        .login-form {
             max-width: 450px;
             width: 90%;
             margin: 0 auto;
@@ -16,7 +16,7 @@
             box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         }
 
-        #login_div {
+        .login_div {
             padding-bottom: 20px;
         }
 
@@ -53,8 +53,8 @@
                     feature is in progress</p>
             </div>
         </div>
-        <div id="login_div">
-            <form id="login-form" method="post" action="" enctype="multipart/form-data">
+        <div id="login_div" class="login-div">
+            <form id="login-form" class="login-form" method="post" action="" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div id="icon_login"><i class="fas fa-user"></i></div>
                 <label for="input-id" style="padding-left: 4px">Select your Profile picture...</label>
@@ -70,6 +70,33 @@
                     theme: "fa",
                     allowedFileExtensions: ["jpg", "png", "jpeg"]
                 });</script>
+            </form>
+        </div>
+
+        <div id="notification_sub_div" class="login-div notification_sub_div" style="margin-top: 20px">
+            <form id="notification_form" class="login-form" method="post" action="">
+                {% csrf_token %}
+                <div id="icon_login"><i class="fas fa-envelope"></i></div>
+                <label for="input-id" style="padding-left: 4px">Notification Settings...</label>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" name="email"
+                           placeholder="Enter email">
+                </div>
+                <button id="update_email" name="update_email" type="submit" class="btn btn-primary float-left">Update
+                    Email
+                </button>
+                {% if user.notifications.email_alerts %}
+                    <button id="unsubscribe" name="unsubscribe" type="submit"
+                            class="btn btn-outline-danger float-right">
+                        Unsubscribe
+                    </button>
+                {% else %}
+                    <button id="subscribe" name="subscribe" type="submit"
+                            class="btn btn-outline-success float-right">
+                        Subscribe
+                    </button>
+                {% endif %}
+                <div> &nbsp;</div>
             </form>
         </div>
     {% else %}
