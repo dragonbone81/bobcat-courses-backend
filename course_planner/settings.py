@@ -35,7 +35,7 @@ if os.environ.get('DEBUG') == 'PRODUCTION_OFF':
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-    os.environ['DATABASE_URL'] = os.environ.get('AWS_DB_URL')
+    # os.environ['DATABASE_URL'] = os.environ.get('AWS_DB_URL')
 else:
     from course_planner.secrets import AWS_KEYS, GOOGLE_AUTH, AMPQ_CELERY, SENDGRID_API_KEY
 
@@ -213,4 +213,3 @@ SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
 django_heroku.settings(locals())
-print(os.environ['DATABASE_URL'])
