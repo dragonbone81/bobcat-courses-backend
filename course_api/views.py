@@ -765,6 +765,7 @@ def waitlist_check(request):
                 user.notifications.notifications = json.dumps(notifications)
                 user.notifications.save()
             waitlist.save()
+    [waitlist.delete() for waitlist in waitlists if waitlist.users.count() == 0]
     return JsonResponse({})
 
 
