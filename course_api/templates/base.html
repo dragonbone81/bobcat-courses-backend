@@ -183,6 +183,15 @@
             color: #e8e217;
         }
 
+        .fa-times {
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .fa-times:hover {
+            color: #5f5f5f;
+        }
+
     </style>
 </head>
 <body class="body" id="body">
@@ -326,7 +335,7 @@
                 document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
             if (notifications.length === 0) {
                 let node = document.createElement("div");
-                node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#ffe3b4;padding-left:5px" class="dropdown-item">No New Alerts</div>';
+                node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#ffe3b4;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">No New Alerts</div>';
                 notifs_windows.appendChild(node);
                 document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
             }
@@ -335,12 +344,12 @@
                     let node = document.createElement("div");
                     if (notification.type === 'waitlist') {
                         if (notification.data.message === 'open_course')
-                            node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#c8ffa8;padding-left:5px;white-space: normal;" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now OPEN!' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#c8ffa8;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now OPEN!' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
                         if (notification.data.message === 'closed_course')
-                            node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#FF9792;padding-left:5px;white-space: normal;" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#FF9792;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
                     }
                     if (notification.type === 'message') {
-                        node.innerHTML = '<div style="border-bottom: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;" class="dropdown-item">' + notification.data.message + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + notification.data.message + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
                     }
                     // Create a text node
                     notifs_windows.appendChild(node);
