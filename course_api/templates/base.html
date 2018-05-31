@@ -68,7 +68,7 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{% static "css/bootstrap-better-nav.min.css" %}">
     <script src="{% static "js/bootstrap-better-nav.min.js" %}"></script>
-{#    <script src="{% static "js/reconnecting-ws.min.js" %}"></script>#}
+    {#    <script src="{% static "js/reconnecting-ws.min.js" %}"></script>#}
     {% block imports %}
     {% endblock %}
     <title>Bobcat Courses | {% block title %}Home{% endblock %}</title>
@@ -205,8 +205,8 @@
                 <li class="nav-item {% if request.path == '/app/bobcat-courses/schedules' %}active{% endif %}">
                     <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
                 </li>
-                <li class="nav-item {% if request.path == '/app/bobcat-courses/profile' %}active{% endif %}">
-                    <a class="nav-link" href="/app/bobcat-courses/profile">My Profile</a>
+                <li class="nav-item {% if request.path == '/app/bobcat-courses/waitlist' %}active{% endif %}">
+                    <a class="nav-link" href="/app/bobcat-courses/waitlist">Waitlists</a>
                 </li>
                 <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
                     <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
@@ -229,20 +229,22 @@
             <ul style="margin-left: -40px;margin-bottom: 0">
                 {% if request.user.is_authenticated %}
                     <div class="form-inline">
+                        <a href="/app/bobcat-courses/profile">
                             <span class="navbar-text">
                                         Welcome
                                 {% if request.user.first_name and request.user.first_name != "Anonymous" %}
                                     {{ request.user.first_name }}{% else %}
                                     {{ request.user.username }}{% endif %}
                                 &nbsp;</span>
-                        <img class="user-pic" src="
+                            <img class="user-pic" src="
  {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                             style="padding-right: 10px; max-height: 40px">
+                                 style="padding-right: 10px; max-height: 40px">
+                        </a>
                         <li class="nav-item dropdown hidden-custom"
                             style="list-style-type: none;">
                             <a class="nav-link" id="navbarDropdown1" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell"></i>
+                                <i class="fas fa-bell" style="cursor: pointer;"></i>
                                 <span class="p1" data-count="0" id="notifications_count" hidden></span>
                             </a>
                             <div style="left: -300px; top: 50px;"
@@ -253,11 +255,11 @@
                         <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">
                             <a class="nav-link" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cog"></i>
+                                <i class="fas fa-cog" style="cursor: pointer;"></i>
                             </a>
                             <div style="left: -100px; top: 50px;" class="dropdown-menu"
                                  aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/app/bobcat-courses/waitlist">Waitlist</a>
+                                <a class="dropdown-item" href="/app/bobcat-courses/profile">Profile</a>
                                 <a class="dropdown-item" href="/app/bobcat-courses/about">About Us</a>
                                 <a class="dropdown-item" href="/app/bobcat-courses/reset-password">Password Reset</a>
                                 <a class="dropdown-item" href="/app/bobcat-courses/logout">Logout <i

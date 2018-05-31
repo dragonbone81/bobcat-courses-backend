@@ -45,59 +45,60 @@
 {% block title %}My Profile{% endblock %}
 {% block content %}
     {% if request.user.is_authenticated %}
-        <div class="jumbotron jumbotron-fluid" style="padding: 10px;">
-            <div class="container">
-                <h1 class="display-4">Whats up?</h1>
-                <p class="lead">Hello
-                    {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}, this
-                    feature is in progress</p>
+        <div style="margin: 30px 0 30px 0">
+            <div id="login_div" class="login-div">
+                <form id="login-form" class="login-form" method="post" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div id="icon_login">
+                        {% if user.scheduleuser.profile_image %}
+                            <img style="max-width: 100px" src="{{ user.scheduleuser.profile_image.url }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <label for="input-id" style="padding-left: 4px">Select your Profile picture...</label>
+                    <div class="form-group">
+                        <input id="input-id" name="profile_picture" type="file" class="file" required>
+                    </div>
+                    <button id="submit_button" type="submit" class="btn btn-primary btn-block">Submit</button>
+                    <script>$("#input-id").fileinput({
+                        maxFileCount: 1,
+                        'showUpload': false,
+                        'previewFileType': 'any',
+                        maxFileSize: 1000,
+                        theme: "fa",
+                        allowedFileExtensions: ["jpg", "png", "jpeg"]
+                    });</script>
+                </form>
             </div>
-        </div>
-        <div id="login_div" class="login-div">
-            <form id="login-form" class="login-form" method="post" action="" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div id="icon_login"><i class="fas fa-user"></i></div>
-                <label for="input-id" style="padding-left: 4px">Select your Profile picture...</label>
-                <div class="form-group">
-                    <input id="input-id" name="profile_picture" type="file" class="file" required>
-                </div>
-                <button id="submit_button" type="submit" class="btn btn-primary btn-block">Submit</button>
-                <script>$("#input-id").fileinput({
-                    maxFileCount: 1,
-                    'showUpload': false,
-                    'previewFileType': 'any',
-                    maxFileSize: 1000,
-                    theme: "fa",
-                    allowedFileExtensions: ["jpg", "png", "jpeg"]
-                });</script>
-            </form>
-        </div>
 
-        <div id="notification_sub_div" class="login-div notification_sub_div" style="margin-top: 20px">
-            <form id="notification_form" class="login-form" method="post" action="">
-                {% csrf_token %}
-                <div id="icon_login"><i class="fas fa-envelope"></i></div>
-                <label for="input-id" style="padding-left: 4px">Notification Settings...</label>
-                <div class="form-group">
-                    <input type="email" class="form-control" id="email" name="email"
-                           placeholder="Enter email">
-                </div>
-                <button id="update_email" name="update_email" type="submit" class="btn btn-primary float-left">Update
-                    Email
-                </button>
-                {% if user.notifications.email_alerts %}
-                    <button id="unsubscribe" name="unsubscribe" type="submit"
-                            class="btn btn-outline-danger float-right">
-                        Unsubscribe
+            <div id="notification_sub_div" class="login-div notification_sub_div" style="margin-top: 20px">
+                <form id="notification_form" class="login-form" method="post" action="">
+                    {% csrf_token %}
+                    <div id="icon_login"><i class="fas fa-envelope"></i></div>
+                    <label for="input-id" style="padding-left: 4px">Notification Settings...</label>
+                    <div class="form-group">
+                        <input type="email" value="{{ user.email }}" class="form-control" id="email" name="email"
+                               placeholder="Enter email">
+                    </div>
+                    <button id="update_email" name="update_email" type="submit" class="btn btn-primary float-left">
+                        Update
+                        Email
                     </button>
-                {% else %}
-                    <button id="subscribe" name="subscribe" type="submit"
-                            class="btn btn-outline-success float-right">
-                        Subscribe
-                    </button>
-                {% endif %}
-                <div> &nbsp;</div>
-            </form>
+                    {% if user.notifications.email_alerts %}
+                        <button id="unsubscribe" name="unsubscribe" type="submit"
+                                class="btn btn-outline-danger float-right">
+                            Unsubscribe
+                        </button>
+                    {% else %}
+                        <button id="subscribe" name="subscribe" type="submit"
+                                class="btn btn-outline-success float-right">
+                            Subscribe
+                        </button>
+                    {% endif %}
+                    <div> &nbsp;</div>
+                </form>
+            </div>
         </div>
     {% else %}
         <div class="jumbotron jumbotron-fluid">
