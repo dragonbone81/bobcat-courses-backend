@@ -117,42 +117,6 @@
             margin: 0;
         }
 
-        /* entire container, keeps perspective */
-
-        /* flip the pane when hovered */
-        .flip-container.is-flipped .flipper {
-            transform: rotateY(180deg);
-        }
-
-        .flip-container, .front, .back {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* flip speed goes here */
-        .flipper {
-            transition: 0.7s;
-            transform-style: preserve-3d;
-        }
-
-        /* hide back of pane during swap */
-        .front, .back {
-            backface-visibility: hidden;
-            position: absolute;
-        }
-
-        /* front pane, placed above back */
-        .front {
-            z-index: 2;
-            /* for firefox 31 */
-            transform: rotateY(0deg);
-        }
-
-        /* back, initially hidden pane */
-        .back {
-            transform: rotateY(180deg);
-        }
-
 
     </style>
 {% endblock %}
@@ -170,34 +134,29 @@
                         <div id="the-basics">
                             <input id="auto_complete" class="typeahead" type="text" placeholder="Search for Courses">
                         </div>
-                        <div class="flip-container"
-                             id="flipper_container" hidden>
-                            <div class="flipper">
-                                <div class="front" style="padding-top: 10px" id="sections_div"
-                                >
-                                    <div class="card mx-auto border-primary"
-                                         style="max-width: 300px;">
-                                        <div class="card-header">
-                                            Sections
-                                        </div>
-                                        <div class="scrollable-card" style="overflow-y: auto;max-height:250px;">
-                                            <ul class="list-group list-group-flush" id="card_list_sections"
-                                                style="cursor: pointer;">
-                                            </ul>
-                                        </div>
-                                    </div>
+                        <div class="front" style="padding-top: 10px" id="sections_div"
+                             hidden>
+                            <div class="card mx-auto border-primary"
+                                 style="max-width: 300px;">
+                                <div class="card-header">
+                                    Sections
                                 </div>
-                                <div class="back" style="padding-top: 10px"
-                                     id="sections_div_details">
-                                    <div class="card mx-auto border-primary"
-                                         style="max-width: 300px;">
-                                        <div class="card-header">
-                                            Details
-                                        </div>
-                                        <div class="card-body" id="section_details_card" style="text-align: left">
+                                <div class="scrollable-card" style="overflow-y: auto;max-height:250px;">
+                                    <ul class="list-group list-group-flush" id="card_list_sections"
+                                        style="cursor: pointer;">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="back" style="padding-top: 10px"
+                             id="sections_div_details" hidden>
+                            <div class="card mx-auto border-primary"
+                                 style="max-width: 300px;">
+                                <div class="card-header">
+                                    Details
+                                </div>
+                                <div class="card-body" id="section_details_card" style="text-align: left">
 
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -425,7 +384,8 @@
             })
         };
         let back_to_searching = () => {
-            document.getElementById('flipper_container').classList.toggle('is-flipped');
+            sections_div.removeAttribute('hidden');
+            sections_div_details.setAttribute("hidden", true);
         };
         let switch_to_section_details = (crn) => {
             let course = selected_sections_dict[crn];
@@ -436,14 +396,15 @@
             section_details_card.innerHTML += '<b>Total Seats: </b>' + course.capacity + '<br>';
             if (course.available > 0) {
                 section_details_card.style.backgroundColor = "#c2ffd0";
-                section_details_card.innerHTML += '<b>Course is NOT full.</b><br>\'<br>';
+                section_details_card.innerHTML += '<b>Course is NOT full.</b><br><br>';
             } else {
                 section_details_card.style.backgroundColor = "#ffd1ca";
-                section_details_card.innerHTML += '<b>Course IS full.</b><br>\'<br>';
+                section_details_card.innerHTML += '<b>Course IS full.</b><br><br>';
             }
             section_details_card.innerHTML += '<button style="float:left;" onclick=back_to_searching(' + crn + ') class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back</button>';
             section_details_card.innerHTML += '<button style="float:right;" onclick=add_to_waitlist(' + crn + ') class="btn btn-primary">Add <i class="fas fa-arrow-right"></i></button>';
-            document.getElementById('flipper_container').classList.toggle('is-flipped');
+            sections_div.setAttribute("hidden", true);
+            sections_div_details.removeAttribute('hidden');
 
         };
         let populate_sections = () => {
@@ -461,7 +422,7 @@
                 section_details.appendChild(node);
                 selected_sections_dict[section.crn] = section;
             }
-            document.getElementById('flipper_container').removeAttribute('hidden');
+            sections_div.removeAttribute('hidden');
         };
     </script>
 {% endblock %}
