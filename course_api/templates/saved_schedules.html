@@ -115,7 +115,15 @@
                 word-break: break-all;
             }
         }
+        .link-desc:hover {
+            color: #000000;
+        }
 
+        .link-desc {
+            color: #323232;
+            font-size: 20px;
+            cursor: pointer;
+        }
     </style>
 {% endblock %}
 
@@ -744,15 +752,16 @@
                             else {
                                 info = '';
                             }
+                            let link = "https://mystudentrecord.ucmerced.edu/pls/PROD/xhwschedule.P_ViewCrnDetail?subjcode=" + course_data.section_data.course_id.split('-')[0] + "&validterm=" + course_list_info[current_id][0].term + "&crn=" + course_data.section_data.crn + "&crsenumb=" + course_data.section_data.course_id.split('-')[1];
                             if (full_courses[current_id].indexOf(course_data.section_data.course_id) === -1) {
                                 course_body += '<li class="list-group-item" style="background-color:' + courses_done[current_id][course_data.section_data.simple_name] +
-                                    ';color: black"> <b>' + course_data.section_data.course_id + '</b>: ' +
+                                    ';color: black"> <i class="link-desc fas fa-external-link-alt" onclick="course_info_link(\'' + link + '\')"></i> &nbsp <b>' + course_data.section_data.course_id + '</b>: ' +
                                     course_data.section_data.crn + '<br>' + info + '</li>';
                             }
                             else {
                                 info = '<u style="color: black;">This section is full</u>';
                                 course_body += '<li class="list-group-item" style="background-color:' + courses_done[current_id][course_data.section_data.simple_name] +
-                                    ';color: #A94442"> <b>' + course_data.section_data.course_id + '</b>: ' +
+                                    ';color: #A94442"> <i class="link-desc fas fa-external-link-alt" onclick="course_info_link(\'' + link + '\')"></i> &nbsp <b>' + course_data.section_data.course_id + '</b>: ' +
                                     course_data.section_data.crn + '<i id="' + course_data.section_data.crn + '" onclick="handle_waitlist(' + course_data.section_data.crn + ')" style="font-size: 30px; position: absolute; right: 5%; top: 30%;cursor: pointer" class="far fa-heart"></i><br>' + info + '</li>';
                             }
 
@@ -760,6 +769,10 @@
                         $("#courses_reg_list").html(all_crns[current_id].join(', '));
                         $("#course_list_info").html(course_body);
                     }
+
+                    let course_info_link = (link) => {
+                        window.open(link, '_blank');
+                    };
 
                     function toggle_tables(way, num) {
                         var table_id = '#' + current_id;
