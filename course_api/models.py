@@ -411,5 +411,8 @@ class Waitlist(models.Model):
         verbose_name='Expired',
     )
 
+    def get_users(self):
+        return self.users.count()
+
     def __str__(self):
         return f"{self.school}:{self.course.crn}"

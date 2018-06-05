@@ -44,7 +44,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 
 class WaitlistAdmin(admin.ModelAdmin):
-    list_display = ('school', 'course')
+    list_display = ( 'course', 'get_users')
     search_fields = ['school', 'course', 'users__username', ]
 
 
