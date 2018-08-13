@@ -195,7 +195,15 @@ class CourseScheduler(object):
                 schedules.append(schedule)
             i = i + 1
         if self.filters:
-            if self.days == 'desc' and self.gaps == 'desc':
+            if self.days == 'desc' and not self.gaps:
+                schedules = sorted(schedules, key=itemgetter('number_of_days'), reverse=True)
+            elif self.days == 'asc' and not self.gaps:
+                schedules = sorted(schedules, key=itemgetter('number_of_days'), reverse=False)
+            elif self.gaps == 'desc' and not self.days:
+                schedules = sorted(schedules, key=itemgetter('gaps'), reverse=True)
+            elif self.gaps == 'asc' and not self.days:
+                schedules = sorted(schedules, key=itemgetter('gaps'), reverse=False)
+            elif self.days == 'desc' and self.gaps == 'desc':
                 schedules = sorted(schedules, key=itemgetter('number_of_days', 'gaps'), reverse=True)
             elif self.days == 'asc' and self.gaps == 'desc':
                 schedules = sorted(schedules, key=itemgetter('gaps'), reverse=True)
