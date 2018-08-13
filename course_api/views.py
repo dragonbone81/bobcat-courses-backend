@@ -296,10 +296,10 @@ class SchedulesListView(ViewSet):
                 search_full = True
             filters = True
         else:
-            earliest_time = None
-            latest_time = None
-            days = None
-            gaps = None
+            earliest_time = request.data.get('earliest_time', None)
+            latest_time = request.data.get('latest_time', None)
+            days = request.data.get('days', None)
+            gaps = request.data.get('gaps', None)
             filters = request.data.get('filters', False)
             search_full = request.data.get('search_full', False)
         term = request.data.get('term', None)
