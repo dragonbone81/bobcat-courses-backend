@@ -20,7 +20,7 @@ channels-redis==2.2.0
 chardet==3.0.4
 colorhash==1.0.2
 constantly==15.1.0
-cryptography==2.2.2
+cryptography==2.3.1
 daphne==2.1.1
 defusedxml==0.5.0
 dj-database-url==0.5.0
@@ -64,10 +64,12 @@ pyasn1-modules==0.2.1
 pycparser==2.18
 PyJWT==1.6.1
 pyOpenSSL==18.0.0
+pypiwin32==223
 python-dateutil==2.7.2
 python-http-client==3.0.0
 python3-openid==3.1.0
 pytz==2018.3
+pywin32==223
 PyYAML==3.12
 requests==2.18.4
 requests-futures==0.9.7
