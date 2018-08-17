@@ -378,6 +378,31 @@ class ContactUs(ViewSet):
         return Response({'success': True})
 
 
+class UpdateNotificationSettings(ViewSet):
+    """
+
+    post: email_alerts !!AND!! email
+    Just sets the users values to the ones given
+    """
+    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        email_alerts = request.data.get('email_alerts')
+        email = request.data.get('email')
+        request.user.notifications.email_alerts = email_alerts
+        request.user.email = email
+        request.user.save()
+        return Response({'success': True})
+
+
 def django_schedules_view(request):
     if request.GET and request.GET.get('term') and request.GET.getlist('courses'):
         term = request.GET.get('term')
