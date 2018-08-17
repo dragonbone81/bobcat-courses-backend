@@ -69,7 +69,7 @@ class UserInfo(ViewSet):
                 'first_name': request.user.first_name, 'last_name': request.user.last_name,
                 'unique_id': request.user.scheduleuser.unique_id,
                 'profile_image_url': request.user.scheduleuser.get_profile_image_url(),
-                'notifications': request.user.notifications}
+                'email_alerts': request.user.notifications.email_alerts}
         return Response(user)
 
 
