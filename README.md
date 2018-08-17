@@ -5,9 +5,8 @@ BobcatCourses let's users create schedules for UC Merced easily just by typing i
 
 # Heroku
 
-[Heroku Link](https://cse120-course-planner.herokuapp.com)
-Hosted on Heroku
+[Frontend](https://bobcatcourses.tk) Frontend app that uses the API.
 
 [Public API Link](https://cse120-course-planner.herokuapp.com/api)
-Our API that we use for all the front-end operations
+Our API that we use for all the front-end operations.
 
