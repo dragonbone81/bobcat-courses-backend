@@ -467,7 +467,7 @@ class SaveSchedule(ViewSet):
     saves schedule
     Needs user authentication and saves schedule to that user
     post term, crns:['34454', '45556',...]
-    if schedule already exists {'schedule_index': index, 'error': 'Schedule already exits', 'type': 'already_exists'}
+    if schedule already exists {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'}
     if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
@@ -493,7 +493,7 @@ class SaveSchedule(ViewSet):
             for index, schedule in enumerate(user_schedules):
                 if set(crns) == set(json.loads(schedule.courses)):
                     return Response(
-                        {'schedule_index': index, 'error': 'Schedule already exits', 'type': 'already_exists'})
+                        {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'})
             schedule = Schedule(
                 user=request.user,
                 term=term,
