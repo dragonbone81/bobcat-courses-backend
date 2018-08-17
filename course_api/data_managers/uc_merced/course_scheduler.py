@@ -84,16 +84,26 @@ class CourseScheduler(object):
     #             n *= len(classes[class_id])
     #     return permutations
 
-    def dayConflicts(self, time, day):
+    def dayConflicts(self, time, day, is_event=False):
         for t in day:  # Go though all the times that are already in the day
-            if time["start"] >= t["start"] and time["start"] <= t["end"]:
-                return True  # if the course we want to add starts during a registered course -> Conflict
-            if time["end"] >= t["start"] and time["end"] <= t["end"]:
-                return True  # if the course we want to add ends during a registered course -> Conflict
-            if t["start"] >= time["start"] and t["start"] <= time["end"]:
-                return True  # if a registered course starts during the course we want to add -> Conflict
-            if t["end"] >= time["start"] and t["end"] <= time["end"]:
-                return True  # if a registered course ends during the course we want to add -> Conflict
+            if is_event:
+                if time["start"] == t["start"] and time["start"] == t["end"]:
+                    return True  # if the course we want to add starts during a registered course -> Conflict
+                if time["end"] == t["start"] and time["end"] == t["end"]:
+                    return True  # if the course we want to add ends during a registered course -> Conflict
+                if t["start"] == time["start"] and t["start"] == time["end"]:
+                    return True  # if a registered course starts during the course we want to add -> Conflict
+                if t["end"] == time["start"] and t["end"] == time["end"]:
+                    return True  # if a registered course ends during the course we want to add -> Conflict
+            else:
+                if time["start"] >= t["start"] and time["start"] <= t["end"]:
+                    return True  # if the course we want to add starts during a registered course -> Conflict
+                if time["end"] >= t["start"] and time["end"] <= t["end"]:
+                    return True  # if the course we want to add ends during a registered course -> Conflict
+                if t["start"] >= time["start"] and t["start"] <= time["end"]:
+                    return True  # if a registered course starts during the course we want to add -> Conflict
+                if t["end"] >= time["start"] and t["end"] <= time["end"]:
+                    return True  # if a registered course ends during the course we want to add -> Conflict
         return False  # No conflict
 
     def hasConflict(self, schedule):
@@ -106,14 +116,21 @@ class CourseScheduler(object):
                 if return_val:
                     allCourses.append(return_val)
         for c in allCourses:
-            if c["hours"] != "TBD-TBD":
+            if not c.get('hours') and c.get('start_time') and c.get('end_time'):
+                for day in c.get("days"):
+                    time = {"start": c["start_time"], "end": c["end_time"]}
+                    if not self.dayConflicts(time, times[day], is_event=True):
+                        times[day].append(time)
+                    else:
+                        return True
+            elif c["hours"] != "TBD-TBD":
                 for day in c.get("days"):
                     time = self.convertTime(c["hours"])
                     if not self.dayConflicts(time, times[day]):
                         times[day].append(time)
                     else:
                         return True
-            if not c['final_days']:
+            if not c.get('final_days'):
                 c['final_days'] = []
             for day in c.get("final_days", []):
                 time = self.convertTime(c["final_hours"])
@@ -133,9 +150,13 @@ class CourseScheduler(object):
 
         for key, section in schedule.items():
             for key, course in section.items():
-                if course and course["hours"] != "TBD-TBD":
+                if course and course.get("hours") != "TBD-TBD" or course and course.get('start_time') and course.get(
+                        'end_time'):
                     for day in course["days"]:
-                        time = self.convertTime(course["hours"])
+                        if course.get('start_time') and course.get('end_time'):
+                            time = {"start": course["start_time"], "end": course["end_time"]}
+                        else:
+                            time = self.convertTime(course["hours"])
                         times[day].append(time)
                         if time["start"] < earliest:
                             earliest = time["start"]
@@ -155,7 +176,7 @@ class CourseScheduler(object):
         info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize}
         return info
 
-    def get_valid_schedules(self, courses):
+    def get_valid_schedules(self, courses, custom_events=list()):
         schedules = list()
 
         classes = {}
@@ -164,7 +185,10 @@ class CourseScheduler(object):
             subCourses = course_data[id]  #
             classes[id] = self.getSections(subCourses)  #
         del course_data
-
+        if len(custom_events) > 0:
+            classes['custom_events'] = {'0': {}}
+            for event in custom_events:
+                classes['custom_events']['0'][event['event_name']] = event
         maxNumberOfPerms = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             maxNumberOfPerms *= len(data)

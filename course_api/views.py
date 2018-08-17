@@ -303,11 +303,12 @@ class SchedulesListView(ViewSet):
             filters = request.data.get('filters', False)
             search_full = request.data.get('search_full', False)
         term = request.data.get('term', None)
+        custom_events = request.data.get('custom_events', [])
         if not term:
             return Response({"Error": "No Term"})
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
                                     search_full=search_full, filters=filters, bad_crns=bad_crns)
-        courses = generator.get_valid_schedules(courses_to_search)
+        courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
         return Response(courses[:80])
 
 
