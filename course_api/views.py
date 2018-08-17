@@ -399,6 +399,7 @@ class UpdateNotificationSettings(ViewSet):
         email = request.data.get('email')
         request.user.notifications.email_alerts = email_alerts
         request.user.email = email
+        request.user.notifications.save()
         request.user.save()
         return Response({'success': True})
 
