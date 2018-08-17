@@ -371,7 +371,7 @@ class ContactUs(ViewSet):
         message = request.data.get('message')
         send_mail('User {} submitted a comment, username:{}, email:{}'.format(name, username, email), message,
                   'support@bobcat-courses.com',
-                  ['mmoison@ucmerced.edu', 'mhernandez268@ucmerced.edu', 'fdietz@ucmerced.edu',
+                  ['mmoison@ucmerced.edu', 'mhernandez268@ucmerced.edu',
                    'cvernikoff@ucmerced.edu'],
                   fail_silently=True)
         return Response({'success': True})
