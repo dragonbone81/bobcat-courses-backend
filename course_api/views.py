@@ -348,6 +348,35 @@ class CasRegistration(ViewSet):
             return Response(response)
 
 
+class ContactUs(ViewSet):
+    """
+
+    post: username, email, name, message
+    Sends Email to us with the message and stuff
+    """
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        return Response(None)
+
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        name = request.data.get('name')
+        message = request.data.get('message')
+        send_mail('User {} submitted a comment, username:{}, email:{}'.format(name, username, email), message,
+                  'support@bobcat-courses.com',
+                  ['mmoison@ucmerced.edu', 'mhernandez268@ucmerced.edu', 'fdietz@ucmerced.edu',
+                   'cvernikoff@ucmerced.edu'],
+                  fail_silently=True)
+        return Response({'success': True})
+
+
 def django_schedules_view(request):
     if request.GET and request.GET.get('term') and request.GET.getlist('courses'):
         term = request.GET.get('term')
