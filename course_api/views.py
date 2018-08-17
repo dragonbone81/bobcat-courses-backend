@@ -68,7 +68,8 @@ class UserInfo(ViewSet):
         user = {'username': request.user.username, 'email': request.user.email, 'name': request.user.get_full_name(),
                 'first_name': request.user.first_name, 'last_name': request.user.last_name,
                 'unique_id': request.user.scheduleuser.unique_id,
-                'profile_image_url': request.user.scheduleuser.get_profile_image_url()}
+                'profile_image_url': request.user.scheduleuser.get_profile_image_url(),
+                'notifications': request.user.notifications}
         return Response(user)
 
 
