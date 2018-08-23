@@ -250,7 +250,7 @@ class SubjectCourseViewSet(viewsets.ModelViewSet):
 
 class SchedulesListView(ViewSet):
     """
-    post: Returns valid schedules for classes - {"course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc", "search_full":false, "bad_crns":[1235,345345]}
+    post: Returns valid schedules for classes - {"custom_events": [{event_name: "cse", start_time: 700, end_time: 830, days: "T"}], "course_list": ["CSE-120", "CSE-150"], "term":"201830", "earliest_time":1000, "latest_time":2100, "gaps";"desc||asc", "days";"desc||asc", "search_full":false, "bad_crns":[1235,345345]}
     """
     # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = ()
