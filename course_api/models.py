@@ -263,36 +263,6 @@ class Course(models.Model):
         blank=True,
         db_index=True,
     )
-    final_type_2 = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    final_days_2 = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    final_hours_2 = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    final_room_2 = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
-    final_dates_2 = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True,
-        db_index=True,
-    )
     simple_name = models.CharField(
         verbose_name="Simple Name",
         max_length=256,
