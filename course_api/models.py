@@ -63,6 +63,10 @@ class Schedule(models.Model):
         verbose_name="Courses",
         default='[]',
     )
+    user_events = models.TextField(
+        verbose_name="User Events",
+        default='[]',
+    )
     user = models.ForeignKey(
         User,
         verbose_name="Schedule User",

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
-    CoursesSearch, SchedulesListView, CasRegistration, django_schedules_view, GetTerms, app_login, SaveSchedule, \
+    CoursesSearch, SchedulesListView, django_schedules_view, GetTerms, app_login, SaveSchedule, \
     django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
@@ -35,7 +35,6 @@ router.register(r'courses/course-match', CourseListView, base_name='CourseListVi
 router.register(r'courses/schedule-search', SchedulesListView, base_name='SchedulesListView')
 router.register(r'courses/course-search', CoursesSearch, base_name='CoursesSearch')
 router.register(r'courses/course-dump', SubjectCourseViewSet, base_name='SubjectCourseViewSet')
-router.register(r'courses/course-register', CasRegistration, base_name='CasRegistration')
 router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
 router.register(r'users/save-schedule', SaveSchedule, base_name='SaveSchedule')
 router.register(r'users/star-schedule', StarSchedule, base_name='StarSchedule')

@@ -5,7 +5,7 @@ def getInfoForSchedule(schedule):
 
     for key, section in schedule.items():
         for key, course in section.items():
-            if course and course["hours"] != "TBD-TBD":
+            if course and isinstance(course, dict) and course.get("hours") and course["hours"] != "TBD-TBD":
                 for day in course["days"]:
                     time = convertTime(course["hours"])
                     times[day].append(time)
@@ -13,7 +13,14 @@ def getInfoForSchedule(schedule):
                         earliest = time["start"]
                     if time["end"] > latest:
                         latest = time["end"]
-
+            elif course and isinstance(course, dict) and course.get("start_time") and course.get("end_time"):
+                for day in course["days"]:
+                    time = {"start": course.get("start_time"), "end": course.get("end_time")}
+                    times[day].append(time)
+                    if time["start"] < earliest:
+                        earliest = time["start"]
+                    if time["end"] > latest:
+                        latest = time["end"]
     gapSize = 0
     numOfDays = 0
 

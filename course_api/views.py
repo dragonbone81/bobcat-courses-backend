@@ -15,7 +15,6 @@ from django.utils.encoding import force_bytes
 from django.template import loader
 from django.contrib.auth import authenticate, login
 from course_api.data_managers.uc_merced.course_scheduler import CourseScheduler
-from course_api.data_managers.uc_merced.my_registration import CourseRegistration
 from course_api.data_managers.uc_merced.course_push import UCMercedCoursePush, SubjectClassUpdate
 from course_api.models import Course, SubjectCourse, Schedule, Terms, Waitlist, Notifications
 from course_api.data_managers.uc_merced.get_update_terms import update_terms as update_uc_merced_terms
@@ -313,42 +312,6 @@ class SchedulesListView(ViewSet):
         return Response(courses[:80])
 
 
-class CasRegistration(ViewSet):
-    """
-    Requires Authentication - {Authorization: "Bearer " + access_token}
-
-    post: Registers you for classes
-    example: {"crns":[123, 1234, 123], "username":"***", "password":"***", "term":201820} for summer term
-    """
-    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = ()
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-
-    def retrieve(self, request, pk=None):
-        return Response(None)
-
-    def list(self, request, format=None):
-        return Response(None)
-
-    def post(self, request):
-        crns = request.data.get('crns')
-        if isinstance(crns, str):
-            crns = crns.split(',')
-        username = request.data.get('username')
-        password = request.data.get('password')
-        term = request.data.get('term')
-        registration = CourseRegistration(course_crns=crns, term=term,
-                                          auth={'username': username, 'password': password})
-        response = registration.cas_login()
-        if response.get('login') == 'success':
-            response = registration.register()
-            print("User {} tried to register, response {}".format(request.user.username, response))
-            return Response(response)
-        else:
-            print("User {} tried to register, response {}".format(request.user.username, response))
-            return Response(response)
-
-
 class ContactUs(ViewSet):
     """
 
@@ -522,7 +485,8 @@ class SaveSchedule(ViewSet):
     """
     saves schedule
     Needs user authentication and saves schedule to that user
-    post term, crns:['34454', '45556',...]
+    post term, crns:['34454', '45556',...],
+    "custom_events":[{event_name: "Work", start_time: 700, end_time: 730, days: "WM"}
     if schedule already exists {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'}
     if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
     """
@@ -539,6 +503,7 @@ class SaveSchedule(ViewSet):
     def post(self, request):
         term = request.data.get('term')
         crns = request.data.get('crns')
+        user_events = request.data.get('custom_events', [])
         if isinstance(crns, str):
             crns = crns.split(',')
         if term and crns and len(crns) > 0 and crns[0] != '':
@@ -554,6 +519,7 @@ class SaveSchedule(ViewSet):
                 user=request.user,
                 term=term,
                 courses=json.dumps(crns),
+                user_events=json.dumps(user_events),
             )
             schedule.save()
             return Response({'success': 'Schedule Saved!'})
@@ -673,8 +639,13 @@ class UserLoadSchedules(ViewSet):
         gen_schedules = []
         for schedule in schedules:
             courses = json.loads(schedule.courses)
+            custom_events = json.loads(schedule.user_events)
             schedule_dict = {'schedule': {}, 'info': {}}
             courses = Course.objects.filter(crn__in=courses)
+            if custom_events:
+                schedule_dict['schedule']['custom_events'] = {}
+                for course in custom_events:
+                    schedule_dict['schedule']['custom_events'][course['event_name']] = course
             for course in courses:
                 if course.simple_name in schedule_dict['schedule']:
                     schedule_dict['schedule'][course.simple_name][course.type] = course.to_dict()
