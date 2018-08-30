@@ -643,15 +643,13 @@ class UserLoadSchedules(ViewSet):
             schedule_dict = {'schedule': {}, 'info': {}}
             courses = Course.objects.filter(crn__in=courses)
             if custom_events:
-                schedule_dict['schedule']['custom_events'] = {}
-                for course in custom_events:
-                    schedule_dict['schedule']['custom_events'][course['event_name']] = course
+                schedule_dict['schedule']['custom_events'] = [course for course in custom_events]
             for course in courses:
                 if course.simple_name in schedule_dict['schedule']:
-                    schedule_dict['schedule'][course.simple_name][course.type] = course.to_dict()
+                    schedule_dict['schedule'][course.simple_name].append(course.to_dict())
                 else:
-                    schedule_dict['schedule'][course.simple_name] = {}
-                    schedule_dict['schedule'][course.simple_name][course.type] = course.to_dict()
+                    schedule_dict['schedule'][course.simple_name] = []
+                    schedule_dict['schedule'][course.simple_name].append(course.to_dict())
             schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
             schedule_dict['important'] = schedule.important
             gen_schedules.append(schedule_dict)

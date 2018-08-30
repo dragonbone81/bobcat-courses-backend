@@ -4,7 +4,7 @@ def getInfoForSchedule(schedule):
     latest = 0000
 
     for key, section in schedule.items():
-        for key, course in section.items():
+        for course in section:
             if course and isinstance(course, dict) and course.get("hours") and course["hours"] != "TBD-TBD":
                 for day in course["days"]:
                     time = convertTime(course["hours"])
