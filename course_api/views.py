@@ -652,6 +652,8 @@ class UserLoadSchedules(ViewSet):
                     schedule_dict['schedule'][course.simple_name].append(course.to_dict())
             schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
             schedule_dict['important'] = schedule.important
+            schedule_dict['custom_events'] = schedule_dict['schedule'].get('custom_events', [])
+            del schedule_dict['schedule']['custom_events']
             gen_schedules.append(schedule_dict)
         return Response(gen_schedules)
 

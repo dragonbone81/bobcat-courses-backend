@@ -239,7 +239,11 @@ class CourseScheduler(object):
                 schedules = sorted(schedules, key=itemgetter('number_of_days', 'gaps'), reverse=False)
         schedule_output = []
         for schedule in schedules:
-            courses = {key: [sections_object for type_key, sections_object in course.items() if sections_object] for key, course in
-                       schedule.get('schedule').items()}
-            schedule_output.append({'schedule': courses, 'info': schedule['info']})
+            courses = {key: [sections_object for type_key, sections_object in course.items() if sections_object] for
+                       key, course in
+                       schedule.get('schedule').items() if key != 'custom_events'}
+            schedule_output.append({'schedule': courses, 'info': schedule['info'],
+                                    'custom_events': [sections_object for type_key, sections_object in
+                                                      schedule['schedule'].get('custom_events', {}).items() if
+                                                      sections_object]})
         return schedule_output
