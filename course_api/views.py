@@ -513,8 +513,21 @@ class SaveSchedule(ViewSet):
             # check Users schedules to make sure schedule not already saved
             for index, schedule in enumerate(user_schedules):
                 if set(crns) == set(json.loads(schedule.courses)):
-                    return Response(
-                        {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'})
+                    same_events = True
+                    if len(json.loads(schedule.user_events)) != len(user_events):
+                        same_events = False
+                    else:
+                        for event1 in json.loads(schedule.user_events):
+                            for event2 in user_events:
+                                if event1["event_name"] != event2["event_name"] \
+                                        or event1["start_time"] != event2["start_time"] \
+                                        or event1["end_time"] != event2["end_time"] \
+                                        or event1["days"] != event2["days"]:
+                                    same_events = False
+                                    break
+                    if same_events:
+                        return Response(
+                            {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'})
             schedule = Schedule(
                 user=request.user,
                 term=term,
@@ -522,7 +535,7 @@ class SaveSchedule(ViewSet):
                 user_events=json.dumps(user_events),
             )
             schedule.save()
-            return Response({'success': 'Schedule Saved!'})
+            return Response({'success': True})
         return Response(None)
 
 
@@ -585,15 +598,29 @@ class DeleteSchedule(ViewSet):
     def post(self, request):
         term = request.data.get('term')
         crns = request.data.get('crns')
+        user_events = request.data.get('custom_events', [])
         if isinstance(crns, str):
             crns = crns.split(',')
         if term and crns:
             for schedule in Schedule.objects.filter(user=request.user, term=term):
                 if set(json.loads(schedule.courses)) == set(crns):
-                    schedule.delete()
-                    return Response({'success': 'Schedule Deleted!'})
+                    same_events = True
+                    if len(json.loads(schedule.user_events)) != len(user_events):
+                        same_events = False
+                    else:
+                        for event1 in json.loads(schedule.user_events):
+                            for event2 in user_events:
+                                if event1["event_name"] != event2["event_name"] \
+                                        or event1["start_time"] != event2["start_time"] \
+                                        or event1["end_time"] != event2["end_time"] \
+                                        or event1["days"] != event2["days"]:
+                                    same_events = False
+                                    break
+                    if same_events:
+                        schedule.delete()
+                        return Response({'success': True})
             return Response({'error': 'Schedule DNE (Already Deleted Probably)'})
-        return Response(None)
+        return Response({'error': "no terms or crn"})
 
 
 class ProfileImageUpload(ViewSet):
