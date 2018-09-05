@@ -486,7 +486,7 @@ class SaveSchedule(ViewSet):
     saves schedule
     Needs user authentication and saves schedule to that user
     post term, crns:['34454', '45556',...],
-    "custom_events":[{event_name: "Work", start_time: 700, end_time: 730, days: "WM"}
+    "custom_events":[{event_name: "Work", start_time: 700, end_time: 730, days: "WM"}]
     if schedule already exists {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'}
     if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
     """
@@ -582,7 +582,8 @@ class DeleteSchedule(ViewSet):
     """
     saves schedule
     Needs user authentication and deletes that users schedule
-    post term, crns:['34454', '45556',...] <-of schedule you want to delete
+    post term, crns:['34454', '45556',...] <-of schedule you want to delete ,
+    "custom_events":[{event_name: "Work", start_time: 700, end_time: 730, days: "WM"}]
     if schedule not found returns {'error': 'Schedule DNE (Already Deleted Probably)'}
     """
     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
