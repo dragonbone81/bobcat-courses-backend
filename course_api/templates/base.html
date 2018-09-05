@@ -195,8 +195,13 @@
     </style>
 </head>
 <body class="body" id="body">
-
-
+{% if '/app/bobcat-courses/reset_password_confirm' not in request.path %}
+    <div class="alert alert-primary" role="alert" style="margin-top: 20px;margin-left: 10px;margin-right: 10px">
+    <h4 class="alert-heading">This website is no longer in use.</h4>
+    <h3><a href="https://bobcatcourses.tk" class="alert-link">Please go here for an updated and better experience:
+        BobcatCourses</a></h3>
+{% endif %}
+</div>
 {% block header %}
     <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
         <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px">
@@ -323,65 +328,70 @@
     {% if request.user.is_authenticated %}
         let notifications = [];
         let handle_delete = (notif_id) => {
-            get_notifications('delete', notif_id, 'id');
-        };
+        get_notifications('delete', notif_id, 'id');
+    };
         let update_dom_notifications = () => {
-            let notifs_windows = document.getElementById("notifications_window");
-            notifs_windows.innerHTML = '';
-            let length_notifs_not_seen = notifications.filter(notif => notif.seen === false).length;
-            if (length_notifs_not_seen > 0)
-                document.getElementById("notifications_count").dataset.count = "" + length_notifs_not_seen;
-            else
-                document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
-            if (notifications.length === 0) {
+        let notifs_windows = document.getElementById("notifications_window");
+        notifs_windows.innerHTML = '';
+        let length_notifs_not_seen = notifications.filter(notif = > notif.seen === false
+    ).
+        length;
+        if (length_notifs_not_seen > 0)
+            document.getElementById("notifications_count").dataset.count = "" + length_notifs_not_seen;
+        else
+            document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
+        if (notifications.length === 0) {
+            let node = document.createElement("div");
+            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#ffe3b4;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">No New Alerts</div>';
+            notifs_windows.appendChild(node);
+            document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
+        }
+        else {
+            for (let notification of notifications) {
                 let node = document.createElement("div");
-                node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#ffe3b4;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">No New Alerts</div>';
+                if (notification.type === 'waitlist') {
+                    if (notification.data.message === 'open_course')
+                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#c8ffa8;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now OPEN!' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                    if (notification.data.message === 'closed_course')
+                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#FF9792;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                }
+                if (notification.type === 'message') {
+                    node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + notification.data.message + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
+                }
+                // Create a text node
                 notifs_windows.appendChild(node);
-                document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
             }
-            else {
-                for (let notification of notifications) {
-                    let node = document.createElement("div");
-                    if (notification.type === 'waitlist') {
-                        if (notification.data.message === 'open_course')
-                            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#c8ffa8;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now OPEN!' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
-                        if (notification.data.message === 'closed_course')
-                            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#FF9792;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
-                    }
-                    if (notification.type === 'message') {
-                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + notification.data.message + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
-                    }
-                    // Create a text node
-                    notifs_windows.appendChild(node);
-                }
-                if (length_notifs_not_seen > 0)
-                    document.getElementById("notifications_count").removeAttribute('hidden');
-            }
-        };
+            if (length_notifs_not_seen > 0)
+                document.getElementById("notifications_count").removeAttribute('hidden');
+        }
+    };
         let get_notifications = (command = null, data = null, identifier = null) => {
-            let url = '/api/users/notifications/';
-            if (command)
-                url += '?command=' + command;
-            if (data || data === 0)
-                url += '&' + identifier + '=' + data;
-            fetch(url, {
-                method: 'get', credentials: "same-origin",
-                headers: {
-                    "X-CSRFToken": "{% csrf_token %}",
-                    "Accept":
-                        "application/json",
-                    "Content-Type":
-                        "application/json"
-                },
-            }).then((response) => {
-                return response.json();
-            }).then((response) => {
-                if (JSON.stringify(notifications) !== JSON.stringify(response) || JSON.stringify(response) === '[]') {
-                    notifications = response.reverse();
-                    update_dom_notifications();
-                }
-            })
-        };
+        let url = '/api/users/notifications/';
+        if (command)
+            url += '?command=' + command;
+        if (data || data === 0)
+            url += '&' + identifier + '=' + data;
+        fetch(url, {
+            method: 'get', credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": "{% csrf_token %}",
+                "Accept":
+                    "application/json",
+                "Content-Type":
+                    "application/json"
+            },
+        }).then((response) = > {
+            return response.json();
+    }).
+        then((response) = > {
+            if(JSON.stringify(notifications) !== JSON.stringify(response) || JSON.stringify(response) === '[]'
+    )
+        {
+            notifications = response.reverse();
+            update_dom_notifications();
+        }
+    })
+    };
         $('#navbarDropdown1').on('click', function (e) {
             let seen_notifs = [];
             for (let notif of notifications) {

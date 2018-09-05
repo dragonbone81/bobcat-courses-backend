@@ -797,7 +797,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
             new_password = request.POST.get('new_password')
             user.set_password(new_password)
             user.save()
-            return redirect('/app/bobcat-courses/login')
+            return redirect('https://bobcatcourses.tk/login')
         else:
             return render(request, 'forgot_password/password-forgot-reset.html')
     else:
