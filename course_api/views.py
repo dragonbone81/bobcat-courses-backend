@@ -517,7 +517,9 @@ class SaveSchedule(ViewSet):
                     else:
                         schedule_events = json.loads(schedule.user_events)
                         for event in user_events:
-                            if not any(d['event_name'] == event['event_name'] for d in schedule_events):
+                            if not any(d['event_name'] == event['event_name'] and d['start_time'] == event[
+                                'start_time'] and d['end_time'] == event['end_time'] and d['days'] == event['days'] for
+                                       d in schedule_events):
                                 same_events = False
                                 break
                     if same_events:
@@ -606,7 +608,9 @@ class DeleteSchedule(ViewSet):
                     else:
                         schedule_events = json.loads(schedule.user_events)
                         for event in user_events:
-                            if not any(d['event_name'] == event['event_name'] for d in schedule_events):
+                            if not any(d['event_name'] == event['event_name'] and d['start_time'] == event[
+                                'start_time'] and d['end_time'] == event['end_time'] and d['days'] == event['days'] for
+                                       d in schedule_events):
                                 same_events = False
                                 break
                     if same_events:
