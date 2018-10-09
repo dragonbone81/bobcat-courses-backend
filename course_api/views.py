@@ -663,26 +663,30 @@ class UserLoadSchedules(ViewSet):
         else:
             schedules = Schedule.objects.filter(user=request.user).order_by('-important', '-created')
         gen_schedules = []
+        terms = json.loads(Terms.objects.get(school='uc_merced').terms)
         for schedule in schedules:
-            courses = json.loads(schedule.courses)
-            custom_events = json.loads(schedule.user_events)
-            schedule_dict = {'schedule': {}, 'info': {}}
-            courses = Course.objects.filter(crn__in=courses)
-            if custom_events:
-                schedule_dict['schedule']['custom_events'] = [course for course in custom_events]
-            for course in courses:
-                if course.simple_name in schedule_dict['schedule']:
-                    schedule_dict['schedule'][course.simple_name].append(course.to_dict())
-                else:
-                    schedule_dict['schedule'][course.simple_name] = []
-                    schedule_dict['schedule'][course.simple_name].append(course.to_dict())
-            schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
-            schedule_dict['important'] = schedule.important
-            schedule_dict['custom_events'] = schedule_dict['schedule'].get('custom_events', [])
-            if schedule_dict['schedule'].get('custom_events'):
-                del schedule_dict['schedule']['custom_events']
-            schedule_dict['term']['info']['term'] = schedule.term
-            gen_schedules.append(schedule_dict)
+            if schedule.term not in terms:
+                schedule.delete()
+            else:
+                courses = json.loads(schedule.courses)
+                custom_events = json.loads(schedule.user_events)
+                schedule_dict = {'schedule': {}, 'info': {}}
+                courses = Course.objects.filter(crn__in=courses)
+                if custom_events:
+                    schedule_dict['schedule']['custom_events'] = [course for course in custom_events]
+                for course in courses:
+                    if course.simple_name in schedule_dict['schedule']:
+                        schedule_dict['schedule'][course.simple_name].append(course.to_dict())
+                    else:
+                        schedule_dict['schedule'][course.simple_name] = []
+                        schedule_dict['schedule'][course.simple_name].append(course.to_dict())
+                schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
+                schedule_dict['important'] = schedule.important
+                schedule_dict['custom_events'] = schedule_dict['schedule'].get('custom_events', [])
+                if schedule_dict['schedule'].get('custom_events'):
+                    del schedule_dict['schedule']['custom_events']
+                schedule_dict['term']['info']['term'] = schedule.term
+                gen_schedules.append(schedule_dict)
         return Response(gen_schedules)
 
     def post(self, request):
