@@ -515,14 +515,11 @@ class SaveSchedule(ViewSet):
                     if len(json.loads(schedule.user_events)) != len(user_events):
                         same_events = False
                     else:
-                        for event1 in json.loads(schedule.user_events):
-                            for event2 in user_events:
-                                if event1["event_name"] != event2["event_name"] \
-                                        or event1["start_time"] != event2["start_time"] \
-                                        or event1["end_time"] != event2["end_time"] \
-                                        or event1["days"] != event2["days"]:
-                                    same_events = False
-                                    break
+                        schedule_events = json.loads(schedule.user_events)
+                        for event in user_events:
+                            if not any(d['event_name'] == event['event_name'] for d in schedule_events):
+                                same_events = False
+                                break
                     if same_events:
                         return Response(
                             {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'})
@@ -607,14 +604,11 @@ class DeleteSchedule(ViewSet):
                     if len(json.loads(schedule.user_events)) != len(user_events):
                         same_events = False
                     else:
-                        for event1 in json.loads(schedule.user_events):
-                            for event2 in user_events:
-                                if event1["event_name"] != event2["event_name"] \
-                                        or event1["start_time"] != event2["start_time"] \
-                                        or event1["end_time"] != event2["end_time"] \
-                                        or event1["days"] != event2["days"]:
-                                    same_events = False
-                                    break
+                        schedule_events = json.loads(schedule.user_events)
+                        for event in user_events:
+                            if not any(d['event_name'] == event['event_name'] for d in schedule_events):
+                                same_events = False
+                                break
                     if same_events:
                         schedule.delete()
                         return Response({'success': True})
