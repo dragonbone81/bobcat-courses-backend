@@ -214,8 +214,9 @@ class GetTerms(ViewSet):
 # Create your views here.
 def course_view(request):
     if request.GET and request.GET.get('pull'):
-        term = request.GET.get('term')
-        UCMercedCoursePush(terms=[str(term)]).push_courses()
+        Course.objects.filter(term='201810').delete()
+        # term = request.GET.get('term')
+        # UCMercedCoursePush(terms=[str(term)]).push_courses()
     elif request.GET and request.GET.get('simple'):
         SubjectClassUpdate().update_lectures()
     elif request.GET and request.GET.get('delete'):

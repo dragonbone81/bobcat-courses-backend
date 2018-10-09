@@ -5,10 +5,10 @@ import requests
 #     url = "https://cse120-course-planner.herokuapp.com/course_pull"
 #     requests.get(url=url)
 #     print('Course Pull Ran')
-def course_pull_201030():
-    url = "https://cse120-course-planner.herokuapp.com/course_pull/?pull=True&term=201830"
+def course_pull_201910():
+    url = "https://cse120-course-planner.herokuapp.com/course_pull/?pull=True&term=201910"
     requests.get(url=url)
-    print('Course Pull 201830 Ran')
+    print('Course Pull 201910 Ran')
 
 
-course_pull_201030()
+course_pull_201910()
