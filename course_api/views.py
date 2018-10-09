@@ -33,8 +33,6 @@ from django.shortcuts import render, redirect
 from course_api.utils.get_schedule_info import getInfoForSchedule
 
 
-# TODO schedule view
-
 class ExampleJWT(APIView):
     """
     * Requires JWT authentication.

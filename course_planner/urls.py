@@ -24,7 +24,7 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     notification_check, ContactUs, UpdateNotificationSettings
 from rest_framework import routers
 from django.views.generic import RedirectView
-from django.contrib.auth.views import logout
+from django.contrib.auth import logout
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf.urls import handler404, handler500
 
