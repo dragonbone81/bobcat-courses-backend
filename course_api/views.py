@@ -681,7 +681,7 @@ class UserLoadSchedules(ViewSet):
             schedule_dict['custom_events'] = schedule_dict['schedule'].get('custom_events', [])
             if schedule_dict['schedule'].get('custom_events'):
                 del schedule_dict['schedule']['custom_events']
-            schedule_dict['term'] = schedule.term
+            schedule_dict['term']['info']['term'] = schedule.term
             gen_schedules.append(schedule_dict)
         return Response(gen_schedules)
 
