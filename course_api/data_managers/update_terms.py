@@ -9,6 +9,5 @@ class UpdateTerms(object):
 
     def update_model(self):
         terms_obj, created = Terms.objects.get_or_create(school=self.school_id)
-        terms_old = json.loads(terms_obj.terms)
-        terms_obj.terms = json.dumps(list(set(terms_old + self.terms)))
+        terms_obj.terms = json.dumps(list(set(self.terms)))
         terms_obj.save()
