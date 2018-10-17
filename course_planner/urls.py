@@ -21,7 +21,7 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
     error_500, ProfileImageUpload, waitlist_check, NotificationsViewSet, django_waitlist_view, WaitlistViewSet, \
-    notification_check, ContactUs, UpdateNotificationSettings
+    notification_check, ContactUs, UpdateNotificationSettings, app_privacy_view
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth import logout
@@ -73,6 +73,7 @@ urlpatterns = [
     path('app/bobcat-courses/login', app_login),
     path('app/bobcat-courses/logout', logout, {'next_page': '/app/bobcat-courses/schedules'}),
     path('app/bobcat-courses/about', app_about_view),
+    path('app/bobcat-courses/privacy', app_privacy_view),
     path('app/bobcat-courses/waitlist', django_waitlist_view),
     path('app/bobcat-courses/reset-password', app_reset_password),
     path('app/bobcat-courses/forgot-password', password_forgot_start),

@@ -433,6 +433,10 @@ def app_register_view(request):
     return render(request, 'register.html')
 
 
+def app_privacy_view(request):
+    return render(request, 'privacy.html')
+
+
 def app_about_view(request):
     if request.POST:
         if not request.user.is_authenticated:
