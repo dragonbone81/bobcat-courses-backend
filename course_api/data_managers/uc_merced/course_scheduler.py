@@ -130,6 +130,18 @@ class CourseScheduler(object):
                         times[day].append(time)
                     else:
                         return True
+        return False
+    
+    def hasConflictingFinals(self, schedule):
+        times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
+        finals = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
+        allCourses = []
+        for c in schedule:
+            for type in schedule[c]:
+                return_val = schedule[c][type]
+                if return_val:
+                    allCourses.append(return_val)
+        for c in allCourses:
             if not c.get('final_days'):
                 c['final_days'] = []
             for day in c.get("final_days", []):
@@ -173,7 +185,7 @@ class CourseScheduler(object):
             for i in range(1, len(list)):
                 gapSize = gapSize + list[i]["start"] - list[i - 1]["end"]
 
-        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize}
+        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize, "hasConflictingFinals": self.hasConflictingFinals(schedule)}
         return info
 
     def get_valid_schedules(self, courses, custom_events=list()):
