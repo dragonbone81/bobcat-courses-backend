@@ -560,11 +560,11 @@ class SaveSchedule(ViewSet):
             )
             schedule.save()
             return Response({'success': True})
-            return Response({"error": {
-                                "title": "schedule_limit_reached",
-                                "description": "The limit of saved schedules was reached",
-                                "code": 112
-                            }})
+        return Response({"error": {
+                            "title": "schedule_limit_reached",
+                            "description": "The limit of saved schedules was reached",
+                            "code": 112
+                        }})
 
 
 class StarSchedule(ViewSet):
