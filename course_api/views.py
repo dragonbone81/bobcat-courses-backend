@@ -678,7 +678,7 @@ class ProfileImageUpload(ViewSet):
         return Response({"error": {
             "title": "no_image",
             "description": "Image not provided",
-            "code": 107
+            "code": 111
         }})
 
 
