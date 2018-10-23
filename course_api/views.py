@@ -650,7 +650,7 @@ class DeleteSchedule(ViewSet):
                 "error_title": "schedule_dne",
                 "error_description": "Could not find schedule",
                 "error_code": 105
-            }})
+            })
         return Response({
             "error_title": "no_term_or_crns",
             "error_description": "Terms or CRN's not provided",
