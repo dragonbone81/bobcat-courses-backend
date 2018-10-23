@@ -108,11 +108,10 @@ class UserRegistration(ViewSet):
             }
             return Response(response)
         else:
-            return Response({"error": {
-                "title": "duplicate_user",
-                "description": "User already exists",
-                "code": 100
-            }})
+            return Response({"error_title": "duplicate_user",
+                "error_description": "User already exists",
+                "error_code": 100
+            })
 
 
 class CourseListView(ViewSet):
@@ -138,11 +137,11 @@ class CourseListView(ViewSet):
         courses_to_search = request.data.get('course_list', []) or request.data.getlist('course_list[]', [])
         term = request.data.get('term')
         if not term:
-            return Response({"error": {
-                "title": "no_term",
-                "description": "Term not provided",
-                "code": 101
-            }})
+            return Response({
+                "error_title": "no_term",
+                "error_description": "Term not provided",
+                "error_code": 101
+            })
         courses = get_courses(courses_to_search, term, search_full=True)
         return Response(courses)
 
@@ -166,11 +165,11 @@ class CoursesSearch(ViewSet):
         course = request.GET.get('course', None)
         term = request.GET.get('term', None)
         if not course or not term:
-            return Response({"error": {
-                "title": "no_course_or_term",
-                "description": "Course or term not provided",
-                "code": 102
-            }})
+            return Response({
+                "error_title": "no_course_or_term",
+                "error_description": "Course or term not provided",
+                "error_code": 102
+            })
         course = course.lower()
         course_with_dash = ''.join(course.split())
         if '-' not in course_with_dash:
@@ -219,11 +218,11 @@ class GetTerms(ViewSet):
         if terms:
             return Response(json.loads(terms[0].terms))
         else:
-            return Response({"error": {
-                "title": "no_school",
-                "description": "School not provided",
-                "code": 103
-            }})
+            return Response({
+                "error_title": "no_school",
+                "error_description": "School not provided",
+                "error_code": 103
+            })
 
 
 # Create your views here.
@@ -318,11 +317,11 @@ class SchedulesListView(ViewSet):
         term = request.data.get('term', None)
         custom_events = request.data.get('custom_events', [])
         if not term:
-            return Response({"error": {
-                "title": "no_term",
-                "description": "Term not provided",
-                "code": 101
-            }})
+            return Response({
+                "error_title": "no_term",
+                "error_description": "Term not provided",
+                "error_code": 101
+            })
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
                                     search_full=search_full, filters=filters, bad_crns=bad_crns)
         courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
@@ -547,11 +546,11 @@ class SaveSchedule(ViewSet):
                                 break
                     if same_events:
                         return Response(
-                            {'schedule_index': index, "error": {
-                                "title": "schedule_already_exists",
-                                "description": "The schedule being saved already exists",
-                                "code": 104
-                            }})
+                            {'schedule_index': index,
+                                "error_title": "schedule_already_exists",
+                                "error_description": "The schedule being saved already exists",
+                                "error_code": 104
+                            })
             schedule = Schedule(
                 user=request.user,
                 term=term,
@@ -560,11 +559,11 @@ class SaveSchedule(ViewSet):
             )
             schedule.save()
             return Response({'success': True})
-        return Response({"error": {
-                            "title": "schedule_limit_reached",
-                            "description": "The limit of saved schedules was reached",
-                            "code": 112
-                        }})
+        return Response({
+                        "error_title": "schedule_limit_reached",
+                        "error_description": "The limit of saved schedules was reached",
+                        "error_code": 112
+                        })
 
 
 class StarSchedule(ViewSet):
@@ -647,16 +646,16 @@ class DeleteSchedule(ViewSet):
                     if same_events:
                         schedule.delete()
                         return Response({'success': True})
-            return Response({"error": {
-                "title": "schedule_dne",
-                "description": "Could not find schedule",
-                "code": 105
+            return Response({
+                "error_title": "schedule_dne",
+                "error_description": "Could not find schedule",
+                "error_code": 105
             }})
-        return Response({"error": {
-            "title": "no_term_or_crns",
-            "description": "Terms or CRN's not provided",
-            "code": 106
-        }})
+        return Response({
+            "error_title": "no_term_or_crns",
+            "error_description": "Terms or CRN's not provided",
+            "error_code": 106
+        })
 
 
 class ProfileImageUpload(ViewSet):
@@ -679,11 +678,11 @@ class ProfileImageUpload(ViewSet):
             request.user.scheduleuser.profile_image = request.data.get('profile_image')
             request.user.scheduleuser.save()
             return Response({'success': True, 'image_url': request.user.scheduleuser.get_profile_image_url()})
-        return Response({"error": {
-            "title": "no_image",
-            "description": "Image not provided",
-            "code": 111
-        }})
+        return Response({
+            "error_title": "no_image",
+            "error_description": "Image not provided",
+            "error_code": 111
+        })
 
 
 class UserLoadSchedules(ViewSet):
@@ -776,17 +775,17 @@ class PasswordChange(ViewSet):
                 request.user.save()
                 return Response({'success': True})
             else:
-                return Response({"error": {
-                    "title": "incorrect_password",
-                    "description": "Old passwords do not match",
-                    "code": 107
-                }})
+                return Response({
+                    "error_title": "incorrect_password",
+                    "error_description": "Old passwords do not match",
+                    "error_code": 107
+                })
         else:
-            return Response({"error": {
-                "title": "passwords_not_provided",
-                "description": "Passwords not provided",
-                "code": 108
-            }})
+            return Response({
+                "error_title": "passwords_not_provided",
+                "error_description": "Passwords not provided",
+                "error_code": 108
+            })
 
 
 def forgot_password_process(request):
@@ -803,11 +802,11 @@ def forgot_password_process(request):
         send_mail(subject, email, 'support@bobcat-courses.com', [user.email], html_message=email,
                   fail_silently=False)
         return Response({'success': True})
-    return Response({"error": {
-        "title": "user_does_not_exist",
-        "description": "Provided user does not exist",
-        "code": 109
-    }})
+    return Response({
+        "error_title": "user_does_not_exist",
+        "error_description": "Provided user does not exist",
+        "error_code": 109
+    })
 
 
 class ForgotPassword(ViewSet):
@@ -971,11 +970,11 @@ class NotificationsViewSet(ViewSet):
             request.user.notifications.notifications = json.dumps(notifications)
             request.user.notifications.save()
             return Response({'success': True})
-        return Response({"error": {
-            "title": "no_crn",
-            "description": "CRN not provided",
-            "code": 110
-        }})
+        return Response({
+            "error_title": "no_crn",
+            "error_description": "CRN not provided",
+            "error_code": 110
+        })
 
 
 class WaitlistViewSet(ViewSet):
@@ -1004,11 +1003,11 @@ class WaitlistViewSet(ViewSet):
             waitlist.users.remove(request.user)
             waitlist.save()
             return Response({'success': True})
-        return Response({"error": {
-            "title": "no_crn",
-            "description": "CRN not provided",
-            "code": 110
-        }})
+        return Response({
+            "error_title": "no_crn",
+            "error_description": "CRN not provided",
+            "error_code": 110
+        })
 
 
 def page_not_found(request, exception):
