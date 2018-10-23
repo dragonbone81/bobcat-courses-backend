@@ -111,7 +111,7 @@ class UserRegistration(ViewSet):
             return Response({"error": {
                 "title": "duplicate_user",
                 "description": "User already exists",
-                "code": "100"
+                "code": 100
             }})
 
 
@@ -141,7 +141,7 @@ class CourseListView(ViewSet):
             return Response({"error": {
                 "title": "no_term",
                 "description": "Term not provided",
-                "code": "101"
+                "code": 101
             }})
         courses = get_courses(courses_to_search, term, search_full=True)
         return Response(courses)
@@ -169,7 +169,7 @@ class CoursesSearch(ViewSet):
             return Response({"error": {
                 "title": "no_course_or_term",
                 "description": "Course or term not provided",
-                "code": "102"
+                "code": 102
             }})
         course = course.lower()
         course_with_dash = ''.join(course.split())
@@ -222,7 +222,7 @@ class GetTerms(ViewSet):
             return Response({"error": {
                 "title": "no_school",
                 "description": "School not provided",
-                "code": "103"
+                "code": 103
             }})
 
 
@@ -321,7 +321,7 @@ class SchedulesListView(ViewSet):
             return Response({"error": {
                 "title": "no_term",
                 "description": "Term not provided",
-                "code": "101"
+                "code": 101
             }})
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
                                     search_full=search_full, filters=filters, bad_crns=bad_crns)
@@ -550,7 +550,7 @@ class SaveSchedule(ViewSet):
                             {'schedule_index': index, "error": {
                                 "title": "schedule_already_exists",
                                 "description": "The schedule being saved already exists",
-                                "code": "104"
+                                "code": 104
                             }})
             schedule = Schedule(
                 user=request.user,
@@ -646,12 +646,12 @@ class DeleteSchedule(ViewSet):
             return Response({"error": {
                 "title": "schedule_dne",
                 "description": "Could not find schedule",
-                "code": "105"
+                "code": 105
             }})
         return Response({"error": {
             "title": "no_term_or_crns",
             "description": "Terms or CRN's not provided",
-            "code": "106"
+            "code": 106
         }})
 
 
@@ -678,7 +678,7 @@ class ProfileImageUpload(ViewSet):
         return Response({"error": {
             "title": "no_image",
             "description": "Image not provided",
-            "code": "107"
+            "code": 107
         }})
 
 
@@ -775,13 +775,13 @@ class PasswordChange(ViewSet):
                 return Response({"error": {
                     "title": "incorrect_password",
                     "description": "Old passwords do not match",
-                    "code": "107"
+                    "code": 107
                 }})
         else:
             return Response({"error": {
                 "title": "passwords_not_provided",
                 "description": "Passwords not provided",
-                "code": "108"
+                "code": 108
             }})
 
 
@@ -802,7 +802,7 @@ def forgot_password_process(request):
     return Response({"error": {
         "title": "user_does_not_exist",
         "description": "Provided user does not exist",
-        "code": "109"
+        "code": 109
     }})
 
 
@@ -970,7 +970,7 @@ class NotificationsViewSet(ViewSet):
         return Response({"error": {
             "title": "no_crn",
             "description": "CRN not provided",
-            "code": "110"
+            "code": 110
         }})
 
 
@@ -1003,7 +1003,7 @@ class WaitlistViewSet(ViewSet):
         return Response({"error": {
             "title": "no_crn",
             "description": "CRN not provided",
-            "code": "110"
+            "code": 110
         }})
 
 
