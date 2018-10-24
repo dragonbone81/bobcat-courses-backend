@@ -88,10 +88,15 @@ class Schedule(models.Model):
         db_index=True,
         auto_now_add=True,
     )
-    important = models.BooleanField(
+    finals_conflict = models.BooleanField(
         default=False,
         db_index=True,
-        verbose_name='Important',
+        verbose_name='Finals Conflict?',
+    )
+    enrolled = models.BooleanField(
+        default=False,
+        db_index=True,
+        verbose_name='Enrolled',
     )
 
     def __str__(self):

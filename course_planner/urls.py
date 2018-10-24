@@ -18,7 +18,7 @@ from django.urls import path, include, re_path
 from course_api.views import course_view, CourseViewSet, CourseListView, ExampleJWT, UserInfo, UserRegistration, \
     CoursesSearch, SchedulesListView, django_schedules_view, GetTerms, app_login, SaveSchedule, \
     django_saved_schedules_view, django_profile_view, app_register_view, DeleteSchedule, \
-    user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, StarSchedule, \
+    user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
     error_500, ProfileImageUpload, waitlist_check, NotificationsViewSet, django_waitlist_view, WaitlistViewSet, \
     notification_check, ContactUs, UpdateNotificationSettings, app_privacy_view
@@ -37,7 +37,7 @@ router.register(r'courses/course-search', CoursesSearch, base_name='CoursesSearc
 router.register(r'courses/course-dump', SubjectCourseViewSet, base_name='SubjectCourseViewSet')
 router.register(r'courses/get-terms', GetTerms, base_name='GetTerms')
 router.register(r'users/save-schedule', SaveSchedule, base_name='SaveSchedule')
-router.register(r'users/star-schedule', StarSchedule, base_name='StarSchedule')
+# router.register(r'users/star-schedule', StarSchedule, base_name='StarSchedule')
 router.register(r'users/schedule-dump', UserLoadSchedules, base_name='UserLoadSchedules')
 router.register(r'users/user-info', UserInfo, base_name='user-info')
 router.register(r'users/delete-schedule', DeleteSchedule, base_name='DeleteSchedule')
@@ -53,7 +53,7 @@ router.register(r'users/update-notification-settings', UpdateNotificationSetting
 handler404 = page_not_found
 handler500 = error_500
 urlpatterns = [
-    path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    # path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     path('admin/', admin.site.urls),
     path('api/courses/jwt-example', ExampleJWT.as_view()),
     path('api/', include(router.urls)),

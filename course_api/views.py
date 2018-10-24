@@ -505,7 +505,7 @@ class SaveSchedule(ViewSet):
     """
     saves schedule
     Needs user authentication and saves schedule to that user
-    post term, crns:['34454', '45556',...],
+    post term, crns:['34454', '45556',...], hasConflictingFinals:false,
     "custom_events":[{event_name: "Work", start_time: 700, end_time: 730, days: "WM"}]
     if schedule already exists {'schedule_index': index, 'error': 'Schedule already exists', 'type': 'already_exists'}
     if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
@@ -556,6 +556,7 @@ class SaveSchedule(ViewSet):
                 term=term,
                 courses=json.dumps(crns),
                 user_events=json.dumps(user_events),
+                finals_conflict=request.data.get('hasConflictingFinals', False)
             )
             schedule.save()
             return Response({'success': True})
@@ -566,43 +567,43 @@ class SaveSchedule(ViewSet):
                         })
 
 
-class StarSchedule(ViewSet):
-    """
-    star schedule
-    Needs user authentication and saves schedule to that user
-    post term, crns:['34454', '45556',...], star
-    if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
-    """
-    authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-
-    def retrieve(self, request, pk=None):
-        return Response(None)
-
-    def list(self, request, format=None):
-        return Response(None)
-
-    def post(self, request):
-        term = request.data.get('term')
-        crns = request.data.get('crns')
-        if isinstance(request.data.get('star'), str):
-            star = True if request.POST.get("star") == "true" else False
-        else:
-            star = request.data.get('star')
-        if isinstance(crns, str):
-            crns = crns.split(',')
-        if term and crns:
-            for schedule in Schedule.objects.filter(user=request.user, term=term):
-                if set(json.loads(schedule.courses)) == set(crns):
-                    schedule.important = star
-                    schedule.save()
-                    if star:
-                        return Response({'success': 'Schedule favorited.'})
-                    else:
-                        return Response({'success': 'Schedule un-favorited.'})
-            return Response({'error': 'Ummmm...please contact us by clicking on the footer :*('})
-        return Response(None)
+# class StarSchedule(ViewSet):
+#     """
+#     star schedule
+#     Needs user authentication and saves schedule to that user
+#     post term, crns:['34454', '45556',...], star
+#     if user has more than 20 saved schedules, returns {'error': 'Max saved schedules reached'}
+#     """
+#     authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+#     permission_classes = (IsAuthenticated,)
+#     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+#
+#     def retrieve(self, request, pk=None):
+#         return Response(None)
+#
+#     def list(self, request, format=None):
+#         return Response(None)
+#
+#     def post(self, request):
+#         term = request.data.get('term')
+#         crns = request.data.get('crns')
+#         if isinstance(request.data.get('star'), str):
+#             star = True if request.POST.get("star") == "true" else False
+#         else:
+#             star = request.data.get('star')
+#         if isinstance(crns, str):
+#             crns = crns.split(',')
+#         if term and crns:
+#             for schedule in Schedule.objects.filter(user=request.user, term=term):
+#                 if set(json.loads(schedule.courses)) == set(crns):
+#                     schedule.important = star
+#                     schedule.save()
+#                     if star:
+#                         return Response({'success': 'Schedule favorited.'})
+#                     else:
+#                         return Response({'success': 'Schedule un-favorited.'})
+#             return Response({'error': 'Ummmm...please contact us by clicking on the footer :*('})
+#         return Response(None)
 
 
 class DeleteSchedule(ViewSet):
@@ -698,10 +699,9 @@ class UserLoadSchedules(ViewSet):
 
     def list(self, request, format=None):
         if request.GET.get('term'):
-            schedules = Schedule.objects.filter(user=request.user, term=request.GET.get('term')).order_by('-important',
-                                                                                                          '-created')
+            schedules = Schedule.objects.filter(user=request.user, term=request.GET.get('term')).order_by('-created')
         else:
-            schedules = Schedule.objects.filter(user=request.user).order_by('-important', '-created')
+            schedules = Schedule.objects.filter(user=request.user).order_by('-created')
         gen_schedules = []
         terms = json.loads(Terms.objects.get(school='uc_merced').terms)
         for schedule in schedules:
@@ -721,11 +721,11 @@ class UserLoadSchedules(ViewSet):
                         schedule_dict['schedule'][course.simple_name] = []
                         schedule_dict['schedule'][course.simple_name].append(course.to_dict())
                 schedule_dict['info'] = getInfoForSchedule(schedule_dict['schedule'])
-                schedule_dict['important'] = schedule.important
                 schedule_dict['custom_events'] = schedule_dict['schedule'].get('custom_events', [])
                 if schedule_dict['schedule'].get('custom_events'):
                     del schedule_dict['schedule']['custom_events']
                 schedule_dict['info']['term'] = schedule.term
+                schedule_dict['info']['hasConflictingFinals'] = schedule.finals_conflict
                 gen_schedules.append(schedule_dict)
         return Response(gen_schedules)
 
