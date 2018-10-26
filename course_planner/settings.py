@@ -211,5 +211,6 @@ DEFAULT_FILE_STORAGE = 'course_planner.storage_backends.MediaStorage'  # <-- her
 STATIC_URL = '/static/'
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-
+ADMINS = [('Christian', 'cvernikoff@ucmerced.edu'), ('Max', 'mmoison@ucmerced.edu'),
+          ('Miguel', 'mhernandez268@ucmerced.edu')]
 django_heroku.settings(locals())
