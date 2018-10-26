@@ -26,12 +26,20 @@ class UCMercedCoursePush(object):
         need_added = list()
         need_update = list()
         for course in self.data:
+            if 'crn' not in course or course['crn'] == 'See Detail':
+                continue
             course['units'] = int(course['units'])
+            if course['capacity'] == '-':
+                course['capacity'] = 1
+            if course['enrolled'] == '-':
+                course['enrolled'] = 1
             course['capacity'] = int(course['capacity'])
             course['enrolled'] = int(course['enrolled'])
             while course['course_name'].endswith('\\t'):
                 course['course_name'] = course['course_name'][:-2]
             course['simple_name'] = get_simple(course['course_id'])
+            if 'available' not in course:
+                course['available'] = 1
             if course['available'] == 'Closed':
                 course['available'] = 0
             else:
