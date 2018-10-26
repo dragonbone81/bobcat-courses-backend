@@ -32,7 +32,7 @@ class UCMercedCoursePush(object):
             if course['capacity'] == '-':
                 course['capacity'] = 1
             if course['enrolled'] == '-':
-                course['enrolled'] = 1
+                course['enrolled'] = 0
             course['capacity'] = int(course['capacity'])
             course['enrolled'] = int(course['enrolled'])
             while course['course_name'].endswith('\\t'):
