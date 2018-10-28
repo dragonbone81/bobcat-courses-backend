@@ -1,5 +1,6 @@
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 from operator import itemgetter
+from collections import OrderedDict
 
 
 class CourseScheduler(object):
@@ -131,7 +132,7 @@ class CourseScheduler(object):
                     else:
                         return True
         return False
-    
+
     def hasConflictingFinals(self, schedule):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         finals = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
@@ -185,7 +186,8 @@ class CourseScheduler(object):
             for i in range(1, len(list)):
                 gapSize = gapSize + list[i]["start"] - list[i - 1]["end"]
 
-        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize, "hasConflictingFinals": self.hasConflictingFinals(schedule)}
+        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize,
+                "hasConflictingFinals": self.hasConflictingFinals(schedule)}
         return info
 
     def get_valid_schedules(self, courses, custom_events=list()):
@@ -201,6 +203,9 @@ class CourseScheduler(object):
             classes['custom_events'] = {'0': {}}
             for event in custom_events:
                 classes['custom_events']['0'][event['event_name']] = event
+        ordered_classes = OrderedDict(
+            sorted(sorted(classes.items(), key=lambda course: len(course[1].keys())), key=lambda course: course[0],
+                   reverse=True))  # sorted first by length of keys then alphabetical
         maxNumberOfPerms = 1
         for class_id, data in classes.items():  # Calculate number of possible permutations
             maxNumberOfPerms *= len(data)
