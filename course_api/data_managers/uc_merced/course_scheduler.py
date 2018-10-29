@@ -56,11 +56,11 @@ class CourseScheduler(object):
 
     def getNthPermutation(self, classes, i):
         permutation = {}
-        n = 1
+        multiplier = 1
         for class_id, data in classes.items():  # Go through all classes and add the relevant section
-            section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
-            permutation[class_id] = classes[class_id][section[0]]
-            n *= len(classes[class_id])
+            section = list(data)[(i/multiplier+(i if multiplier > 1 else 0))%len(data)]
+            permutation[class_id] = data[section[0]]
+            n *= len(data)
         return permutation
 
     # def generateSchedules(self, courseIDs):
