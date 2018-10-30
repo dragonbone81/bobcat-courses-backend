@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from json import loads as json_loads
 
 
+class Statistics(models.Model):
+    schedules_generated = models.IntegerField(
+        verbose_name="Schedules Generated",
+        db_index=True,
+    )
+
+
 class ScheduleUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     unique_id = models.CharField(max_length=100)
