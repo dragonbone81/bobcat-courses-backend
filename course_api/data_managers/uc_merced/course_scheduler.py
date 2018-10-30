@@ -4,15 +4,13 @@ from collections import OrderedDict
 
 
 class CourseScheduler(object):
-    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc', search_full=False,
-                 filters=False, bad_crns=None):
+    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc', search_full=False, bad_crns=None):
         self.term = term
         self.earliest_time = earliest_time
         self.latest_time = latest_time
         self.gaps = gaps
         self.days = days
         self.search_full = search_full
-        self.filters = filters
         self.bad_crns = bad_crns
 
     def convertTime(self, s):
@@ -195,25 +193,22 @@ class CourseScheduler(object):
             permutation = self.getNthPermutation(ordered_classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
-                if self.filters:
-                    if self.earliest_time and info.get('earliest') < self.earliest_time:
-                        i += 1
-                        continue
-                    if self.latest_time and info.get('latest') > self.latest_time:
-                        i += 1
-                        continue
+                if self.earliest_time and info.get('earliest') < self.earliest_time:
+                    i += 1
+                    continue
+                if self.latest_time and info.get('latest') > self.latest_time:
+                    i += 1
+                    continue
                 schedule = dict()
                 schedule["schedule"] = permutation
                 schedule["info"] = info
                 # sorry max I need this for sorting :*(
-                if self.filters:
+                if self.gaps or self.days:
                     schedule['number_of_days'] = info['number_of_days']
-                    schedule['earliest'] = info['earliest']
-                    schedule['latest'] = info['latest']
                     schedule['gaps'] = info['gaps']
                 schedules.append(schedule)
             i = i + 1
-        if self.filters:
+        if self.days or self.gaps:
             if self.days == 'desc' and not self.gaps:
                 schedules = sorted(schedules, key=itemgetter('number_of_days'), reverse=True)
             elif self.days == 'asc' and not self.gaps:

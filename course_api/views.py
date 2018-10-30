@@ -109,9 +109,9 @@ class UserRegistration(ViewSet):
             return Response(response)
         else:
             return Response({"error_title": "duplicate_user",
-                "error_description": "User already exists",
-                "error_code": 100
-            })
+                             "error_description": "User already exists",
+                             "error_code": 100
+                             })
 
 
 class CourseListView(ViewSet):
@@ -308,11 +308,10 @@ class SchedulesListView(ViewSet):
                 search_full = True
             filters = True
         else:
-            earliest_time = request.data.get('earliest_time', None)
-            latest_time = request.data.get('latest_time', None)
-            days = request.data.get('days', None)
-            gaps = request.data.get('gaps', None)
-            filters = request.data.get('filters', False)
+            earliest_time = request.data.get('earliest_time', False)
+            latest_time = request.data.get('latest_time', False)
+            days = request.data.get('days', False)
+            gaps = request.data.get('gaps', False)
             search_full = request.data.get('search_full', False)
         term = request.data.get('term', None)
         custom_events = request.data.get('custom_events', [])
@@ -323,7 +322,7 @@ class SchedulesListView(ViewSet):
                 "error_code": 101
             })
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
-                                    search_full=search_full, filters=filters, bad_crns=bad_crns)
+                                    search_full=search_full, bad_crns=bad_crns)
         courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
         return Response(courses[:80])
 
@@ -547,10 +546,10 @@ class SaveSchedule(ViewSet):
                     if same_events:
                         return Response(
                             {'schedule_index': index,
-                                "error_title": "schedule_already_exists",
-                                "error_description": "The schedule being saved already exists",
-                                "error_code": 104
-                            })
+                             "error_title": "schedule_already_exists",
+                             "error_description": "The schedule being saved already exists",
+                             "error_code": 104
+                             })
             schedule = Schedule(
                 user=request.user,
                 term=term,
@@ -561,10 +560,10 @@ class SaveSchedule(ViewSet):
             schedule.save()
             return Response({'success': True})
         return Response({
-                        "error_title": "schedule_limit_reached",
-                        "error_description": "The limit of saved schedules was reached",
-                        "error_code": 112
-                        })
+            "error_title": "schedule_limit_reached",
+            "error_description": "The limit of saved schedules was reached",
+            "error_code": 112
+        })
 
 
 # class StarSchedule(ViewSet):
