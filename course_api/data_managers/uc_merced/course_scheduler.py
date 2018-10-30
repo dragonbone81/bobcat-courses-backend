@@ -15,7 +15,8 @@ class CourseScheduler(object):
         self.filters = filters
         self.bad_crns = bad_crns
 
-    def convertTime(self, s):
+    @staticmethod
+    def convertTime(s):
         t = s.split("-")  # separate start and end times
         startTime = t[0].split(":")
         endTime = t[1].split(":")
@@ -54,7 +55,8 @@ class CourseScheduler(object):
                 sections[classid] = {"LECT": c}
         return sections  # return the sections
 
-    def getNthPermutation(self, classes, i):
+    @staticmethod
+    def getNthPermutation(classes, i):
         permutation = {}
         multiplier = 1
         for class_id, data in classes.items():  # Go through all classes and add the relevant section
@@ -63,7 +65,8 @@ class CourseScheduler(object):
             multiplier *= len(data)
         return permutation
 
-    def dayConflicts(self, time, day, is_event=False):
+    @staticmethod
+    def dayConflicts(time, day, is_event=False):
         for t in day:  # Go though all the times that are already in the day
             if is_event:
                 if time["start"] >= t["start"] and time["start"] < t["end"]:
@@ -85,7 +88,8 @@ class CourseScheduler(object):
                     return True  # if a registered course ends during the course we want to add -> Conflict
         return False  # No conflict
 
-    def hasConflict(self, schedule):
+    @staticmethod
+    def hasConflict(schedule):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         finals = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         allCourses = []
@@ -98,20 +102,21 @@ class CourseScheduler(object):
             if not c.get('hours') and c.get('start_time') and c.get('end_time'):
                 for day in c.get("days"):
                     time = {"start": c["start_time"], "end": c["end_time"]}
-                    if not self.dayConflicts(time, times[day], is_event=True):
+                    if not CourseScheduler.dayConflicts(time, times[day], is_event=True):
                         times[day].append(time)
                     else:
                         return True
             elif c["hours"] != "TBD-TBD":
                 for day in c.get("days"):
-                    time = self.convertTime(c["hours"])
-                    if not self.dayConflicts(time, times[day]):
+                    time = CourseScheduler.convertTime(c["hours"])
+                    if not CourseScheduler.dayConflicts(time, times[day]):
                         times[day].append(time)
                     else:
                         return True
         return False
 
-    def hasConflictingFinals(self, schedule):
+    @staticmethod
+    def hasConflictingFinals(schedule):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         finals = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         allCourses = []
@@ -124,8 +129,8 @@ class CourseScheduler(object):
             if not c.get('final_days'):
                 c['final_days'] = []
             for day in c.get("final_days", []):
-                time = self.convertTime(c["final_hours"])
-                if not self.dayConflicts(time, finals[day]):
+                time = CourseScheduler.convertTime(c["final_hours"])
+                if not CourseScheduler.dayConflicts(time, finals[day]):
                     finals[day].append(time)
                 else:
                     return True
@@ -134,7 +139,8 @@ class CourseScheduler(object):
                 c['final_days'] = None
         return False
 
-    def getInfoForSchedule(self, schedule):
+    @staticmethod
+    def getInfoForSchedule(schedule):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         earliest = 2400
         latest = 0000
@@ -147,7 +153,7 @@ class CourseScheduler(object):
                         if course.get('start_time') and course.get('end_time'):
                             time = {"start": course["start_time"], "end": course["end_time"]}
                         else:
-                            time = self.convertTime(course["hours"])
+                            time = CourseScheduler.convertTime(course["hours"])
                         times[day].append(time)
                         if time["start"] < earliest:
                             earliest = time["start"]
@@ -165,12 +171,33 @@ class CourseScheduler(object):
                 gapSize = gapSize + list[i]["start"] - list[i - 1]["end"]
 
         info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize,
-                "hasConflictingFinals": self.hasConflictingFinals(schedule)}
+                "hasConflictingFinals": CourseScheduler.hasConflictingFinals(schedule)}
         return info
+
+    # @staticmethod
+    # def get_full_permutation(filters, earliest_time, latest_time, ordered_classes, i):
+    #     permutation = CourseScheduler.getNthPermutation(ordered_classes, i)
+    #     if not CourseScheduler.hasConflict(permutation):
+    #         info = CourseScheduler.getInfoForSchedule(permutation)
+    #         if filters:
+    #             if earliest_time and info.get('earliest') < earliest_time:
+    #                 return False
+    #             if latest_time and info.get('latest') > latest_time:
+    #                 return False
+    #         schedule = dict()
+    #         schedule["schedule"] = permutation
+    #         schedule["info"] = info
+    #         # sorry max I need this for sorting :*(
+    #         if filters:
+    #             schedule['number_of_days'] = info['number_of_days']
+    #             schedule['earliest'] = info['earliest']
+    #             schedule['latest'] = info['latest']
+    #             schedule['gaps'] = info['gaps']
+    #         return schedule
+    #     return False
 
     def get_valid_schedules(self, courses, custom_events=list()):
         schedules = list()
-
         classes = {}
         course_data = get_courses(courses, self.term, search_full=self.search_full, bad_crns=self.bad_crns)
         for id in courses:  # Create a dictionary that contains all classes (each contains all their sections)
@@ -189,30 +216,28 @@ class CourseScheduler(object):
             maxNumberOfPerms *= len(data)
 
         numberOfValidSchedules = 50
+        # schedules = self.get_full_permutation(numberOfValidSchedules, maxNumberOfPerms, ordered_classes)
         i = 0
-
-        while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
-            permutation = self.getNthPermutation(ordered_classes, i)
-            if not self.hasConflict(permutation):
-                info = self.getInfoForSchedule(permutation)
-                if self.filters:
-                    if self.earliest_time and info.get('earliest') < self.earliest_time:
-                        i += 1
-                        continue
-                    if self.latest_time and info.get('latest') > self.latest_time:
-                        i += 1
-                        continue
-                schedule = dict()
-                schedule["schedule"] = permutation
-                schedule["info"] = info
-                # sorry max I need this for sorting :*(
-                if self.filters:
-                    schedule['number_of_days'] = info['number_of_days']
-                    schedule['earliest'] = info['earliest']
-                    schedule['latest'] = info['latest']
-                    schedule['gaps'] = info['gaps']
-                schedules.append(schedule)
-            i = i + 1
+        actualLength = 0
+        from multiprocessing import Pool
+        pool = Pool(100)
+        from course_api.data_managers.uc_merced.test import get_full_permutation
+        while actualLength < numberOfValidSchedules and i < maxNumberOfPerms:
+            while len(schedules) < 1000 and i < maxNumberOfPerms:
+                # print(i)
+                schedule = pool.apply_async(get_full_permutation,
+                                            (self.filters, self.earliest_time, self.latest_time, ordered_classes, i))
+                # print(schedule.get())
+                # schedule = self.get_full_permutation(ordered_classes, i)
+                if schedule:
+                    schedules.append(schedule)
+                i = i + 1
+            # print(schedules)
+            schedules = [schedule.get() if not isinstance(schedule, dict) else schedule for schedule in schedules]
+            schedules = [schedule for schedule in schedules if schedule]
+            actualLength = len(schedules)
+            print(actualLength)
+            # print(schedules)
         if self.filters:
             if self.days == 'desc' and not self.gaps:
                 schedules = sorted(schedules, key=itemgetter('number_of_days'), reverse=True)
