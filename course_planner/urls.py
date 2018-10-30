@@ -21,7 +21,7 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
     error_500, ProfileImageUpload, waitlist_check, NotificationsViewSet, django_waitlist_view, WaitlistViewSet, \
-    notification_check, ContactUs, UpdateNotificationSettings, app_privacy_view
+    notification_check, ContactUs, UpdateNotificationSettings, app_privacy_view, GetStats
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth import logout
@@ -29,6 +29,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf.urls import handler404, handler500
 
 router = routers.DefaultRouter()
+router.register(r'statistics', GetStats, base_name='GetStats')
 router.register(r'courses-list', CourseViewSet, base_name='courses')
 router.register(r'register', UserRegistration, base_name='register')
 router.register(r'courses/course-match', CourseListView, base_name='CourseListView')

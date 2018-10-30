@@ -16,7 +16,7 @@ from django.template import loader
 from django.contrib.auth import authenticate, login
 from course_api.data_managers.uc_merced.course_scheduler import CourseScheduler
 from course_api.data_managers.uc_merced.course_push import UCMercedCoursePush, SubjectClassUpdate
-from course_api.models import Course, SubjectCourse, Schedule, Terms, Waitlist, Notifications
+from course_api.models import Course, SubjectCourse, Schedule, Terms, Waitlist, Notifications, Statistics
 from course_api.data_managers.uc_merced.get_update_terms import update_terms as update_uc_merced_terms
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.response import Response
@@ -321,10 +321,40 @@ class SchedulesListView(ViewSet):
                 "error_description": "Term not provided",
                 "error_code": 101
             })
+
         generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
                                     search_full=search_full, bad_crns=bad_crns)
         courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
-        return Response(courses[:80])
+        stats = Statistics.objects.get(id=1)
+        stats.schedules_generated += len(courses)
+        stats.save()
+        return Response(courses)
+
+
+class GetStats(ViewSet):
+    """
+    get stats
+    """
+    # authentication_classes = (JWTAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = ()
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def retrieve(self, request, pk=None):
+        return Response(None)
+
+    def list(self, request, format=None):
+        # this just matches simple name
+        total_schedules_generated = Statistics.objects.get(id=1).schedules_generated
+        total_users = User.objects.all().count()
+        total_saved_schedules = Schedule.objects.all().count()
+        total_waitlists = Waitlist.objects.all().count()
+
+        return Response({
+            "total_schedules_generated": total_schedules_generated,
+            "total_users": total_users,
+            "total_saved_schedules": total_saved_schedules,
+            "total_waitlists": total_waitlists,
+        })
 
 
 class ContactUs(ViewSet):
