@@ -1,5 +1,6 @@
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 from operator import itemgetter
+from collections import OrderedDict
 
 
 class CourseScheduler(object):
@@ -55,34 +56,12 @@ class CourseScheduler(object):
 
     def getNthPermutation(self, classes, i):
         permutation = {}
-        n = 1
+        multiplier = 1
         for class_id, data in classes.items():  # Go through all classes and add the relevant section
-            section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
-            permutation[class_id] = classes[class_id][section[0]]
-            n *= len(classes[class_id])
+            section = list(data)[int((i / multiplier + (i if multiplier > 1 else 0)) % len(data))]
+            permutation[class_id] = data[section]
+            multiplier *= len(data)
         return permutation
-
-    # def generateSchedules(self, courseIDs):
-    #     classes = {}
-    #     course_data = get_courses(courseIDs, self.term, search_full=self.search_full)
-    #
-    #     for id in courseIDs:  # Create a dictionary that contains all classes (each contains all their sections)
-    #         subCourses = course_data[id]  #
-    #         classes[id] = self.getSections(subCourses)  #
-    #
-    #     n = 1
-    #     for class_id, data in classes.items():  # Calculate number of possible permutations
-    #         n *= len(data)
-    #
-    #     permutations = [{} for i in range(n)]  # Create an array to contain all possible schedules
-    #
-    #     for i in range(len(permutations)):  # This is what makes all possible combinations
-    #         n = 1
-    #         for class_id, data in classes.items():  # Go through all classes and add the relevant section
-    #             section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
-    #             permutations[i][class_id] = classes[class_id][section[0]]
-    #             n *= len(classes[class_id])
-    #     return permutations
 
     def dayConflicts(self, time, day, is_event=False):
         for t in day:  # Go though all the times that are already in the day
@@ -131,7 +110,7 @@ class CourseScheduler(object):
                     else:
                         return True
         return False
-    
+
     def hasConflictingFinals(self, schedule):
         times = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
         finals = {"M": [], "T": [], "W": [], "R": [], "F": [], "S": []}
@@ -185,7 +164,8 @@ class CourseScheduler(object):
             for i in range(1, len(list)):
                 gapSize = gapSize + list[i]["start"] - list[i - 1]["end"]
 
-        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize, "hasConflictingFinals": self.hasConflictingFinals(schedule)}
+        info = {"number_of_days": numOfDays, "earliest": earliest, "latest": latest, "gaps": gapSize,
+                "hasConflictingFinals": self.hasConflictingFinals(schedule)}
         return info
 
     def get_valid_schedules(self, courses, custom_events=list()):
@@ -201,15 +181,18 @@ class CourseScheduler(object):
             classes['custom_events'] = {'0': {}}
             for event in custom_events:
                 classes['custom_events']['0'][event['event_name']] = event
+        ordered_classes = OrderedDict(
+            sorted(sorted(classes.items(), key=lambda course: len(course[1].keys())), key=lambda course: course[0],
+                   reverse=True))  # sorted first by length of keys then alphabetical
         maxNumberOfPerms = 1
-        for class_id, data in classes.items():  # Calculate number of possible permutations
+        for class_id, data in ordered_classes.items():  # Calculate number of possible permutations
             maxNumberOfPerms *= len(data)
 
-        numberOfValidSchedules = 80
+        numberOfValidSchedules = 50
         i = 0
 
         while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
-            permutation = self.getNthPermutation(classes, i)
+            permutation = self.getNthPermutation(ordered_classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
                 if self.filters:
