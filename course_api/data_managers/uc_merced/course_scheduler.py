@@ -54,11 +54,11 @@ class CourseScheduler(object):
 
     def getNthPermutation(self, classes, i):
         permutation = {}
-        multiplier = 1
+        n = 1
         for class_id, data in classes.items():  # Go through all classes and add the relevant section
-            section = list(data)[int((i / multiplier + (i if multiplier > 1 else 0)) % len(data))]
-            permutation[class_id] = data[section]
-            multiplier *= len(data)
+            section = list(classes[class_id].items())[int(i / n % len(classes[class_id]))]
+            permutation[class_id] = classes[class_id][section[0]]
+            n *= len(classes[class_id])
         return permutation
 
     def dayConflicts(self, time, day, is_event=False):
@@ -179,18 +179,18 @@ class CourseScheduler(object):
             classes['custom_events'] = {'0': {}}
             for event in custom_events:
                 classes['custom_events']['0'][event['event_name']] = event
-        ordered_classes = OrderedDict(
-            sorted(sorted(classes.items(), key=lambda course: len(course[1].keys())), key=lambda course: course[0],
-                   reverse=True))  # sorted first by length of keys then alphabetical
+        # ordered_classes = OrderedDict(
+        #     sorted(sorted(classes.items(), key=lambda course: len(course[1].keys())), key=lambda course: course[0],
+        #            reverse=True))  # sorted first by length of keys then alphabetical
         maxNumberOfPerms = 1
-        for class_id, data in ordered_classes.items():  # Calculate number of possible permutations
+        for class_id, data in classes.items():  # Calculate number of possible permutations
             maxNumberOfPerms *= len(data)
 
         numberOfValidSchedules = 50
         i = 0
 
         while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
-            permutation = self.getNthPermutation(ordered_classes, i)
+            permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
                 if self.earliest_time and info.get('earliest') < self.earliest_time:
