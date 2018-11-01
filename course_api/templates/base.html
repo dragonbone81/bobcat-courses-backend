@@ -22,18 +22,18 @@
     </style>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <meta charset="utf-8">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-        var user_id = "{{ user.scheduleuser.unique_id }}";
-        gtag('config', 'UA-116671933-1', {'user_id': user_id});
-    </script>
+{#    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116671933-1"></script>#}
+{#    <script>#}
+{#        window.dataLayer = window.dataLayer || [];#}
+{##}
+{#        function gtag() {#}
+{#            dataLayer.push(arguments);#}
+{#        }#}
+{##}
+{#        gtag('js', new Date());#}
+{#        var user_id = "{{ user.scheduleuser.unique_id }}";#}
+{#        gtag('config', 'UA-116671933-1', {'user_id': user_id});#}
+{#    </script>#}
 
     <link rel="canonical" href="{{ request.build_absolute_uri }}{{ object.get_absolute_url }}">
 
@@ -50,7 +50,7 @@
 
     <link rel="shortcut icon" type="image/png"
           href="{% static "favicon.png" %}"/>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+{#    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>#}
 
     <!-- Required meta tags -->
 
@@ -59,15 +59,15 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="{% static "font-awesome/js/fontawesome-all.min.js" %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static "css/bootstrap-better-nav.min.css" %}">
-    <script src="{% static "js/bootstrap-better-nav.min.js" %}"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"#}
+{#            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"#}
+{#            crossorigin="anonymous"></script>#}
+{#    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"#}
+{#            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"#}
+{#            crossorigin="anonymous"></script>#}
+{#    <link rel="stylesheet" href="{% static "css/bootstrap-better-nav.min.css" %}">#}
+{#    <script src="{% static "js/bootstrap-better-nav.min.js" %}"></script>#}
     {#    <script src="{% static "js/reconnecting-ws.min.js" %}"></script>#}
     {% block imports %}
     {% endblock %}
@@ -76,7 +76,7 @@
         #body {
             background: #f1f7fc;
         }
-
+/*
         @media (max-width: 890px) {
             .hidden-custom {
                 display: none;
@@ -111,86 +111,87 @@
                 display: none;
             }
         }
-
-        .p1[data-count]:after {
-            position: absolute;
-            right: 10%;
-            top: 0;
-            content: attr(data-count);
-            font-size: 80%;
-            padding: .2em;
-            border-radius: 50%;
-            line-height: 1em;
-            color: white;
-            background: rgba(255, 0, 0, .85);
-            text-align: center;
-            min-width: 1em;
-        }
-
-        .scrollable-menu {
-            height: auto;
-            max-height: 200px;
-            max-width: 400px;
-            min-width: 400px;
-            overflow-x: hidden;
-        }
-
-        .scrollable-menu::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .scrollable-menu::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 5px;
-        }
-
-        .scrollable-menu::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 5px;
-        }
-
-        .scrollable-menu::-webkit-scrollbar-thumb:hover {
-            background: #555;
-            border-radius: 5px;
-        }
-
-        .footer {
-            width: 100%;
-            height: 35px;
-            padding-bottom: 10px;
-            text-align: center;
-        }
-
-        .fa-cog:hover {
-            color: #e8e217;
-        }
-
-        .fa-cog {
-            color: #ccc617;
-            font-size: 35px;
-            margin: -10px;
-            padding-bottom: 8px
-        }
-
-        .fa-bell {
-            color: #ccc617;
-            font-size: 35px;
-            margin: -10px;
-            padding-bottom: 8px
-        }
-
-        .fa-bell:hover {
-            color: #e8e217;
-        }
-
-        .fa-times {
-            color: #000000;
-            cursor: pointer;
-        }
-
-        .fa-times:hover {
-            color: #5f5f5f;
-        }
+        */
+        {##}
+        {#.p1[data-count]:after {#}
+        {#    position: absolute;#}
+        {#    right: 10%;#}
+        {#    top: 0;#}
+        {#    content: attr(data-count);#}
+        {#    font-size: 80%;#}
+        {#    padding: .2em;#}
+        {#    border-radius: 50%;#}
+        {#    line-height: 1em;#}
+        {#    color: white;#}
+        {#    background: rgba(255, 0, 0, .85);#}
+        {#    text-align: center;#}
+        {#    min-width: 1em;#}
+        {#}#}
+        {##}
+        {#.scrollable-menu {#}
+        {#    height: auto;#}
+        {#    max-height: 200px;#}
+        {#    max-width: 400px;#}
+        {#    min-width: 400px;#}
+        {#    overflow-x: hidden;#}
+        {#}#}
+        {##}
+        {#.scrollable-menu::-webkit-scrollbar {#}
+        {#    width: 5px;#}
+        {#}#}
+        {##}
+        {#.scrollable-menu::-webkit-scrollbar-track {#}
+        {#    background: #f1f1f1;#}
+        {#    border-radius: 5px;#}
+        {#}#}
+        {##}
+        {#.scrollable-menu::-webkit-scrollbar-thumb {#}
+        {#    background: #888;#}
+        {#    border-radius: 5px;#}
+        {#}#}
+        {##}
+        {#.scrollable-menu::-webkit-scrollbar-thumb:hover {#}
+        {#    background: #555;#}
+        {#    border-radius: 5px;#}
+        {#}#}
+        {##}
+        {#.footer {#}
+        {#    width: 100%;#}
+        {#    height: 35px;#}
+        {#    padding-bottom: 10px;#}
+        {#    text-align: center;#}
+        {#}#}
+        {##}
+        {#.fa-cog:hover {#}
+        {#    color: #e8e217;#}
+        {#}#}
+        {##}
+        {#.fa-cog {#}
+        {#    color: #ccc617;#}
+        {#    font-size: 35px;#}
+        {#    margin: -10px;#}
+        {#    padding-bottom: 8px#}
+        {#}#}
+        {##}
+        {#.fa-bell {#}
+        {#    color: #ccc617;#}
+        {#    font-size: 35px;#}
+        {#    margin: -10px;#}
+        {#    padding-bottom: 8px#}
+        {#}#}
+        {##}
+        {#.fa-bell:hover {#}
+        {#    color: #e8e217;#}
+        {#}#}
+        {##}
+        {#.fa-times {#}
+        {#    color: #000000;#}
+        {#    cursor: pointer;#}
+        {#}#}
+        {##}
+        {#.fa-times:hover {#}
+        {#    color: #5f5f5f;#}
+        {#}#}
 
     </style>
 </head>
@@ -202,96 +203,96 @@
         BobcatCourses</a></h3>
 {% endif %}
 </div>
-{% block header %}
-    <nav class="navbar navbar-expand-custom navbar-dark bg-dark">
-        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px">
-            <img
-                    src="{% static "favicon.png" %}"
-                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">
-            Bobcat
-            Courses</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item {% if request.path == '/app/bobcat-courses/schedules' %}active{% endif %}">
-                    <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>
-                </li>
-                <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">
-                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>
-                </li>
-                <li class="nav-item {% if request.path == '/app/bobcat-courses/waitlist' %}active{% endif %}">
-                    <a class="nav-link" href="/app/bobcat-courses/waitlist">Waitlists</a>
-                </li>
-                <li class="nav-item hidden-custom-li">
-                    <a class="nav-link" href="/app/bobcat-courses/about">About Us</a>
-                </li>
-                <li class="nav-item hidden-custom-li">
-                    <a class="nav-link" href="/app/bobcat-courses/waitlist">Waitlist</a>
-                </li>
-                {% if request.user.is_authenticated %}
-                    <li class="nav-item hidden-custom-li">
-                        <a class="nav-link" href="/app/bobcat-courses/reset-password">Password Reset</a>
-                    </li>
-                    <li class="nav-item hidden-custom-li">
-                        <a class="nav-link" href="/app/bobcat-courses/logout">Logout <i class="fas fa-sign-out-alt"></i></a>
-                    </li>
-                {% endif %}
-            </ul>
-            <ul style="margin-left: -40px;margin-bottom: 0">
-                {% if request.user.is_authenticated %}
-                    <div class="form-inline">
-                        <a href="/app/bobcat-courses/profile">
-                            <span class="navbar-text">
-                                        Welcome
-                                {% if request.user.first_name and request.user.first_name != "Anonymous" %}
-                                    {{ request.user.first_name }}{% else %}
-                                    {{ request.user.username }}{% endif %}
-                                &nbsp;</span>
-                            <img class="user-pic" src="
- {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"
-                                 style="padding-right: 10px; max-height: 40px">
-                        </a>
-                        <li class="nav-item dropdown hidden-custom"
-                            style="list-style-type: none;">
-                            <a class="nav-link" id="navbarDropdown1" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell" style="cursor: pointer;"></i>
-                                <span class="p1" data-count="0" id="notifications_count" hidden></span>
-                            </a>
-                            <div style="left: -300px; top: 50px;"
-                                 class="dropdown-menu dropdown-menu-form scrollable-menu"
-                                 aria-labelledby="navbarDropdown" id="notifications_window">
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">
-                            <a class="nav-link" id="navbarDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cog" style="cursor: pointer;"></i>
-                            </a>
-                            <div style="left: -100px; top: 50px;" class="dropdown-menu"
-                                 aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/app/bobcat-courses/profile">Profile</a>
-                                <a class="dropdown-item" href="/app/bobcat-courses/about">About Us</a>
-                                <a class="dropdown-item" href="/app/bobcat-courses/reset-password">Password Reset</a>
-                                <a class="dropdown-item" href="/app/bobcat-courses/logout">Logout <i
-                                        class="fas fa-sign-out-alt"></i></a>
-                            </div>
-                        </li>
-                    </div>
-                {% else %}
-                    <form action="/app/bobcat-courses/login">
-                        <button type="submit"
-                                class="btn btn-outline-success">Login
-                        </button>
-                    </form>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-{% endblock %}
+{#{% block header %}#}
+{#    <nav class="navbar navbar-expand-custom navbar-dark bg-dark">#}
+{#        <a class="navbar-brand" href="/app/bobcat-courses/schedules" style="margin-top: -5px">#}
+{#            <img#}
+{#                    src="{% static "favicon.png" %}"#}
+{#                    class="d-inline-block align-top" alt="" style="padding-right: 5px;max-height: 30px">#}
+{#            Bobcat#}
+{#            Courses</a>#}
+{#        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"#}
+{#                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">#}
+{#            <span class="navbar-toggler-icon"></span>#}
+{#        </button>#}
+{#        <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
+{#            <ul class="navbar-nav mr-auto">#}
+{#                <li class="nav-item {% if request.path == '/app/bobcat-courses/schedules' %}active{% endif %}">#}
+{#                    <a class="nav-link" href="/app/bobcat-courses/schedules">Plan Schedules</a>#}
+{#                </li>#}
+{#                <li class="nav-item {% if request.path == '/app/bobcat-courses/saved-schedules' %}active{% endif %}">#}
+{#                    <a class="nav-link" href="/app/bobcat-courses/saved-schedules">Saved Schedules</a>#}
+{#                </li>#}
+{#                <li class="nav-item {% if request.path == '/app/bobcat-courses/waitlist' %}active{% endif %}">#}
+{#                    <a class="nav-link" href="/app/bobcat-courses/waitlist">Waitlists</a>#}
+{#                </li>#}
+{#                <li class="nav-item hidden-custom-li">#}
+{#                    <a class="nav-link" href="/app/bobcat-courses/about">About Us</a>#}
+{#                </li>#}
+{#                <li class="nav-item hidden-custom-li">#}
+{#                    <a class="nav-link" href="/app/bobcat-courses/waitlist">Waitlist</a>#}
+{#                </li>#}
+{#                {% if request.user.is_authenticated %}#}
+{#                    <li class="nav-item hidden-custom-li">#}
+{#                        <a class="nav-link" href="/app/bobcat-courses/reset-password">Password Reset</a>#}
+{#                    </li>#}
+{#                    <li class="nav-item hidden-custom-li">#}
+{#                        <a class="nav-link" href="/app/bobcat-courses/logout">Logout <i class="fas fa-sign-out-alt"></i></a>#}
+{#                    </li>#}
+{#                {% endif %}#}
+{#            </ul>#}
+{#            <ul style="margin-left: -40px;margin-bottom: 0">#}
+{#                {% if request.user.is_authenticated %}#}
+{#                    <div class="form-inline">#}
+{#                        <a href="/app/bobcat-courses/profile">#}
+{#                            <span class="navbar-text">#}
+{#                                        Welcome#}
+{#                                {% if request.user.first_name and request.user.first_name != "Anonymous" %}#}
+{#                                    {{ request.user.first_name }}{% else %}#}
+{#                                    {{ request.user.username }}{% endif %}#}
+{#                                &nbsp;</span>#}
+{#                            <img class="user-pic" src="#}
+{# {% if user.scheduleuser.profile_image %}{{ user.scheduleuser.profile_image.url }}{% else %}{% endif %}"#}
+{#                                 style="padding-right: 10px; max-height: 40px">#}
+{#                        </a>#}
+{#                        <li class="nav-item dropdown hidden-custom"#}
+{#                            style="list-style-type: none;">#}
+{#                            <a class="nav-link" id="navbarDropdown1" role="button"#}
+{#                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                                <i class="fas fa-bell" style="cursor: pointer;"></i>#}
+{#                                <span class="p1" data-count="0" id="notifications_count" hidden></span>#}
+{#                            </a>#}
+{#                            <div style="left: -300px; top: 50px;"#}
+{#                                 class="dropdown-menu dropdown-menu-form scrollable-menu"#}
+{#                                 aria-labelledby="navbarDropdown" id="notifications_window">#}
+{#                            </div>#}
+{#                        </li>#}
+{#                        <li class="nav-item dropdown hidden-custom" style="list-style-type: none;">#}
+{#                            <a class="nav-link" id="navbarDropdown" role="button"#}
+{#                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+{#                                <i class="fas fa-cog" style="cursor: pointer;"></i>#}
+{#                            </a>#}
+{#                            <div style="left: -100px; top: 50px;" class="dropdown-menu"#}
+{#                                 aria-labelledby="navbarDropdown">#}
+{#                                <a class="dropdown-item" href="/app/bobcat-courses/profile">Profile</a>#}
+{#                                <a class="dropdown-item" href="/app/bobcat-courses/about">About Us</a>#}
+{#                                <a class="dropdown-item" href="/app/bobcat-courses/reset-password">Password Reset</a>#}
+{#                                <a class="dropdown-item" href="/app/bobcat-courses/logout">Logout <i#}
+{#                                        class="fas fa-sign-out-alt"></i></a>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                    </div>#}
+{#                {% else %}#}
+{#                    <form action="/app/bobcat-courses/login">#}
+{#                        <button type="submit"#}
+{#                                class="btn btn-outline-success">Login#}
+{#                        </button>#}
+{#                    </form>#}
+{#                {% endif %}#}
+{#            </ul>#}
+{#        </div>#}
+{#    </nav>#}
+{#{% endblock %}#}
 {% if error.message %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>{{ error.message }}</strong>
@@ -311,103 +312,103 @@
 {% block content %}
 {% endblock %}
 
-<footer onclick="about()" class="footer" style="cursor: pointer;">
-    <div class="container">
-        <span style="color: black" class="float-right">About/Suggestions</span>
-        <span style="color: black" class="float-left">&#169;BobcatCourses 2018</span>
-    </div>
-    <script>
-        function about() {
-            window.location.href = "/app/bobcat-courses/about";
-        }
-    </script>
+{#<footer onclick="about()" class="footer" style="cursor: pointer;">#}
+{#    <div class="container">#}
+{#        <span style="color: black" class="float-right">About/Suggestions</span>#}
+{#        <span style="color: black" class="float-left">&#169;BobcatCourses 2018</span>#}
+{#    </div>#}
+{#    <script>#}
+{#        function about() {#}
+{#            window.location.href = "/app/bobcat-courses/about";#}
+{#        }#}
+{#    </script>#}
+{##}
+{#</footer>#}
 
-</footer>
-
-<script async>
-    {% if request.user.is_authenticated %}
-        let notifications = [];
-        let handle_delete = (notif_id) => {
-        get_notifications('delete', notif_id, 'id');
-    };
-        let update_dom_notifications = () => {
-        let notifs_windows = document.getElementById("notifications_window");
-        notifs_windows.innerHTML = '';
-        let length_notifs_not_seen = notifications.filter(notif = > notif.seen === false
-    ).
-        length;
-        if (length_notifs_not_seen > 0)
-            document.getElementById("notifications_count").dataset.count = "" + length_notifs_not_seen;
-        else
-            document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
-        if (notifications.length === 0) {
-            let node = document.createElement("div");
-            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#ffe3b4;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">No New Alerts</div>';
-            notifs_windows.appendChild(node);
-            document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));
-        }
-        else {
-            for (let notification of notifications) {
-                let node = document.createElement("div");
-                if (notification.type === 'waitlist') {
-                    if (notification.data.message === 'open_course')
-                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#c8ffa8;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now OPEN!' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
-                    if (notification.data.message === 'closed_course')
-                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#FF9792;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
-                }
-                if (notification.type === 'message') {
-                    node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + notification.data.message + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';
-                }
-                // Create a text node
-                notifs_windows.appendChild(node);
-            }
-            if (length_notifs_not_seen > 0)
-                document.getElementById("notifications_count").removeAttribute('hidden');
-        }
-    };
-        let get_notifications = (command = null, data = null, identifier = null) => {
-        let url = '/api/users/notifications/';
-        if (command)
-            url += '?command=' + command;
-        if (data || data === 0)
-            url += '&' + identifier + '=' + data;
-        fetch(url, {
-            method: 'get', credentials: "same-origin",
-            headers: {
-                "X-CSRFToken": "{% csrf_token %}",
-                "Accept":
-                    "application/json",
-                "Content-Type":
-                    "application/json"
-            },
-        }).then((response) = > {
-            return response.json();
-    }).
-        then((response) = > {
-            if(JSON.stringify(notifications) !== JSON.stringify(response) || JSON.stringify(response) === '[]'
-    )
-        {
-            notifications = response.reverse();
-            update_dom_notifications();
-        }
-    })
-    };
-        $('#navbarDropdown1').on('click', function (e) {
-            let seen_notifs = [];
-            for (let notif of notifications) {
-                seen_notifs.push(notif.id);
-            }
-            get_notifications('seen_notifs', JSON.stringify(seen_notifs), 'notifs');
-        });
-        $('.dropdown-menu').on('click', function (e) {
-            if ($(this).hasClass('dropdown-menu-form')) {
-                e.stopPropagation();
-            }
-        });
-        setInterval(get_notifications, 30000);
-        get_notifications();
-    {% endif %}
-</script>
+{#<script async>#}
+{#    {% if request.user.is_authenticated %}#}
+{#        let notifications = [];#}
+{#        let handle_delete = (notif_id) => {#}
+{#        get_notifications('delete', notif_id, 'id');#}
+{#    };#}
+{#        let update_dom_notifications = () => {#}
+{#        let notifs_windows = document.getElementById("notifications_window");#}
+{#        notifs_windows.innerHTML = '';#}
+{#        let length_notifs_not_seen = notifications.filter(notif = > notif.seen === false#}
+{#    ).#}
+{#        length;#}
+{#        if (length_notifs_not_seen > 0)#}
+{#            document.getElementById("notifications_count").dataset.count = "" + length_notifs_not_seen;#}
+{#        else#}
+{#            document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));#}
+{#        if (notifications.length === 0) {#}
+{#            let node = document.createElement("div");#}
+{#            node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#ffe3b4;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">No New Alerts</div>';#}
+{#            notifs_windows.appendChild(node);#}
+{#            document.getElementById("notifications_count").setAttributeNode(document.createAttribute('hidden'));#}
+{#        }#}
+{#        else {#}
+{#            for (let notification of notifications) {#}
+{#                let node = document.createElement("div");#}
+{#                if (notification.type === 'waitlist') {#}
+{#                    if (notification.data.message === 'open_course')#}
+{#                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#c8ffa8;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now OPEN!' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';#}
+{#                    if (notification.data.message === 'closed_course')#}
+{#                        node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#FF9792;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + 'Course ' + notification.data.course.course_id + ' (' + notification.data.course.crn + ') is now CLOSED.' + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';#}
+{#                }#}
+{#                if (notification.type === 'message') {#}
+{#                    node.innerHTML = '<div style="border-radius: 10px;border-bottom: 1px solid grey;border-right: 1px solid grey;border-left: 1px solid grey;background:#cacaff;padding-left:5px;white-space: normal;margin-left:5px;margin-top:5px" class="dropdown-item">' + notification.data.message + ' - ' + notification.time + '<i style="float: right; margin-top:2px; font-size:20px" class="fas fa-times" onclick="handle_delete(' + notification.id + ')"></i>' + '</div>';#}
+{#                }#}
+{#                // Create a text node#}
+{#                notifs_windows.appendChild(node);#}
+{#            }#}
+{#            if (length_notifs_not_seen > 0)#}
+{#                document.getElementById("notifications_count").removeAttribute('hidden');#}
+{#        }#}
+{#    };#}
+{#        let get_notifications = (command = null, data = null, identifier = null) => {#}
+{#        let url = '/api/users/notifications/';#}
+{#        if (command)#}
+{#            url += '?command=' + command;#}
+{#        if (data || data === 0)#}
+{#            url += '&' + identifier + '=' + data;#}
+{#        fetch(url, {#}
+{#            method: 'get', credentials: "same-origin",#}
+{#            headers: {#}
+{#                "X-CSRFToken": "{% csrf_token %}",#}
+{#                "Accept":#}
+{#                    "application/json",#}
+{#                "Content-Type":#}
+{#                    "application/json"#}
+{#            },#}
+{#        }).then((response) = > {#}
+{#            return response.json();#}
+{#    }).#}
+{#        then((response) = > {#}
+{#            if(JSON.stringify(notifications) !== JSON.stringify(response) || JSON.stringify(response) === '[]'#}
+{#    )#}
+{#        {#}
+{#            notifications = response.reverse();#}
+{#            update_dom_notifications();#}
+{#        }#}
+{#    })#}
+{#    };#}
+{#        $('#navbarDropdown1').on('click', function (e) {#}
+{#            let seen_notifs = [];#}
+{#            for (let notif of notifications) {#}
+{#                seen_notifs.push(notif.id);#}
+{#            }#}
+{#            get_notifications('seen_notifs', JSON.stringify(seen_notifs), 'notifs');#}
+{#        });#}
+{#        $('.dropdown-menu').on('click', function (e) {#}
+{#            if ($(this).hasClass('dropdown-menu-form')) {#}
+{#                e.stopPropagation();#}
+{#            }#}
+{#        });#}
+{#        setInterval(get_notifications, 30000);#}
+{#        get_notifications();#}
+{#    {% endif %}#}
+{#</script>#}
 </body>
 
 </html>
