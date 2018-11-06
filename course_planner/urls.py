@@ -61,7 +61,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh', TokenRefreshView.as_view()),
-    path('api/oauth/', include('social_django.urls', namespace='social')),
 
     # local schedule urls
     path('', RedirectView.as_view(url='https://bobcatcourses.tk')),
