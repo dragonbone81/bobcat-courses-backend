@@ -8,7 +8,6 @@ from django.core.mail import send_mail
 from course_planner.settings import DEBUG
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 from course_api.utils.create_notification import create_notification
-from course_api.tasks import course_push_task
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
@@ -236,8 +235,6 @@ def course_view(request):
         UCMercedCoursePush().delete_courses()
     elif request.GET and request.GET.get('terms'):
         update_uc_merced_terms()
-    else:
-        course_push_task()
     return JsonResponse({'success': True})
 
 
