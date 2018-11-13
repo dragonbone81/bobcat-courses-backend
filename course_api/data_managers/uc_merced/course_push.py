@@ -26,7 +26,7 @@ class UCMercedCoursePush(object):
         need_added = list()
         need_update = list()
         for course in self.data:
-            if 'crn' not in course or course['crn'] == 'See Detail':
+            if 'crn' not in course or course['crn'] == 'See Detail' or course['crn'] == 'Closed':
                 continue
             course['units'] = int(course['units'])
             if course['capacity'] == '-':

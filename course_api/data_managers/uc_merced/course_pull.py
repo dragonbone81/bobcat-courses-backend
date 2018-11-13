@@ -104,7 +104,7 @@ class UCMercedClassParser(object):
         data = [dict(zip(header, line)) for line in data]
         current_lect = None
         for line in data:
-            if line.get('crn') == 'See Detail':
+            if line.get('crn') == 'See Detail' or line.get('crn') == 'Closed':
                 continue
             if line['type'] != 'LAB':
                 previous_discussion = None
