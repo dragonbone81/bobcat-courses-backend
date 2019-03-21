@@ -21,7 +21,7 @@ from course_api.views import course_view, CourseViewSet, CourseListView, Example
     user_update_script_once, ping, UserLoadSchedules, SubjectCourseViewSet, app_about_view, \
     PasswordChange, app_reset_password, ForgotPassword, password_reset_confirm, password_forgot_start, page_not_found, \
     error_500, ProfileImageUpload, waitlist_check, NotificationsViewSet, django_waitlist_view, WaitlistViewSet, \
-    notification_check, ContactUs, UpdateNotificationSettings, app_privacy_view, GetStats
+    notification_check, ContactUs, UpdateNotificationSettings, app_privacy_view, GetStats, update_to_next_term
 from rest_framework import routers
 from django.views.generic import RedirectView
 from django.contrib.auth import logout
@@ -88,5 +88,6 @@ urlpatterns = [
     path('sync_users', user_update_script_once),
     path('sync_waitlist', waitlist_check),
     path('sync_notifications', notification_check),
+    path('update_to_next_term', update_to_next_term),
 
 ]

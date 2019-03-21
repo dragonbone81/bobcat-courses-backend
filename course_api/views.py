@@ -238,6 +238,15 @@ def course_view(request):
     return JsonResponse({'success': True})
 
 
+def update_to_next_term(request):
+    terms = json.loads(Terms.objects.get(school='uc_merced').terms)
+    Course.objects.exclude(term__in=terms).delete()
+    Schedule.objects.exclude(term__in=terms).delete()
+    Waitlist.objects.all().delete()
+    SubjectClassUpdate().update_lectures()
+    return JsonResponse({'success': True})
+
+
 def ping(request):
     return JsonResponse({'status': 'UP'})
 
