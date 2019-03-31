@@ -29,6 +29,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.shortcuts import render, redirect
 from course_api.utils.get_schedule_info import getInfoForSchedule
+import requests
 
 
 class ExampleJWT(APIView):
@@ -283,58 +284,72 @@ class SchedulesListView(ViewSet):
         """
         Return a list of all courses.
         """
-        courses_to_search = request.data.get('course_list', [])
-        bad_crns = request.data.get('bad_crns', [])
-        if courses_to_search and isinstance(courses_to_search, str):
-            courses_to_search = request.data.getlist('course_list', [])
-            bad_crns = request.data.get('bad_crns', '').split(',')
-            earliest_time = request.data.get('earliest_time', None)
-            if earliest_time and earliest_time != 'any':
-                earliest_time = int(earliest_time)
-            else:
-                earliest_time = None
-            latest_time = request.data.get('latest_time', None)
-            if latest_time and latest_time != 'any':
-                latest_time = int(latest_time)
-            else:
-                latest_time = None
-            filters_list = request.data.getlist('filters', [])
-            gaps = 'asc'
-            if 'gaps_min' in filters_list:
+        try:
+            courses_to_search = request.data.get('course_list', [])
+            bad_crns = request.data.get('bad_crns', [])
+            if courses_to_search and isinstance(courses_to_search, str):
+                courses_to_search = request.data.getlist('course_list', [])
+                bad_crns = request.data.get('bad_crns', '').split(',')
+                earliest_time = request.data.get('earliest_time', None)
+                if earliest_time and earliest_time != 'any':
+                    earliest_time = int(earliest_time)
+                else:
+                    earliest_time = None
+                latest_time = request.data.get('latest_time', None)
+                if latest_time and latest_time != 'any':
+                    latest_time = int(latest_time)
+                else:
+                    latest_time = None
+                filters_list = request.data.getlist('filters', [])
                 gaps = 'asc'
-            if 'gaps_max' in filters_list:
-                gaps = 'desc'
-            days = 'desc'
-            if 'min_days' in filters_list:
-                days = 'asc'
-            if 'max_days' in filters_list:
+                if 'gaps_min' in filters_list:
+                    gaps = 'asc'
+                if 'gaps_max' in filters_list:
+                    gaps = 'desc'
                 days = 'desc'
-            search_full = False
-            if 'search_full' in filters_list:
-                search_full = True
-            filters = True
-        else:
-            earliest_time = request.data.get('earliest_time', False)
-            latest_time = request.data.get('latest_time', False)
-            days = request.data.get('days', False)
-            gaps = request.data.get('gaps', False)
-            search_full = request.data.get('search_full', False)
-        term = request.data.get('term', None)
-        custom_events = request.data.get('custom_events', [])
-        if not term:
-            return Response({
-                "error_title": "no_term",
-                "error_description": "Term not provided",
-                "error_code": 101
-            })
-
-        generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
-                                    search_full=search_full, bad_crns=bad_crns)
-        courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
-        stats = Statistics.objects.get(id=1)
-        stats.schedules_generated += len(courses)
-        stats.save()
-        return Response(courses)
+                if 'min_days' in filters_list:
+                    days = 'asc'
+                if 'max_days' in filters_list:
+                    days = 'desc'
+                search_full = False
+                if 'search_full' in filters_list:
+                    search_full = True
+                filters = True
+            else:
+                earliest_time = request.data.get('earliest_time', False)
+                latest_time = request.data.get('latest_time', False)
+                days = request.data.get('days', False)
+                gaps = request.data.get('gaps', False)
+                search_full = request.data.get('search_full', False)
+            term = request.data.get('term', None)
+            custom_events = request.data.get('custom_events', [])
+            if not term:
+                return Response({
+                    "error_title": "no_term",
+                    "error_description": "Term not provided",
+                    "error_code": 101
+                })
+            generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
+                                        search_full=search_full, bad_crns=bad_crns)
+            courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
+            if courses == "TIMEOUT":
+                import time
+                requests.post(url="https://bobcatcourses-ad9a.restdb.io/rest/bobcat-courses",
+                              json={("{}".format(time.time()).replace(".", "")): request.data},
+                              headers={"x-apikey": "be7b16c7f7a0a387a924e8199244bc2130105"})
+                return Response([])
+            stats = Statistics.objects.get(id=1)
+            stats.schedules_generated += len(courses)
+            stats.save()
+            return Response(courses)
+        except Exception as e:
+            import time
+            error_log = request.data
+            error_log["error"] = str(e)
+            requests.post(url="https://bobcatcourses-ad9a.restdb.io/rest/bobcat-courses",
+                          json={("{}".format(time.time()).replace(".", "")): error_log},
+                          headers={"x-apikey": "be7b16c7f7a0a387a924e8199244bc2130105"})
+            return Response([])
 
 
 class GetStats(ViewSet):

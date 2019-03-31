@@ -1,10 +1,12 @@
 from course_api.utils.get_courses_base_on_simple_name import get_courses
 from operator import itemgetter
 from collections import OrderedDict
+import time
 
 
 class CourseScheduler(object):
-    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc', search_full=False, bad_crns=None):
+    def __init__(self, term, earliest_time=None, latest_time=None, gaps='asc', days='asc', search_full=False,
+                 bad_crns=None):
         self.term = term
         self.earliest_time = earliest_time
         self.latest_time = latest_time
@@ -12,6 +14,7 @@ class CourseScheduler(object):
         self.days = days
         self.search_full = search_full
         self.bad_crns = bad_crns
+        self.start_time = time.time()
 
     def convertTime(self, s):
         t = s.split("-")  # separate start and end times
@@ -190,6 +193,8 @@ class CourseScheduler(object):
         i = 0
 
         while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
+            if time.time() - self.start_time > 20:
+                return "TIMEOUT"
             permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
