@@ -331,11 +331,13 @@ class SchedulesListView(ViewSet):
                 })
             generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
                                         search_full=search_full, bad_crns=bad_crns)
-            courses = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
+            courses, error = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
             if courses == "TIMEOUT":
                 import time
+                error_log = request.data
+                error_log["state"] = error
                 requests.post(url="https://bobcatcourses-ad9a.restdb.io/rest/bobcat-courses",
-                              json={("{}".format(time.time()).replace(".", "")): request.data},
+                              json={("{}".format(time.time()).replace(".", "")): error_log},
                               headers={"x-apikey": "be7b16c7f7a0a387a924e8199244bc2130105"})
                 return Response([])
             stats = Statistics.objects.get(id=1)

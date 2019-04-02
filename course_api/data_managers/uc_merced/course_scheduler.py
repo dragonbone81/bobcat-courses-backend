@@ -194,7 +194,8 @@ class CourseScheduler(object):
 
         while len(schedules) < numberOfValidSchedules and i < maxNumberOfPerms:
             if time.time() - self.start_time > 20:
-                return "TIMEOUT"
+                return "TIMEOUT", {"schedules_created": schedules, "numberOfValidSchedules": numberOfValidSchedules,
+                                   "i": i, "maxperms": maxNumberOfPerms}
             permutation = self.getNthPermutation(classes, i)
             if not self.hasConflict(permutation):
                 info = self.getInfoForSchedule(permutation)
@@ -241,4 +242,4 @@ class CourseScheduler(object):
                                     'custom_events': [sections_object for type_key, sections_object in
                                                       schedule['schedule'].get('custom_events', {}).items() if
                                                       sections_object]})
-        return schedule_output
+        return schedule_output, {}
