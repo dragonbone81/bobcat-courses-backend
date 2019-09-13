@@ -8,7 +8,7 @@ import json
 
 
 class UCMercedCoursePush(object):
-    def __init__(self, terms=[], auto=False):
+    def __init__(self, terms=[], auto=True):
         if auto:
             terms = [json.loads(Terms.objects.get(school='uc_merced').terms)[-1]]
         self.term = terms[0]
