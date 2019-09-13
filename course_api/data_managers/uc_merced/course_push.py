@@ -10,7 +10,7 @@ import json
 class UCMercedCoursePush(object):
     def __init__(self, terms=[], auto=False):
         if auto:
-            terms = json.loads(Terms.objects.get(school='uc_merced').terms[-1])
+            terms = [json.loads(Terms.objects.get(school='uc_merced').terms)[-1]]
         self.term = terms[0]
         self.data = UCMercedClassParser(terms=terms).parse_terms()
 
