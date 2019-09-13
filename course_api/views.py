@@ -251,6 +251,12 @@ def update_to_next_term(request):
     return JsonResponse({'success': True})
 
 
+def clean_term(request):
+    term = request.GET.get('term')
+    Course.objects.filter(term=term).delete()
+    return JsonResponse({'success': True})
+
+
 def ping(request):
     return JsonResponse({'status': 'UP'})
 
