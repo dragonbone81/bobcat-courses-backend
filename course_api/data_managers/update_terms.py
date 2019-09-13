@@ -11,5 +11,6 @@ class UpdateTerms(object):
         terms_obj, created = Terms.objects.get_or_create(school=self.school_id)
         terms = list(set(self.terms))
         terms.sort()
+        terms = [term for term in terms if not term.endswith("20")]
         terms_obj.terms = json.dumps([terms[-1]])
         terms_obj.save()
