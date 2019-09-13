@@ -229,7 +229,10 @@ class GetTerms(ViewSet):
 def course_view(request):
     if request.GET and request.GET.get('pull'):
         term = request.GET.get('term')
-        UCMercedCoursePush(terms=[str(term)]).push_courses()
+        if term == "auto":
+            UCMercedCoursePush(terms=[], auto=True).push_courses()
+        else:
+            UCMercedCoursePush(terms=[str(term)]).push_courses()
     elif request.GET and request.GET.get('simple'):
         SubjectClassUpdate().update_lectures()
     elif request.GET and request.GET.get('delete'):
@@ -329,7 +332,8 @@ class SchedulesListView(ViewSet):
                     "error_description": "Term not provided",
                     "error_code": 101
                 })
-            generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days, gaps=gaps,
+            generator = CourseScheduler(term, earliest_time=earliest_time, latest_time=latest_time, days=days,
+                                        gaps=gaps,
                                         search_full=search_full, bad_crns=bad_crns)
             courses, error = generator.get_valid_schedules(courses_to_search, custom_events=custom_events)
             if courses == "TIMEOUT":

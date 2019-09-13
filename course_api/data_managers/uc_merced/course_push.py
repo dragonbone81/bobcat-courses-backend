@@ -8,13 +8,14 @@ import json
 
 
 class UCMercedCoursePush(object):
-    def __init__(self, terms=[]):
-        # if not terms:
-        #     terms = json.loads(Terms.objects.get(school='uc_merced').terms)
+    def __init__(self, terms=[], auto=False):
+        if auto:
+            terms = json.loads(Terms.objects.get(school='uc_merced').terms[-1])
+        self.term = terms[0]
         self.data = UCMercedClassParser(terms=terms).parse_terms()
 
     def delete_courses(self):
-        current_courses = Course.objects.filter(term=201910)
+        current_courses = Course.objects.filter(term=self.term)
         new_course_crn_list = [str(course['crn']) for course in self.data]
         current_course_crn_list = [str(course.crn) for course in current_courses]
         need_deleted = list(set(current_course_crn_list) - set(new_course_crn_list))

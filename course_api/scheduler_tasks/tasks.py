@@ -6,9 +6,9 @@ import requests
 #     requests.get(url=url)
 #     print('Course Pull Ran')
 def course_pull_201930():
-    url = "https://cse120-course-planner.herokuapp.com/course_pull/?pull=True&term=201930"
+    url = "https://cse120-course-planner.herokuapp.com/course_pull/?pull=True&term=auto"
     requests.get(url=url)
-    print('Course Pull 201930 Ran')
+    print('Course Pull auto Ran')
 
 
 course_pull_201930()
