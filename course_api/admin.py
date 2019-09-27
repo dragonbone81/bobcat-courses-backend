@@ -32,6 +32,11 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 
+class NotificationsAdmin(admin.ModelAdmin):
+    list_display = ('user')
+    search_fields = ['user']
+
+
 # Register your models here.
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('crn', 'subject', 'type', 'course_name', 'course_id', 'course_name', 'course_name', 'term')
@@ -69,4 +74,5 @@ admin.site.register(SubjectCourse, SubjectClassAdmin)
 admin.site.register(Terms, TermsAdmin)
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Waitlist, WaitlistAdmin)
+admin.site.register(Notifications, NotificationsAdmin)
 admin.site.register(Statistics)
