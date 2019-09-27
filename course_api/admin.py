@@ -33,8 +33,8 @@ admin.site.register(User, UserAdmin)
 
 
 class NotificationsAdmin(admin.ModelAdmin):
-    list_display = ('user')
-    search_fields = ['user__username']
+    list_display = ('user', )
+    search_fields = ['user__username', ]
 
 
 # Register your models here.
