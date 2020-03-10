@@ -379,7 +379,7 @@ class GetStats(ViewSet):
         # this just matches simple name
         total_schedules_generated = Statistics.objects.get(id=1).schedules_generated
         total_users = User.objects.all().count()
-        total_saved_schedules = Schedule.objects.all().count()
+        total_saved_schedules = Schedule.objects.last().pk
         total_waitlists = Waitlist.objects.all().count()
 
         return Response({
