@@ -25,6 +25,7 @@ class NotificationsInline(admin.StackedInline):
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
     inlines = (ScheduleUserInline, NotificationsInline,)
+    list_display = BaseUserAdmin.list_display + ('date_joined', 'last_login')
 
 
 # Re-register UserAdmin
