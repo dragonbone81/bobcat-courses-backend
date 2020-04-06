@@ -15,4 +15,6 @@ def get_courses(courses_to_search, term, search_full=False, bad_crns=None):
     for course in total_courses:
         crn_dict[course.crn] = course.simple_name
         courses[course.simple_name].append(course.to_dict())
+        if course.days == '\xa0':
+            courses[course.simple_name][-1]["days"] = ''
     return courses
