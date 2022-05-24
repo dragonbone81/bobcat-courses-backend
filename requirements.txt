@@ -21,7 +21,7 @@ idna==2.7
 jmespath==0.9.3
 Pillow==6.2.0
 psycopg2==2.7.5
-PyJWT==1.6.4
+PyJWT==2.4.0
 python-dateutil==2.7.5
 python-http-client==3.1.0
 pytz==2018.7
